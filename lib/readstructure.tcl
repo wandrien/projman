@@ -19,6 +19,78 @@ proc GetVariablesFromFile {fileName} {
     set procList ""
     set varList ""
     set params ""
+    set varsBegin false
+    puts $fileName
+    set f [open "$fileName" r]
+    if {[dict exists $lexers $fileType] == 0} {return}
+    while {[gets $f line] >=0 } {
+        if {[dict exists $lexers $fileType varRegexpCommandMultiline] != 0 } {
+            if {[eval [dict get $lexers $fileType varRegexpCommandMultiline]]} {
+                if [info exists indent] {
+                    set indentSize [string length $indent]
+                } else {
+                    set indentSize 0
+                }
+                set varsBegin true
+                puts "====== $varsBegin $indentSize"
+                continue
+                # lappend varList [list $varName $varValue]
+            }
+        }
+        if {$varsBegin eq "true"} {
+            set l [GetVarFromLine $line $fileType]
+            if {$line eq ""} {
+               set varsBegin false
+               puts "====== $varsBegin $indentSize [lindex $l 3]"
+               continue
+            }
+            if {[lindex $l 3] ne ""} {
+                if [expr [lindex $l 3] <= $indentSize] {
+                   set varsBegin false
+                   puts "====== $varsBegin $indentSize >[lindex $l 3]<"
+                   continue
+                }
+            }
+            lappend varList [list [lindex $l 0] [lindex $l 1] [lindex $l 2]]
+        }
+    }
+    # puts $procList
+    # puts $varList	
+    close $f
+    return $varList
+}
+proc GetVarFromLine {line fileType} {
+    global lexers
+    if {[dict exists $lexers $fileType varRegexpCommand] != 0 } {
+        if {[eval [dict get $lexers $fileType varRegexpCommand]]} {
+            if [info exists varName] {
+                set varName [string trim $varName]
+            } else {
+                set varName ""
+            }
+            if [info exists varValue] {
+                set varValue [string trim $varValue]
+            } else {
+                set varValue ""
+            }
+            if [info exists varType] {
+                set varType [string trim $varType]
+            } else {
+                set varType ""
+            }
+            set indentLength  [string length $indent]
+            puts "variable: $varName, value: $varValue, type: $varType, indent: >$indent< $indentLength"
+            return [list $varName $varValue $varType $indentLength]
+        }
+    }
+}
+proc GetVariablesFromVarFile {fileName} {
+    global tree nbEditor editors lexers project
+    set fileType [string toupper [string trimleft [file extension $fileName] "."]]
+    set procList ""
+    set varList ""
+    set params ""
+    puts $fileName
     set f [open "$fileName" r]
     if {[dict exists $lexers $fileType] == 0} {return}
     while {[gets $f line] >=0 } {
@@ -32,22 +104,13 @@ proc GetVariablesFromFile {fileName} {
             # }
         # }
         # Выбираем переменные
-        if {[dict exists $lexers $fileType varRegexpCommand] != 0 } {
-            if {[eval [dict get $lexers $fileType varRegexpCommand]]} {
-                set varName [string trim $varName]
-                set varValue [string trim $varValue]
-                # puts "variable: $varName, value: $varValue"
-                lappend varList [list $varName $varValue]
-            }
-        }
+        lappend varList [GetVarFromLine $line $fileType]
     }
     # puts $procList
-    # puts $varList
+    # puts $varList	
     close $f
     return $varList
 }
-
-
 proc ReadFilesFromDirectory {directory root {type ""}} {
     global procList project lexers variables
     
@@ -66,13 +129,31 @@ proc ReadFilesFromDirectory {directory root {type ""}} {
         } elseif {[file isdirectory $fileName] == 1} {
             # set type ""
             ReadFilesFromDirectory [file join $directory $fileName] $root
-        }   
-        if {$type eq "var"} {
+        }
+        if {[string match {*inventory*} [string tolower $fileName]]} {
+            lappend project($root) [file join $root $directory $fileName]
+            set variables([file join $root $directory $fileName]) [GetVariablesFromVarFile [file join $root $directory $fileName]]        
+        }
+        if {[string tolower $fileName] eq "ansible.cfg"} {
+            # puts "find ansible.cfg [file join $root $directory $fileName]"
+            set f [open [file join $root $directory $fileName] r]
+            while {[gets $f line] >= 0} {
+                # puts "\t$line"
+                if [regexp -nocase -all -- {^\s*inventory\s*=\s*(.+?)$} $line match fileName] {
+                    # puts "Inventory file is a: $line"
+                    lappend project($root) [file join $root $directory $fileName]
+                    set variables([file join $root $directory $fileName]) [GetVariablesFromVarFile [file join $root $directory $fileName]]                    
+                }
+            }
+            close $f
+        }
+        
+        if {$type eq "var" && [file isdirectory [file join $root $directory $fileName]] != 1} {
             # puts ">>>>>$root $fileName"
             # puts "[GetVariablesFromFile $fileName]"
             # dict set project $root [file join $root $directory $fileName];# "[GetVariablesFromFile $fileName]"
             lappend project($root) [file join $root $directory $fileName]
-            set variables([file join $root $directory $fileName]) [GetVariablesFromFile $fileName]
+            set variables([file join $root $directory $fileName]) [GetVariablesFromVarFile [file join $root $directory $fileName]]
             # puts "[file join $root $directory $fileName]---$variables([file join $root $directory $fileName])"
         }
     }

@@ -253,7 +253,7 @@ namespace eval FileOper {
         }
         $nbEditor select $itemName
         Editor::ReadStructure $itemName.frmText.t $treeItemName
-
+        GetVariablesFromFile $fileFullPath
         focus -force $itemName.frmText.t.t
         
         return $itemName

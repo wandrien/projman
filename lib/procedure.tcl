@@ -150,10 +150,16 @@ proc SearchVariable {txt} {
                 puts "------$b -- [lindex $b 0]"
                 if {$varName eq [lindex $b 0]} {
                     puts "УРААААААА $varName = $b в файле $a \n\t [lindex $b 0]"
-                    FindVariablesDialog $txt "$varName: $a"
+                    # FindVariablesDialog $txt "$varName: \[...\][file tail $a]"
+                    lappend l [list $varName [lindex $b 1] $a]
                 }
             }
         }
+    }
+    if [info exists l] {
+        FindVariablesDialog $txt $l
+    } else {
+        return
     }
 }
 proc FindVariablesDialog {txt args} {
@@ -172,18 +178,42 @@ proc FindVariablesDialog {txt args} {
     wm transient $win .
     wm overrideredirect $win 1
     
-    listbox $win.lBox -width 50 -border 2 -yscrollcommand "$win.yscroll set" -border 1
-    ttk::scrollbar $win.yscroll -orient vertical -command  "$win.lBox yview"
-    pack $win.lBox -expand true -fill y -side left
-    pack $win.yscroll -side left -expand false -fill y
-    
+    # listbox $win.lBox -width 50 -border 2 -yscrollcommand "$win.yscroll set" -border 1
+    ttk::treeview $win.lBox -show headings -height 5\
+        -columns "variable value path" -displaycolumns "variable value path"\
+        -yscrollcommand [list $win.v set] -xscrollcommand [list $win.h set]
+
+
+    ttk::scrollbar $win.v -orient vertical -command  "$win.lBox yview"
+    ttk::scrollbar $win.h -orient horizontal -command  "$win.lBox xview"
+    # pack $win.lBox -expand true -fill y -side left
+    # pack $win.yscroll -side left -expand false -fill y
+    # pack $win.xscroll -side bottom -expand false -fill x
+        
+    grid $win.lBox -row 0 -column 0 -sticky nsew
+    grid $win.v -row 0 -column 1 -sticky nsew
+    grid $win.h -row 1 -column 0 -sticky nsew
+    grid columnconfigure $win 0 -weight 1
+    grid rowconfigure $win 0 -weight 1
+        
+    $win.lBox heading variable -text [::msgcat::mc "Variable"]
+    $win.lBox heading value -text [::msgcat::mc "Value"]
+    $win.lBox heading path -text [::msgcat::mc "File path"]
+    set height 0
     foreach { word } $args {
-        $win.lBox insert end $word
+        foreach lst $word {
+            # set l [split $lst " "]
+            puts "[lindex $lst 0] -[lindex $lst 1] -[lindex $lst 2]"
+            # lappend l2 [lindex $l 0] [lindex $l 1] [file tail [lindex $l 2]]
+            $win.lBox insert {} end -values $lst -text {1 2 3}
+            # $win.lBox insert end $word
+            incr height
+        }
     }
+    $win.lBox selection set I001
+    # catch { $win.lBox activate 0 ; $win.lBox selection set 0 0 }
     
-    catch { $win.lBox activate 0 ; $win.lBox selection set 0 0 }
-    
-    if { [set height [llength $args]] > 10 } { set height 10 }
+    if { $height > 10 } { set height 10 }
     $win.lBox configure -height $height
 
     bind $win      <Escape> { 
@@ -198,15 +228,25 @@ proc FindVariablesDialog {txt args} {
     }
     bind $win.lBox <Return> {
         # set findString [dict get $lexers [dict get $editors $Editor::txt fileType] procFindString]
-        set values [.findVariables.lBox get [.findVariables.lBox curselection]]
+        set id [$win.lBox selection]
+        set values [$win.lBox item $id -values]
+        set key [lindex [split $id "::"] 0]
+        puts "- $id - $values - $key"
         # regsub -all {PROCNAME} $findString $values str
         # Editor::FindFunction "$str"
         destroy .findVariables
+        FileOper::Edit [lindex $values 2]
         # $txt tag remove sel 1.0 end
         # focus $Editor::txt.t
         break
     }
-    bind $win.lBox <Any-Key> {Editor::ListBoxSearch %W %A}
+    # bind $win.lBox <Double-ButtonPress-1> {Tree::DoublePressItem $win.lBox}
+    bind $win.lBox <ButtonRelease-1> {
+        Tree::PressItem $win.lBox
+        break
+    }
+    
+    # bind $win.lBox <Any-Key> {Editor::ListBoxSearch %W %A}
     # Определям расстояние до края экрана (основного окна) и если
     # оно меньше размера окна со списком то сдвигаем его вверх
     set winGeom [winfo reqheight $win]
@@ -216,6 +256,8 @@ proc FindVariablesDialog {txt args} {
         set y [expr $topHeight - $winGeom]
     }
     wm geom $win +$x+$y
+    focus -force $win.lBox
+    $win.lBox focus I001
 }
 
    

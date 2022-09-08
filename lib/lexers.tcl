@@ -15,7 +15,7 @@ dict set lexers TCL varRegexpCommand {regexp -nocase -all -- {^\s*?set\s+([a-zA-
 dict set lexers GO commentSymbol {//}
 dict set lexers GO procFindString {func.*?PROCNAME}
 dict set lexers GO procRegexpCommand {regexp -nocase -all -- {\s*?func\s*?(\(\w+\s*?\**?\w+\)|)\s*?(\w+)\((.*?)\)\s+?([a-zA-Z0-9\{\}\[\]\(\)-_.]*?|)\s*?\{} $line match linkName procName params returns}
-
+dict set lexers GO varRegexpCommand {regexp -nocase -all -line -- {^\s*?var\s+([a-zA-Z0-9\-_$]+)\s+(.+?)(\s*$)} $line match varName varType lineEnd}
 #--------------------------------------------------
 # SHELL (Bash)
 dict set lexers SH commentSymbol {#}
@@ -41,7 +41,7 @@ dict set lexers YML commentSymbol {#}
 dict set lexers YML tabSize 2
 dict set lexers YML procFindString {(- name:)\s*?PROCNAME}
 dict set lexers YML procRegexpCommand {regexp -nocase -all -- {^\s*?- (name):\s(.+?)$} $line match keyWord procName}
-dict set lexers YML varRegexpCommand {regexp -nocase -all -- {^\s*?([a-zA-Z0-9\-_$]+):\s+(.+?)(\s*$)} $line match varName varValue lineEnd}
+dict set lexers YML varRegexpCommand {regexp -nocase -all -- {^(\s*?)([a-zA-Z0-9\-_$]+):\s+(.+?)(\s*$)} $line match indent varName varValue lineEnd}
+dict set lexers YML varRegexpCommandMultiline {regexp -all -line -- {^(\s*)(set_fact|vars):$} $line match indent keyWord}
 
 dict set lexers ALL varDirectory {variables vars group_vars host_vars}
-

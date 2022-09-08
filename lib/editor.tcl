@@ -594,9 +594,22 @@ namespace eval Editor {
             # Выбираем переменные
             if {[dict exists $lexers $fileType varRegexpCommand] != 0 } {
                 if {[eval [dict get $lexers $fileType varRegexpCommand]]} {
-                    set varName [string trim $varName]
-                    set varValue [string trim $varValue]
-                    puts "variable: $varName, value: $varValue"
+                    if [info exists varName] {
+                        set varName [string trim $varName]
+                    } else {
+                        set varName ""
+                    }
+                    if [info exists varValue] {
+                        set varValue [string trim $varValue]
+                    } else {
+                        set varValue ""
+                    }
+                    if [info exists varType] {
+                        set varType [string trim $varType]
+                    } else {
+                        set varType ""
+                    }
+                    puts "variable: $varName, value: $varValue, type: $varType"
                     lappend varList [list $varName $varValue]
                 }
             }
@@ -979,6 +992,21 @@ proc FindFunction {findString} {
         focus -force $win.entryFind
     }
 
+    proc SplitEditor {w orient} {
+        ttk::panedwindow $w.panelTxt -orient horizontal -style TPanedwindow
+        pack propagate $w.panelTxt false 
+        set frmText [ttk::frame $w.frmText2 -border 1]
+        
+        pack $frmText  -side top -expand true -fill both
+        ctext $frmText.t2
+        pack $frmText.t2 -fill both -expand 1
+        $frmText.t2 insert end [$w.frmText.t get 0.0 end]
+
+        $w.panelTxt add $w.frmText -weight 0  
+        $w.panelTxt add $w.frmText2 -weight 1
+
+    }
+
     proc Editor {fileFullPath nb itemName} {
         global cfgVariables editors
         set fr $itemName
@@ -988,15 +1016,34 @@ proc FindFunction {findString} {
              set lblText ""
 
         }
-        
-        set lblName "lbl[string range $itemName [expr [string last "." $itemName] +1] end]"
-        ttk::label $fr.$lblName -text $lblText
-        pack $fr.$lblName  -side top  -anchor w -fill x
+        ttk::frame $fr.header
         
         set frmText [ttk::frame $fr.frmText -border 1]
         set txt $frmText.t
+        
+        set lblName "lbl[string range $itemName [expr [string last "." $itemName] +1] end]"
+        ttk::label $fr.header.$lblName -text $lblText
+        # pack $fr.$lblName  -side top  -anchor w -fill x
+        
+        set btnSplitV "btnSplitV[string range $itemName [expr [string last "." $itemName] +1] end]"
+        set btnSplitH "btnSplitH[string range $itemName [expr [string last "." $itemName] +1] end]"
+        ttk::button $fr.header.$btnSplitH -image split_horizontal_11x11 \
+            -command "Editor::SplitEditor $fr horizontal"
+        ttk::button $fr.header.$btnSplitV -image split_vertical_11x11 \
+            -command "Editor::SplitEditor $fr vertical" -state disable
+        # pack $fr.$btnSplitH $fr.$btnSplitV  -side right  -anchor e
+        pack $fr.header.$lblName -side left -expand true -fill x
+        pack $fr.header.$btnSplitV $fr.header.$btnSplitH -side right
+        
+        pack $fr.header -side top -fill x
+        
+        # set frmText [ttk::frame $fr.frmText -border 1]
+        # set txt $frmText.t
+        
+     
+        pack $frmText  -side top -expand true -fill both
 
-        pack $frmText  -side top -expand true -fill both 
+        
         pack [ttk::scrollbar $frmText.v -command "$frmText.t yview"] -side right -fill y
         ttk::scrollbar $frmText.h -orient horizontal -command "$frmText.t xview"
         ctext $txt -xscrollcommand "$frmText.h set" -yscrollcommand "$frmText.v set" \

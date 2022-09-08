@@ -100,14 +100,18 @@ namespace eval Tree {
         set key [lindex [split $id "::"] 0]
         if {$values eq "" || $key eq ""} {return}
         
-        # puts "$key $tree $values"
-        switch $key {
+        puts "$key $tree $values"
+        switch -regexp $key {
             directory {
                 FileOper::ReadFolder  $values
                 # $tree item $id -open false
             }
             file {
                 FileOper::Edit $values
+            }
+            I[0-9]*? {
+                destroy .findVariables
+                FileOper::Edit [lindex $values 2]
             }
             default {
                 set parentItem [$tree parent $id]
