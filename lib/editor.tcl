@@ -436,10 +436,10 @@ namespace eval Editor {
         if {$key == 63 || $key == 107 || $key == 108 || $key == 112} {return "true"}
     }
     
-    proc BindKeys {w fileType} {
+    proc BindKeys {w txt fileType} {
         global cfgVariables
         #  variable txt
-        set txt $w.frmText.t
+        # set txt $w.frmText.t
         bind $txt <KeyRelease> "Editor::ReleaseKey %K $txt"
         bind $txt <KeyPress> "Editor::PressKey %K $txt"
         # bind $txt <KeyRelease> "Editor::Key %k %K" 
@@ -496,9 +496,9 @@ namespace eval Editor {
         bind $txt <Control-i> ImageBase64Encode
         bind $txt <Control-u> "Editor::SearchBrackets %W"
         bind $txt <Control-J> "catch {Editor::GoToFunction $w}"
-        bind $txt <Control-j> "catch {Editor::GoToFunction $w}"
+        bind $txt <Control-j> "catch {Editor::GoToFunction $w}; break"
         bind $txt <Alt-w> "$txt delete {insert wordstart} {insert wordend}"
-        bind $txt <Alt-r> "$txt delete {insert linestart} {insert lineend}"
+        bind $txt <Alt-r> "$txt delete {insert linestart} {insert lineend + 1char}"
         bind $txt <Alt-b> "$txt delete {insert linestart} insert"
         bind $txt <Alt-e> "$txt delete insert {insert lineend}"
     }
@@ -692,7 +692,7 @@ proc FindFunction {findString} {
     # ----------------------------------------------------------------------
     # Вызов диалога со списком процедур или функций присутствующих в тексте
     
-        proc GoToFunction { w } {
+    proc GoToFunction { w } {
         global tree editors
         set txt $w.frmText.t
         # set start_word [$txt get "insert - 1 chars wordstart" insert]
@@ -992,57 +992,35 @@ proc FindFunction {findString} {
         focus -force $win.entryFind
     }
 
-    proc SplitEditor {w orient} {
-        ttk::panedwindow $w.panelTxt -orient horizontal -style TPanedwindow
-        pack propagate $w.panelTxt false 
-        set frmText [ttk::frame $w.frmText2 -border 1]
-        
-        pack $frmText  -side top -expand true -fill both
-        ctext $frmText.t2
-        pack $frmText.t2 -fill both -expand 1
-        $frmText.t2 insert end [$w.frmText.t get 0.0 end]
+    proc SplitEditor {w fileType} {
+        global cfgVariables
+        puts [$w.panelTxt panes]
+        if [winfo exists $w.frmText2] {
+            $w.panelTxt forget $w.frmText2
+            destroy $w.frmText2
+            return
+        }
+        set frmText [Editor::EditorWidget $w $fileType]
+        $frmText.t insert end [$w.frmText.t get 0.0 end]
 
-        $w.panelTxt add $w.frmText -weight 0  
+        # $w.panelTxt add $w.frmText -weight 0  
         $w.panelTxt add $w.frmText2 -weight 1
-
     }
 
-    proc Editor {fileFullPath nb itemName} {
+    proc EditorWidget {fr fileType} {
         global cfgVariables editors
-        set fr $itemName
-        if ![string match "*untitled*" $itemName] {
-             set lblText $fileFullPath
+        
+        if [winfo exists $fr.frmText] {
+            set frmText [ttk::frame $fr.frmText2 -border 1]
         } else {
-             set lblText ""
-
+            set frmText [ttk::frame $fr.frmText -border 1]
         }
-        ttk::frame $fr.header
-        
-        set frmText [ttk::frame $fr.frmText -border 1]
         set txt $frmText.t
-        
-        set lblName "lbl[string range $itemName [expr [string last "." $itemName] +1] end]"
-        ttk::label $fr.header.$lblName -text $lblText
-        # pack $fr.$lblName  -side top  -anchor w -fill x
-        
-        set btnSplitV "btnSplitV[string range $itemName [expr [string last "." $itemName] +1] end]"
-        set btnSplitH "btnSplitH[string range $itemName [expr [string last "." $itemName] +1] end]"
-        ttk::button $fr.header.$btnSplitH -image split_horizontal_11x11 \
-            -command "Editor::SplitEditor $fr horizontal"
-        ttk::button $fr.header.$btnSplitV -image split_vertical_11x11 \
-            -command "Editor::SplitEditor $fr vertical" -state disable
-        # pack $fr.$btnSplitH $fr.$btnSplitV  -side right  -anchor e
-        pack $fr.header.$lblName -side left -expand true -fill x
-        pack $fr.header.$btnSplitV $fr.header.$btnSplitH -side right
-        
-        pack $fr.header -side top -fill x
         
         # set frmText [ttk::frame $fr.frmText -border 1]
         # set txt $frmText.t
-        
      
         pack $frmText  -side top -expand true -fill both
-
         
         pack [ttk::scrollbar $frmText.v -command "$frmText.t yview"] -side right -fill y
         ttk::scrollbar $frmText.h -orient horizontal -command "$frmText.t xview"
@@ -1060,9 +1038,6 @@ proc FindFunction {findString} {
         $txt tag configure lightBracket -background $cfgVariables(selectLightBg) -foreground #00ffff
         $txt tag configure lightSelected -background $cfgVariables(selectLightBg) -foreground #00ffff
         
-        set fileType [string toupper [string trimleft [file extension $fileFullPath] "."]]
-        if {$fileType eq ""} {set fileType "Unknown"}
-
         # puts ">$fileType<"
         # puts [info procs Highlight::GO]
         dict set editors $txt fileType $fileType
@@ -1077,13 +1052,46 @@ proc FindFunction {findString} {
         } else {
             Highlight::Default $txt
         }
+        BindKeys $fr $txt $fileType        
+        return $frmText
+    }
+
+    proc Editor {fileFullPath nb itemName} {
+        global cfgVariables editors
+        set fr $itemName
+        if ![string match "*untitled*" $itemName] {
+             set lblText $fileFullPath
+        } else {
+             set lblText ""
+
+        }
+        set fileType [string toupper [string trimleft [file extension $fileFullPath] "."]]
+        if {$fileType eq ""} {set fileType "Unknown"}
         
-        BindKeys $itemName $fileType
-        # bind $txt <Return> {
-            # regexp {^(\s*)} [%W get "insert linestart" end] -> spaceStart
-            # %W insert insert "\n$spaceStart"
-            # break
-        # }
+        ttk::frame $fr.header
+        set lblName "lbl[string range $itemName [expr [string last "." $itemName] +1] end]"
+        ttk::label $fr.header.$lblName -text $lblText
+        # pack $fr.$lblName  -side top  -anchor w -fill x
+        
+        set btnSplitV "btnSplitV[string range $itemName [expr [string last "." $itemName] +1] end]"
+        set btnSplitH "btnSplitH[string range $itemName [expr [string last "." $itemName] +1] end]"
+        ttk::button $fr.header.$btnSplitH -image split_horizontal_11x11 \
+            -command "Editor::SplitEditor $fr $fileType"
+        ttk::button $fr.header.$btnSplitV -image split_vertical_11x11 \
+            -command "Editor::SplitEditor $fr $fileType" -state disable
+        # pack $fr.$btnSplitH $fr.$btnSplitV  -side right  -anchor e
+        pack $fr.header.$lblName -side left -expand true -fill x
+        pack $fr.header.$btnSplitV $fr.header.$btnSplitH -side right
+        
+        pack $fr.header -side top -fill x
+        
+        ttk::panedwindow $fr.panelTxt -orient vertical -style TPanedwindow
+        pack propagate $fr.panelTxt false 
+        pack $fr.panelTxt -side top -fill both -expand true
+
+        set frmText [Editor::EditorWidget $fr $fileType]
+        
+        $fr.panelTxt add $frmText -weight 0
 
         return $fr
     }

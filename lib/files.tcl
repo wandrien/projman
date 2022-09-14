@@ -16,8 +16,12 @@ namespace eval FileOper {
     }        
     
     proc OpenDialog {} {
-        global env
-        set dir $env(HOME)
+        global env project activeProject
+        if [info exists activeProject] {
+            set dir $activeProject
+        } else {
+            set dir $env(HOME)
+        }
         set fullPath [tk_getOpenFile -initialdir $dir -filetypes $::types -parent .]
         set file [string range $fullPath [expr [string last "/" $fullPath]+1] end]
         regsub -all "." $file "_" node
@@ -26,7 +30,7 @@ namespace eval FileOper {
         set name [file rootname $file]
         set ext [string range [file extension $file] 1 end]
         if {$fullPath != ""} {
-            puts $fullPath
+            # puts $fullPath
             return $fullPath
         } else {
             return
@@ -34,16 +38,23 @@ namespace eval FileOper {
     }
     
     proc OpenFolderDialog {} {
-        global env
+        global env activeProject
         #global tree node types dot env noteBook fontNormal fontBold fileList noteBook projDir activeProject imgDir editor rootDir
         #     set dir $projDir
-        set dir $env(HOME)
+        if [info exists activeProject] {
+            set dir $activeProject
+        } else {
+            set dir $env(HOME)
+        }
         set fullPath [tk_chooseDirectory  -initialdir $dir -parent .]
         set file [string range $fullPath [expr [string last "/" $fullPath]+1] end]
         regsub -all "." $file "_" node
         set dir [file dirname $fullPath]
         #     EditFile .frmBody.frmCat.noteBook.ffiles.frmTreeFiles.treeFiles $node $fullPath
-        puts $fullPath
+        # puts $fullPath
+        if ![info exists activeProject] {
+            set activeProject $fullPath
+        }
        
         return $fullPath
     }
@@ -75,7 +86,7 @@ namespace eval FileOper {
         foreach nbItem [array names modified] {
             if {$modified($nbItem) eq "true"} {
                 $nbEditor select $nbItem
-                puts "close tab $nbItem"
+                # puts "close tab $nbItem"
                 if {[Close] eq "cancel"} {return "cancel"}
             }
         }
@@ -84,7 +95,7 @@ namespace eval FileOper {
     proc Close {} {
         global nbEditor modified tree
         set nbItem [$nbEditor select]
-	    puts "close tab $nbItem"
+	    # puts "close tab $nbItem"
     	   
         if {$nbItem == ""} {return}
         if {$modified($nbItem) eq "true"} {
@@ -116,11 +127,18 @@ namespace eval FileOper {
     }
     
     proc Save {} {
-        global nbEditor tree env
+        global nbEditor tree env activeProject
+
+        if [info exists activeProject] {
+            set dir $activeProject
+        } else {
+            set dir $env(HOME)
+        }
+        
         set nbEditorItem [$nbEditor select]
         puts "Saved editor text: $nbEditorItem"
         if [string match "*untitled*" $nbEditorItem] {
-            set filePath [tk_getSaveFile -initialdir $env(HOME) -filetypes $::types -parent .]
+            set filePath [tk_getSaveFile -initialdir $dir -filetypes $::types -parent .]
             if {$filePath eq ""} {
                 return
             }
@@ -129,7 +147,7 @@ namespace eval FileOper {
             $nbEditor tab $nbEditorItem -text $fileName
             # set treeitem [Tree::InsertItem $tree {} $filePath "file" $fileName]
             set lblName "lbl[string range $nbEditorItem [expr [string last "." $nbEditorItem] +1] end]"
-            $nbEditorItem.$lblName configure -text $filePath
+            $nbEditorItem.header.$lblName configure -text $filePath
         } else {
             set treeItem "file::[string range $nbEditorItem [expr [string last "." $nbEditorItem] +1] end ]"
             set filePath [Tree::GetItemID $tree $treeItem]
@@ -165,7 +183,7 @@ namespace eval FileOper {
     }
     
     proc ReadFolder {directory {parent ""}} {
-        global tree dir lexers
+        global tree dir lexers  project
         puts "Read the folder $directory"
         set rList ""
         if {[catch {cd $directory}] != 0} {

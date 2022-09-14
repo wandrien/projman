@@ -63,7 +63,7 @@ namespace eval Tree {
             }
         }
         append id $type "::" $subNode
-        puts "Tree ID: $id, tree item: $item"
+        # puts "Tree ID: $id, tree item: $item"
         if ![$tree exists $id] {
             $tree insert $parent end -id "$id" -text " $text" -values "$item" -image $image
         }

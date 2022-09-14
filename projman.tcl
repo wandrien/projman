@@ -10,7 +10,7 @@ exec wish "$0" -- "$@"
 ######################################################
 # Version: 2.0.0
 # Release: alpha
-# Build: 05092022090515
+# Build: 14092022145805
 ######################################################
 
 # определим текущую версию, релиз и т.д.
@@ -114,6 +114,7 @@ if [info exists opened] {
     puts $opened
     foreach path $opened {
         if [file isdirectory $path] {
+            set activeProject $path
             FileOper::ReadFolder $path
             ReadFilesFromDirectory $path $path
             # puts "aaa[dict values $project "ansible*"]"

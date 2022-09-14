@@ -109,3 +109,9 @@
    - Added search function name into Function navigation whem press key
    - Added find and replace dialog
    - Fixed correct placement the Function dialog 
+
+14/09/2022
+    - Added procedure for the horizontal split a text window
+    - Fixed untitled file saved
+    - Fixed Alt+R (delete row), now will are deleted row with a "\n\r" symbols
+
