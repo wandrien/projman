@@ -1004,7 +1004,9 @@ proc FindFunction {findString} {
         $frmText.t insert end [$w.frmText.t get 0.0 end]
 
         # $w.panelTxt add $w.frmText -weight 0  
-        $w.panelTxt add $w.frmText2 -weight 1
+        $w.panelTxt add $frmText -weight 1
+
+        $frmText.t see [$w.frmText.t index insert]
     }
 
     proc EditorWidget {fr fileType} {
