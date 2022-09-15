@@ -973,8 +973,8 @@ namespace eval Editor {
         grid $win.lblCounter -row 2 -column 2 -sticky we
 
         # set reqWidth [winfo reqwidth $win]
-        set boxX      [expr [winfo rootx $w] + [expr [winfo width $nbEditor] - 350]]
-        set boxY      [expr [winfo rooty $w] + 10]
+        set boxX [expr [winfo rootx $w] + [expr [winfo width $nbEditor] - 350]]
+        set boxY [expr [winfo rooty $w] + 10]
 
         bind $win <Escape> { 
             destroy $Editor::win
