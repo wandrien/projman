@@ -618,7 +618,7 @@ namespace eval Editor {
         dict set editors $txt variableList $varList
     }
 
-proc FindFunction {findString} {
+    proc FindFunction {findString} {
         global nbEditor
         puts $findString
         set pos "0.0"
@@ -992,8 +992,28 @@ proc FindFunction {findString} {
         focus -force $win.entryFind
     }
 
-    proc SplitEditor {w fileType} {
+    proc SplitEditorH {w fileType} {
         global cfgVariables
+        puts [$w.panelTxt panes]
+        if [winfo exists $w.frmText2] {
+            $w.panelTxt forget $w.frmText2
+            destroy $w.frmText2
+            return
+        }
+        set frmText [Editor::EditorWidget $w $fileType]
+        $frmText.t insert end [$w.frmText.t get 0.0 end]
+
+        # $w.panelTxt add $w.frmText -weight 0  
+        $w.panelTxt add $frmText -weight 1
+
+        $frmText.t see [$w.frmText.t index insert]
+        focus -force $frmText.t.t
+    }
+
+    proc SplitEditorV {w fileType} {
+        global cfgVariables
+        .frmBody.panel add $frmTree -weight 0
+
         puts [$w.panelTxt panes]
         if [winfo exists $w.frmText2] {
             $w.panelTxt forget $w.frmText2
@@ -1032,7 +1052,9 @@ proc FindFunction {findString} {
             -tabs "[expr {4 * [font measure $cfgVariables(font) 0]}] left" -tabstyle tabular -undo true
             
         pack $txt -fill both -expand 1
-        pack $frmText.h -side bottom -fill x
+        if {$cfgVariables(editorWrap) eq "none"} {
+            pack $frmText.h -side bottom -fill x
+        }
         # puts ">>>>>>> [bindtags $txt]"
         if {$cfgVariables(lineNumberShow) eq "false"} {
             $txt configure -linemap 0
@@ -1078,9 +1100,9 @@ proc FindFunction {findString} {
         set btnSplitV "btnSplitV[string range $itemName [expr [string last "." $itemName] +1] end]"
         set btnSplitH "btnSplitH[string range $itemName [expr [string last "." $itemName] +1] end]"
         ttk::button $fr.header.$btnSplitH -image split_horizontal_11x11 \
-            -command "Editor::SplitEditor $fr $fileType"
+            -command "Editor::SplitEditorH $fr $fileType"
         ttk::button $fr.header.$btnSplitV -image split_vertical_11x11 \
-            -command "Editor::SplitEditor $fr $fileType" -state disable
+            -command "Editor::SplitEditorV $fr $fileType" -state disable
         # pack $fr.$btnSplitH $fr.$btnSplitV  -side right  -anchor e
         pack $fr.header.$lblName -side left -expand true -fill x
         pack $fr.header.$btnSplitV $fr.header.$btnSplitH -side right
