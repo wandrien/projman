@@ -122,6 +122,18 @@ if [info exists opened] {
             ResetModifiedFlag [FileOper::Edit $path]
         }
     }
+} else {
+    if {$cfgVariables(opened) ne ""} {
+        set activeProject $cfgVariables(opened)
+        FileOper::ReadFolder $cfgVariables(opened)
+        ReadFilesFromDirectory $cfgVariables(opened) $cfgVariables(opened)
+        if {$cfgVariables(editedFiles) ne ""} {
+            foreach f [split $cfgVariables(editedFiles) " "] {
+                puts $f
+                FileOper::Edit $f
+            }
+        }
+    }
 }
 
 # if [info exists project] {

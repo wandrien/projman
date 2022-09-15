@@ -9,6 +9,7 @@
 ######################################################
 
 proc GetFileMenu {m} {
+    global activeProject
     $m add command -label [::msgcat::mc "New file"] -command Editor::New\
     -accelerator "Ctrl+N"
     $m add command -label [::msgcat::mc "Open file"] -accelerator "Ctrl+O" -command {
@@ -24,6 +25,7 @@ proc GetFileMenu {m} {
     $m add command -label [::msgcat::mc "Open folder"] -accelerator "Ctrl+K" -command {
         set folderPath [FileOper::OpenFolderDialog]
         if {$folderPath != ""} {
+            set activeProject $folderPath
             FileOper::ReadFolder $folderPath
             ReadFilesFromDirectory $folderPath $folderPath
         }

@@ -22,9 +22,11 @@ if [info exists env(LANG)] {
 }
 
 set ::configDefault "\[General\]
-locale=$locale
 cfgModifyDate=''
+opened=''
+editedFiles=''
 \[GUI\]
+locale=$locale
 theme=dark
 toolBarShow=true
 menuShow=true
@@ -70,6 +72,7 @@ proc Config::read {dir} {
 }
 
 proc Config::write {dir} {
+    global activeProject
     set cfgFile [ini::open [file join $dir projman.ini] "w"]
     foreach section  [array names ::cfgINIsections] {
         foreach key $::cfgINIsections($section) {
@@ -82,7 +85,9 @@ proc Config::write {dir} {
   
     # Save an top level window geometry into config
     ini::set $cfgFile "GUI" geometry [wm geometry .]
-    
+    if {$activeProject ne ""} {
+        ini::set $cfgFile "General" opened $activeProject
+    }
     ini::commit $cfgFile
     ini::close $cfgFile
 }
