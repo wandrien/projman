@@ -60,15 +60,17 @@ namespace eval ttk::theme::dark {
         
         # ttk widgets.
         ttk::style configure TButton \
-        -width -8 -padding {5 1} -relief link
+            -width -8 -padding {5 1} -relief link
         ttk::style configure TMenubutton -relief flat -arrowsize 0
         ttk::style configure TCheckbutton \
-        -indicatorbackground "#ffffff" -indicatormargin {1 1 4 1}
+            -indicatorbackground $colors(-lighter) -indicatormargin {1 1 4 1}
         ttk::style configure TRadiobutton \
-        -indicatorbackground "#ffffff" -indicatormargin {1 1 4 1}
+            -indicatorbackground "#ffffff" -indicatormargin {1 1 4 1}
         ttk::style configure TFrame -relief flat -border -1
-        # ttk::style configure TEntry -fieldbackground #ffffff -foreground #000000 -padding {2 0}
-        ttk::style configure TEntry -fieldbackground $colors(-lightframe) -foreground #ffffff -padding {2 0}
+        ttk::style configure TEntry -fieldbackground $colors(-lightframe) \
+            -padding {2 0}
+        ttk::style configure TLabel -foreground  $colors(-disabledfg) \
+            -background $colors(-frame) -padding {2 0}
         
         ttk::style configure TCombobox \
             -fieldbackground $colors(-lightframe) \
@@ -105,9 +107,7 @@ namespace eval ttk::theme::dark {
             -linemapfg [list active $colors(-linemapfg)]\
             -background [list active $colors(-lighter)] \
             -foreground [list disabled $colors(-disabledfg)]
-            
-        ttk::style configure TLabel -foreground  $colors(-disabledfg)  -padding {2 0}
-       
+                   
         # ttk::style configure TreeCtrl \
         # -background gray30 -itembackground {gray60 gray50} \
         # -itemfill #ffffff -itemaccentfill yellow

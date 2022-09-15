@@ -77,6 +77,7 @@
 ::msgcat::mcset ru "File modify" "Файл изменен"
 ::msgcat::mcset ru "File saved" "Файл сохранен"
 ::msgcat::mcset ru "Find" "Найти"
+::msgcat::mcset ru "Finded" "Найдено"
 ::msgcat::mcset ru "Find in files" "Найти  в файлах"
 ::msgcat::mcset ru "Font normal" "Нормальный шрифт"
 ::msgcat::mcset ru "Font bold" "Жирный шрифт"

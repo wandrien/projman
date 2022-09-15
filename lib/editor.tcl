@@ -838,6 +838,7 @@ namespace eval Editor {
         }
         wm geom $win +$x+$y
     }
+
     proc FindReplaceText {findString replaceString regexp} {
         global nbEditor
         set txt [$nbEditor select].frmText.t
@@ -884,11 +885,15 @@ namespace eval Editor {
             $txt tag add sel $ind $endInd
             incr i
         }
+        .finddialog.lblCounter configure -text "[::msgcat::mc "Finded"]: $i"
+        
         # set pos [$txt search $options $findString $pos end]
 
         
         # $txt mark set insert $pos
-        $txt see $pos
+        if {[lindex $lstFindIndex 0] ne "" } {
+            $txt see [lindex $lstFindIndex 0]
+        }
         # puts $pos
         # # highlight the found word
         # set line [lindex [split $pos "."] 0]
@@ -917,7 +922,7 @@ namespace eval Editor {
         set txt $w.frmText.t
         set win .finddialog
         set regexpSet ""
-        # set nocaseSet "-nocase"
+        set searchAll "-all"
         
         if { [winfo exists $win] }  { destroy $win }
         toplevel $win
@@ -944,7 +949,7 @@ namespace eval Editor {
             -command {
                 puts $Editor::show($Editor::win.entryReplace)
                 if {$Editor::show($Editor::win.entryReplace) eq "false"} {
-                    grid $Editor::win.entryReplace -row 1 -column 0 -columnspan 2 -sticky nsew
+                    grid $Editor::win.entryReplace -row 1 -column 0 -columnspan 3 -sticky nsew
                     grid $Editor::win.bDone -row 1 -column 3 -sticky e
                     grid $Editor::win.bDoneAll -row 1 -column 4 -sticky e
                     set Editor::show($Editor::win.entryReplace) "true"
@@ -955,15 +960,17 @@ namespace eval Editor {
             }
         ttk::checkbutton $win.chkRegexp -text "Regexp" \
             -variable regexpSet -onvalue "-regexp" -offvalue ""
-        # ttk::checkbutton $win.chkCase -text "Case Sensitive" \
-            # -variable nocaseSet -onvalue "" -offvalue "-nocase"
-
-        grid $win.entryFind -row 0 -column 0  -columnspan 2 -sticky nsew
+        ttk::checkbutton $win.chkAll -text "All" -state disable\
+            -variable searchAll -onvalue "-all" -offvalue ""
+        ttk::label $win.lblCounter -justify right -anchor e -text ""
+        
+        grid $win.entryFind -row 0 -column 0  -columnspan 3 -sticky nsew
         grid $win.bForward -row 0 -column 3 -sticky e
         grid $win.bBackward -row 0 -column 4 -sticky e
         grid $win.bReplace -row 0 -column 5 -sticky e
         grid $win.chkRegexp -row 2 -column 0 -sticky w
-        # grid $win.chkCase -row 2 -column 1  -sticky w
+        # grid $win.chkAll -row 2 -column 1  -sticky w
+        grid $win.lblCounter -row 2 -column 2 -sticky we
 
         # set reqWidth [winfo reqwidth $win]
         set boxX      [expr [winfo rootx $w] + [expr [winfo width $nbEditor] - 350]]
@@ -998,6 +1005,7 @@ namespace eval Editor {
         if [winfo exists $w.frmText2] {
             $w.panelTxt forget $w.frmText2
             destroy $w.frmText2
+            focus -force $w.frmText.t.t
             return
         }
         set frmText [Editor::EditorWidget $w $fileType]
