@@ -136,10 +136,11 @@ grid rowconfigure $frmTree 0 -weight 1
 set frmWork [ttk::frame .frmWork -border 0 -relief flat]
 
 set nbEditor [ttk::notebook $frmWork.nbEditor]
+pack $nbEditor -side left -fill both -expand true
 
-#grid $nbEditor -row 0 -column 0 -sticky nsew
-pack $nbEditor -fill both -expand true
-
+# set nbEditor2 [ttk::notebook $frmWork.nbEditor2]
+# pack $nbEditor2 -side left -fill both -expand true
+# 
 # Create an image CLOSE for tab
 ttk::style element create close_button image close_10x10 -height 12 -width 12 -sticky e -padding {10 0}
 
@@ -153,7 +154,7 @@ ttk::style layout TNotebook.Tab {
 }
 bind TNotebook <Button-1> "catch {NB::PressTab %W %x %y}\;[bind TNotebook <Button-1>];break"
 # bind <<NotebookTabChanged>> "NB::PressTab %W %x %y"
-
+bind TNotebook <ButtonRelease-1> "NB::PressTab %W %x %y"
 # bind . <Control-Tab> "NB::NextTab $nbEditor"
 bind . <Control-Next> "NB::NextTab $nbEditor 1"
 bind . <Control-Prior> "NB::NextTab $nbEditor -1"
