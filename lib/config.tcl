@@ -87,6 +87,8 @@ proc Config::write {dir} {
     ini::set $cfgFile "GUI" geometry [wm geometry .]
     if {$activeProject ne ""} {
         ini::set $cfgFile "General" opened $activeProject
+    } else {
+        ini::set $cfgFile "General" opened ""
     }
     ini::commit $cfgFile
     ini::close $cfgFile

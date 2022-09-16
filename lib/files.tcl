@@ -61,7 +61,7 @@ namespace eval FileOper {
 
     proc CloseFolder {} {
         global tree nbEditor activeProject
-        set activeProject ""
+
         set treeItem [$tree selection]
         set parent [$tree parent $treeItem]
         while {$parent ne ""} {
@@ -80,6 +80,7 @@ namespace eval FileOper {
             }
             $tree delete $treeItem
         }
+        set activeProject ""
     }
 
     proc CloseAll {} {
