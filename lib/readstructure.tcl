@@ -132,17 +132,20 @@ proc ReadFilesFromDirectory {directory root {type ""}} {
         }
         if {[string match {*inventory*} [string tolower $fileName]]} {
             lappend project($root) [file join $root $directory $fileName]
-            set variables([file join $root $directory $fileName]) [GetVariablesFromVarFile [file join $root $directory $fileName]]        
+            set variables([file join $root $directory $fileName]) \
+                [GetVariablesFromVarFile [file join $root $directory $fileName]]        
         }
         if {[string tolower $fileName] eq "ansible.cfg"} {
             # puts "find ansible.cfg [file join $root $directory $fileName]"
             set f [open [file join $root $directory $fileName] r]
             while {[gets $f line] >= 0} {
-                # puts "\t$line"
-                if [regexp -nocase -all -- {^\s*inventory\s*=\s*(.+?)$} $line match fileName] {
+                if [regexp -nocase -all -- {^\s*inventory\s*=\s*(\.\/|)(.+?)$} $line match v1 fileName] {
                     # puts "Inventory file is a: $line"
+                    if {[lsearch $project($root) [file join $root $directory $fileName]] eq "-1"} {
                     lappend project($root) [file join $root $directory $fileName]
-                    set variables([file join $root $directory $fileName]) [GetVariablesFromVarFile [file join $root $directory $fileName]]                    
+                        set variables([file join $root $directory $fileName]) \
+                            [GetVariablesFromVarFile [file join $root $directory $fileName]]
+                    }
                 }
             }
             close $f
@@ -153,7 +156,8 @@ proc ReadFilesFromDirectory {directory root {type ""}} {
             # puts "[GetVariablesFromFile $fileName]"
             # dict set project $root [file join $root $directory $fileName];# "[GetVariablesFromFile $fileName]"
             lappend project($root) [file join $root $directory $fileName]
-            set variables([file join $root $directory $fileName]) [GetVariablesFromVarFile [file join $root $directory $fileName]]
+            set variables([file join $root $directory $fileName]) \
+                [GetVariablesFromVarFile [file join $root $directory $fileName]]
             # puts "[file join $root $directory $fileName]---$variables([file join $root $directory $fileName])"
         }
     }
