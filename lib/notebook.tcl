@@ -29,7 +29,11 @@ namespace eval NB {
     }
 
     proc PressTab {w x y} {
-        $w select [$w identify tab $x $y]
+        if {[$w identify tab $x $y] ne ""} {
+            $w select [$w identify tab $x $y]
+        } else {
+            return
+        }
         if {[$w identify $x $y] == "close_button"} {
             FileOper::Close
         } else {

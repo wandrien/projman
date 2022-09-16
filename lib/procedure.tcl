@@ -162,14 +162,21 @@ proc SearchVariable {txt} {
         return
     }
 }
+proc GetVariableFilePath {txt} {
+    set str [$txt get {insert linestart} {insert lineend}]
+    if [regexp -nocase -all -- {^([0-9A-Za-z\-_:]*?) :: (.*?) :: (.*?)$} $str match vName vValue vPath] {
+        return $vPath
+    }
+}
 proc FindVariablesDialog {txt args} {
-    global editors lexers
+    global editors lexers cfgVariables
     # variable txt 
     variable win
+    variable t $txt
     # set txt $w.frmText.t
-    set box        [$txt bbox insert]
-    set x      [expr [lindex $box 0] + [winfo rootx $txt] ]
-    set y      [expr [lindex $box 1] + [winfo rooty $txt] + [lindex $box 3] ]
+    set box [$txt bbox insert]
+    set x   [expr [lindex $box 0] + [winfo rootx $txt] ]
+    set y   [expr [lindex $box 1] + [winfo rooty $txt] + [lindex $box 3] ]
 
     set win .findVariables
 
@@ -177,13 +184,16 @@ proc FindVariablesDialog {txt args} {
     toplevel $win
     wm transient $win .
     wm overrideredirect $win 1
-    
+    # set win [canvas $win.c -yscrollcommand "$win.v set" -xscrollcommand "$win.h set"]
+
     # listbox $win.lBox -width 50 -border 2 -yscrollcommand "$win.yscroll set" -border 1
-    ttk::treeview $win.lBox -show headings -height 5\
-        -columns "variable value path" -displaycolumns "variable value path"\
-        -yscrollcommand [list $win.v set] -xscrollcommand [list $win.h set]
-
-
+    # ttk::treeview $win.lBox -show headings -height 5\
+        # -columns "variable value path" -displaycolumns "variable value path"\
+        # -yscrollcommand [list $win.v set] -xscrollcommand [list $win.h set]
+    ctext $win.lBox -height 5 -font $cfgVariables(font) -wrap none \
+        -yscrollcommand [list $win.v set] -xscrollcommand [list $win.h set] \
+        -linemapfg $cfgVariables(lineNumberFG) -linemapbg $cfgVariables(lineNumberBG)
+    
     ttk::scrollbar $win.v -orient vertical -command  "$win.lBox yview"
     ttk::scrollbar $win.h -orient horizontal -command  "$win.lBox xview"
     # pack $win.lBox -expand true -fill y -side left
@@ -196,53 +206,62 @@ proc FindVariablesDialog {txt args} {
     grid columnconfigure $win 0 -weight 1
     grid rowconfigure $win 0 -weight 1
         
-    $win.lBox heading variable -text [::msgcat::mc "Variable"]
-    $win.lBox heading value -text [::msgcat::mc "Value"]
-    $win.lBox heading path -text [::msgcat::mc "File path"]
-    set height 0
+    # $win.lBox heading variable -text [::msgcat::mc "Variable"]
+    # $win.lBox heading value -text [::msgcat::mc "Value"]
+    # $win.lBox heading path -text [::msgcat::mc "File path"]
+    # set height 0
     foreach { word } $args {
         foreach lst $word {
             # set l [split $lst " "]
             puts "[lindex $lst 0] -[lindex $lst 1] -[lindex $lst 2]"
             # lappend l2 [lindex $l 0] [lindex $l 1] [file tail [lindex $l 2]]
-            $win.lBox insert {} end -values $lst -text {1 2 3}
+            # $win.lBox insert {} end -values $lst -text {1 2 3}
+            $win.lBox insert end "[lindex $lst 0] :: [lindex $lst 1] :: [lindex $lst 2]\n"
             # $win.lBox insert end $word
             incr height
         }
     }
-    $win.lBox selection set I001
+    # $win.lBox selection set I001
     # catch { $win.lBox activate 0 ; $win.lBox selection set 0 0 }
     
     if { $height > 10 } { set height 10 }
     $win.lBox configure -height $height
 
-    bind $win      <Escape> { 
+    bind $win <Escape> { 
         destroy $win
-        # focus -force $txt.t
+        focus -force $t.t
         break
     }
     bind $win.lBox <Escape> {
         destroy $win
-        # focus -force $txt.t
+        focus -force $t.t
         break
     }
     bind $win.lBox <Return> {
         # set findString [dict get $lexers [dict get $editors $Editor::txt fileType] procFindString]
-        set id [$win.lBox selection]
-        set values [$win.lBox item $id -values]
-        set key [lindex [split $id "::"] 0]
-        puts "- $id - $values - $key"
+        # set id [$win.lBox selection]
+        # set values [$win.lBox item $id -values]
+        # set key [lindex [split $id "::"] 0]
+        # 
+        # puts "- $id - $values - $key"
         # regsub -all {PROCNAME} $findString $values str
         # Editor::FindFunction "$str"
-        destroy .findVariables
-        FileOper::Edit [lindex $values 2]
+        set path [GetVariableFilePath $win.lBox]
+        if {$path ne ""} {
+            destroy .findVariables
+            FileOper::Edit $path
+        }
         # $txt tag remove sel 1.0 end
         # focus $Editor::txt.t
         break
     }
     # bind $win.lBox <Double-ButtonPress-1> {Tree::DoublePressItem $win.lBox}
     bind $win.lBox <ButtonRelease-1> {
-        Tree::PressItem $win.lBox
+        set path [GetVariableFilePath $win.lBox]
+        if {$path ne ""} {
+            destroy .findVariables
+            FileOper::Edit $path
+        }
         break
     }
     
@@ -255,9 +274,13 @@ proc FindVariablesDialog {txt args} {
     if [expr [expr $topHeight - $y] < $winGeom] {
         set y [expr $topHeight - $winGeom]
     }
+    ctext::addHighlightClassForRegexp $win.lBox namespaces #4f64ff {::}
+    $win.lBox highlight 1.0 end
+    
     wm geom $win +$x+$y
-    focus -force $win.lBox
-    $win.lBox focus I001
+    $win.lBox see 1.0
+    focus -force $win.lBox.t
+    # $win.lBox focus I001
 }
 
    
