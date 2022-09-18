@@ -165,7 +165,7 @@ proc SearchVariable {txt} {
 proc GetVariableFilePath {txt} {
     set str [$txt get {insert linestart} {insert lineend}]
     if [regexp -nocase -all -- {^([0-9A-Za-z\-_:]*?) :: (.*?) :: (.*?)$} $str match vName vValue vPath] {
-        return $vPath
+        return [list $vName $vPath]
     }
 }
 proc FindVariablesDialog {txt args} {
@@ -246,10 +246,14 @@ proc FindVariablesDialog {txt args} {
         # puts "- $id - $values - $key"
         # regsub -all {PROCNAME} $findString $values str
         # Editor::FindFunction "$str"
-        set path [GetVariableFilePath $win.lBox]
+        set _v [GetVariableFilePath $win.lBox]
+        set varName [lindex $_v 0]
+        set path [lindex $_v 1]
+        unset _v
         if {$path ne ""} {
             destroy .findVariables
             FileOper::Edit $path
+            Editor::FindFunction "$varName"
         }
         # $txt tag remove sel 1.0 end
         # focus $Editor::txt.t
@@ -257,10 +261,14 @@ proc FindVariablesDialog {txt args} {
     }
     # bind $win.lBox <Double-ButtonPress-1> {Tree::DoublePressItem $win.lBox}
     bind $win.lBox <ButtonRelease-1> {
-        set path [GetVariableFilePath $win.lBox]
+        set _v [GetVariableFilePath $win.lBox]
+        set varName [lindex $_v 0]
+        set path [lindex $_v 1]
+        unset _v
         if {$path ne ""} {
             destroy .findVariables
             FileOper::Edit $path
+            Editor::FindFunction "$varName"
         }
         break
     }
