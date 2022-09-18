@@ -23,8 +23,8 @@ if [info exists env(LANG)] {
 
 set ::configDefault "\[General\]
 cfgModifyDate=''
-opened=''
-editedFiles=''
+opened=
+editedFiles=
 \[GUI\]
 locale=$locale
 theme=dark
@@ -85,7 +85,7 @@ proc Config::write {dir} {
   
     # Save an top level window geometry into config
     ini::set $cfgFile "GUI" geometry [wm geometry .]
-    if {$activeProject ne ""} {
+    if {[info exists activeProject] !=0 && $activeProject ne ""} {
         ini::set $cfgFile "General" opened $activeProject
     } else {
         ini::set $cfgFile "General" opened ""

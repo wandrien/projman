@@ -10,7 +10,7 @@ exec wish "$0" -- "$@"
 ######################################################
 # Version: 2.0.0
 # Release: alpha
-# Build: 16092022163648
+# Build: 18092022095233
 ######################################################
 
 # определим текущую версию, релиз и т.д.
@@ -111,7 +111,7 @@ source [file join $dir(lib) gui.tcl]
 
 # Open the PATH if command line argument has been setting
 if [info exists opened] {
-    puts $opened
+    puts ">$opened"
     foreach path $opened {
         if [file isdirectory $path] {
             set activeProject $path
@@ -124,6 +124,7 @@ if [info exists opened] {
     }
 } else {
     if {$cfgVariables(opened) ne ""} {
+        puts "<$cfgVariables(opened)"
         set activeProject $cfgVariables(opened)
         FileOper::ReadFolder $cfgVariables(opened)
         ReadFilesFromDirectory $cfgVariables(opened) $cfgVariables(opened)
