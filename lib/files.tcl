@@ -258,6 +258,10 @@ namespace eval FileOper {
     
     proc Edit {fileFullPath} {
         global nbEditor tree
+        if {[file exists $fileFullPath] == 0} {
+            return false
+        }
+        
         set filePath [file dirname $fileFullPath]
         set fileName [file tail $fileFullPath]
         regsub -all {\.|/|\\|\s} $fileFullPath "_" itemName

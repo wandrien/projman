@@ -107,7 +107,11 @@ namespace eval Tree {
                 # $tree item $id -open false
             }
             file {
-                FileOper::Edit $values
+                set v [FileOper::Edit $values]
+                if {$v eq false} {
+                    $tree delete $id
+                }
+                unset v
             }
             I[0-9]*? {
                 destroy .findVariables
