@@ -228,12 +228,16 @@ namespace eval FileOper {
         # Sort  lists and insert into tree
         if {[info exists lstDir] && [llength $lstDir] > 0} {
             foreach f [lsort $lstDir] {
-                puts "Tree insert item: [Tree::InsertItem $tree $parent [file join $directory $f] "directory" $f]"
+                set i [Tree::InsertItem $tree $parent [file join $directory $f] "directory" $f]
+                # puts "Tree insert item: $i $f]"
+                ReadFolder [file join $directory $f] $i
+                unset i
             }
         }
         if {[info exists lstFiles] && [llength $lstFiles] > 0} {
             foreach f [lsort $lstFiles] {
-                puts "Tree insert item: [Tree::InsertItem $tree $parent [file join $directory $f] "file" $f]"
+                Tree::InsertItem $tree $parent [file join $directory $f] "file" $f
+                # puts "Tree insert item: "
             }
         }
         # Чтение структуры файлов в каталоге

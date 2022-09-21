@@ -448,8 +448,8 @@ namespace eval Editor {
         #     #bind $txt <Control-g> GoToLine
         #     bind $txt <Control-g> {focus .frmTool.frmGoto.entGoTo; .frmTool.frmGoto.entGoTo delete 0 end}
         bind $txt <Control-agrave> "Editor::FindDialog $w"
-        bind $txt <Control-f> "Editor::FindDialog $w"
-        bind $txt <Control-F> "Editor::FindDialog $w"
+        bind $txt <Control-f> "Editor::FindDialog $txt"
+        bind $txt <Control-F> "Editor::FindDialog $txt"
         #     bind $txt <F3> {FindNext $w.text 1}
         #     bind $txt <Control-ecircumflex> ReplaceDialog
         #     bind $txt <Control-r> ReplaceDialog
@@ -495,12 +495,13 @@ namespace eval Editor {
         # bind $txt <<Selection>> "Editor::SelectionGet $txt"
         bind $txt <Control-i> ImageBase64Encode
         bind $txt <Control-u> "Editor::SearchBrackets %W"
-        bind $txt <Control-J> "catch {Editor::GoToFunction $w}"
-        bind $txt <Control-j> "catch {Editor::GoToFunction $w}; break"
+        bind $txt <Control-J> "catch {Editor::GoToFunction $txt}"
+        bind $txt <Control-j> "catch {Editor::GoToFunction $txt}; break"
         bind $txt <Alt-w> "$txt delete {insert wordstart} {insert wordend}"
         bind $txt <Alt-r> "$txt delete {insert linestart} {insert lineend + 1char}"
         bind $txt <Alt-b> "$txt delete {insert linestart} insert"
         bind $txt <Alt-e> "$txt delete insert {insert lineend}"
+        bind $txt <Alt-s> "Editor::SplitEditorH $w $fileType"
     }
     
     proc SearchBrackets {txt} {
@@ -586,7 +587,9 @@ namespace eval Editor {
             if {[dict exists $lexers $fileType procRegexpCommand] != 0 } {
                 if {[eval [dict get $lexers $fileType procRegexpCommand]]} {
                     set procName_ [string trim $procName]
-                    puts [Tree::InsertItem $tree $treeItemName $procName_  "procedure" "$procName_ ($params)"]
+                    if {$treeItemName ne ""} {
+                        puts [Tree::InsertItem $tree $treeItemName $procName_  "procedure" "$procName_ ($params)"]
+                    }
                     lappend procList [list $procName_ $params]
                     unset procName_
                 }
@@ -618,11 +621,11 @@ namespace eval Editor {
         dict set editors $txt variableList $varList
     }
 
-    proc FindFunction {findString} {
+    proc FindFunction {txt findString} {
         global nbEditor
         puts $findString
         set pos "0.0"
-        set txt [$nbEditor select].frmText.t
+        # set txt [$nbEditor select].frmText.t
         $txt see $pos
         set line [lindex [split $pos "."] 0]
         set x [lindex [split $pos "."] 1]
@@ -691,22 +694,19 @@ namespace eval Editor {
 
     # ----------------------------------------------------------------------
     # Вызов диалога со списком процедур или функций присутствующих в тексте
-    
     proc GoToFunction { w } {
         global tree editors
-        set txt $w.frmText.t
-        # set start_word [$txt get "insert - 1 chars wordstart" insert]
+        puts $w
+        # set txt $w.frmText.t
+        set txt $w
         set box        [$txt bbox insert]
         set box_x      [expr [lindex $box 0] + [winfo rootx $txt] ]
         set box_y      [expr [lindex $box 1] + [winfo rooty $txt] + [lindex $box 3] ]
         set l ""
-        # bindtags $txt [list GoToFunctionBind [winfo toplevel $txt] $txt Text sysAfter all]
-        # bind GoToFunctionBind <Escape> "bindtags $txt {[list [winfo toplevel $txt] $txt Text sysAfter all]}; catch { destroy .gotofunction; break}"
-        # bind GoToFunctionBind <Key> { Editor::GoToFunctionKey %W %K %A ; break}
-        # puts [array names editors]
-
+        # puts "--$txt"
+        # puts $editors($txt)
         foreach item [dict get $editors $txt procedureList] {
-            # puts $item
+            puts $item
             lappend l [lindex $item 0]
         }
         if {$l ne ""} {
@@ -714,50 +714,6 @@ namespace eval Editor {
             focus .gotofunction.lBox
         }
     }
-
-    # proc GoToFunctionKey { txt K A } {
-        # set win .gotofunction
-        # set ind [$win.lBox curselection]
-        # puts "$txt $K $A"
-        # switch -- $K {
-            # Prior   {
-                # set up   [expr [$win.lBox index active] - [$win.lBox cget -height]]
-                # if { $up < 0 } { set up 0 }
-                # $win.lBox activate $up
-                # $win.lBox selection clear 0 end
-                # $win.lBox selection set $up $up
-            # }
-            # Next    {
-                # set down [expr [$win.lBox index active] + [$win.lBox cget -height]]
-                # if { $down >= [$win.lBox index end] }  { set down end }
-                # $win.lBox activate $down
-                # $win.lBox selection clear 0 end
-                # $win.lBox selection set $down $down
-            # }
-            # Up      {
-                # set up   [expr [$win.lBox index active] - 1]
-                # if { $up < 0 } { set up 0 }
-                # $win.lBox activate $up
-                # $win.lBox selection clear 0 end
-                # $win.lBox selection set $up $up
-            # }
-            # Down    {
-                # set down [expr [$win.lBox index active] + 1]
-                # if { $down >= [$win.lBox index end] }  { set down end }
-                # $win.lBox activate $down 
-                # $win.lBox selection clear 0 end 
-                # $win.lBox selection set $down $down 
-            # }
-            # Return  {
-                # Editor::FindFunction "proc $values"
-                # eval [bind GoToFunctionBind <Escape>]
-            # }
-            # default {
-                # $txt insert "insert" $A
-                # eval [bind GoToFunctionBind <Escape>] 
-            # }
-        # }
-    # }
 
     #---------------------------------------------------------
     # Поиск по списку по первой букве
@@ -785,10 +741,11 @@ namespace eval Editor {
         global editors lexers
         variable txt 
         variable win
-        set txt $w.frmText.t
+        # set txt $w.frmText.t
+        set txt $w
         set win .gotofunction
 
-        if { [winfo exists $win] }  { destroy $win }
+        if { [winfo exists $win] } { destroy $win }
         toplevel $win
         wm transient $win .
         wm overrideredirect $win 1
@@ -807,7 +764,7 @@ namespace eval Editor {
         if { [set height [llength $args]] > 10 } { set height 10 }
         $win.lBox configure -height $height
 
-        bind $win      <Escape> { 
+        bind $win <Escape> { 
             destroy $Editor::win
             focus -force $Editor::txt.t
             break
@@ -821,7 +778,7 @@ namespace eval Editor {
             set findString [dict get $lexers [dict get $editors $Editor::txt fileType] procFindString]
             set values [.gotofunction.lBox get [.gotofunction.lBox curselection]]
             regsub -all {PROCNAME} $findString $values str
-            Editor::FindFunction "$str"
+            Editor::FindFunction $Editor::txt "$str"
             destroy .gotofunction
             $Editor::txt tag remove sel 1.0 end
             # focus $Editor::txt.t
@@ -839,9 +796,10 @@ namespace eval Editor {
         wm geom $win +$x+$y
     }
 
-    proc FindReplaceText {findString replaceString regexp} {
+    proc FindReplaceText {txt findString replaceString regexp} {
         global nbEditor
-        set txt [$nbEditor select].frmText.t
+        puts [focus]
+        # set txt [$nbEditor select].frmText.t
         $txt tag remove sel 1.0 end
         # $txt see $pos
         # set pos [$txt search -nocase $findString $line.$x end]
@@ -919,7 +877,8 @@ namespace eval Editor {
         set findString ""
         set replaceString ""
         
-        set txt $w.frmText.t
+        # set txt $w.frmText.t
+        set txt $w
         set win .finddialog
         set regexpSet ""
         set searchAll "-all"
@@ -936,18 +895,18 @@ namespace eval Editor {
         
         
         ttk::button $win.bForward -image forward_20x20 -command  {
-            Editor::FindReplaceText "$findString" "" $regexpSet
+            Editor::FindReplaceText $Editor::txt "$findString" "" $regexpSet
         }
         ttk::button $win.bBackward -state disable -image backward_20x20 -command "puts $replaceString"
         ttk::button $win.bDone -image done_20x20 -state disable -command {
             puts "$findString -> $replaceString, $regexpSet"
         }
         ttk::button $win.bDoneAll -image doneall_20x20 -command {
-            Editor::FindReplaceText "$findString" "$replaceString" $regexpSet
+            Editor::FindReplaceText $Editor::txt "$findString" "$replaceString" $regexpSet
         }
         ttk::button $win.bReplace -image replace_20x20 \
             -command {
-                puts $Editor::show($Editor::win.entryReplace)
+                # puts $Editor::show($Editor::win.entryReplace)
                 if {$Editor::show($Editor::win.entryReplace) eq "false"} {
                     grid $Editor::win.entryReplace -row 1 -column 0 -columnspan 3 -sticky nsew
                     grid $Editor::win.bDone -row 1 -column 3 -sticky e
@@ -987,11 +946,11 @@ namespace eval Editor {
             break
         }
         bind $win.entryFind <Return> {
-            Editor::FindReplaceText "$findString" "" $regexpSet
+            Editor::FindReplaceText $Editor::txt "$findString" "" $regexpSet
             break
         }
         bind $win.entryReplace <Return> {
-            Editor::FindReplaceText "$findString" "$replaceString" $regexpSet
+            Editor::FindReplaceText $Editor::txt "$findString" "$replaceString" $regexpSet
             break
         }
 
@@ -999,6 +958,7 @@ namespace eval Editor {
         focus -force $win.entryFind
     }
 
+    # Horizontal split the Editor text widget
     proc SplitEditorH {w fileType} {
         global cfgVariables
         puts [$w.panelTxt panes]
@@ -1015,6 +975,7 @@ namespace eval Editor {
         $w.panelTxt add $frmText -weight 1
 
         $frmText.t see [$w.frmText.t index insert]
+        ReadStructure $frmText.t ""
         focus -force $frmText.t.t
     }
 
@@ -1036,7 +997,7 @@ namespace eval Editor {
 
         $frmText.t see [$w.frmText.t index insert]
     }
-
+    
     proc EditorWidget {fr fileType} {
         global cfgVariables editors
         
@@ -1075,8 +1036,8 @@ namespace eval Editor {
         dict set editors $txt fileType $fileType
         dict set editors $txt procedureList [list]
         
-        # puts ">>[dict get $editors $txt fileType]"
-        # puts ">>[dict get $editors $txt procedureList]"
+        puts ">>[dict get $editors $txt fileType]"
+        puts ">>[dict get $editors $txt procedureList]"
 		# puts ">>>>> $editors"
         
         if  {[info procs ::Highlight::$fileType] ne ""} {

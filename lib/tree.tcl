@@ -126,7 +126,7 @@ namespace eval Tree {
                 set findString [dict get $lexers [dict get $editors $txt fileType] procFindString]
                 regsub -all {PROCNAME} $findString $values str
 
-                Editor::FindFunction "$str"
+                Editor::FindFunction $txt "$str"
             }
         }
     }

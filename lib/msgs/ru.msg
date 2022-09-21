@@ -179,6 +179,7 @@
 ::msgcat::mcset ru "Show backup files" "Показывать временные файлы"
 ::msgcat::mcset ru "Show the Menu" "Показывать меню"
 ::msgcat::mcset ru "Show dot files" "Показывать скрытые файлы"
+::msgcat::mcset ru "Specify the absolute path to the directory or file" "Укажите полный путь к каталогу или файлу"
 ::msgcat::mcset ru "Split edit window" "Разделить окно редактора"
 ::msgcat::mcset ru "SQL commands" "SQL команды"
 ::msgcat::mcset ru "Text autoformat" "Автоформат текста"

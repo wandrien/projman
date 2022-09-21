@@ -58,7 +58,7 @@ namespace eval Highlight {} {
 
     proc PY {txt} {
         ctext::addHighlightClassForRegexp $txt flags orange {-+[a-zA-Z\-_]+}
-        ctext::addHighlightClass $txt stackControl #19a2a6 {if else: elif for while case switch def import from return make break defer continue package len print with open try: except}
+        ctext::addHighlightClass $txt stackControl #19a2a6 {if else: elif for while case switch def import from return make break defer continue package len print with open try: except: in}
         ctext::addHighlightClass $txt types #7187d5 {string int int16 int32 int64 float bool byte}
         ctext::addHighlightClassWithOnlyCharStart $txt vars #4471ca "\&"
         ctext::addHighlightClassWithOnlyCharStart $txt vars #4471ca "\*"

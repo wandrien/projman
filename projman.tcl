@@ -10,7 +10,7 @@ exec wish "$0" -- "$@"
 ######################################################
 # Version: 2.0.0
 # Release: alpha
-# Build: 19092022115815
+# Build: 21092022142626
 ######################################################
 
 # определим текущую версию, релиз и т.д.
@@ -50,7 +50,6 @@ package require Thread
 
 # Устанавливаем текущий каталог
 set dir(root) [pwd]
-
 set dir(doc) [file join $dir(root) doc]
 
 # Устанавливаем рабочий каталог, если его нет то создаём.
@@ -111,38 +110,32 @@ source [file join $dir(lib) gui.tcl]
 
 # Open the PATH if command line argument has been setting
 if [info exists opened] {
-    puts ">$opened"
+    # puts ">$opened"
     foreach path $opened {
+        if {[file pathtype $path] ne "absolute"} {
+            puts "\n\t[::msgcat::mc "Specify the absolute path to the directory or file"]: $path\n"
+            exit
+        }
         if [file isdirectory $path] {
             set activeProject $path
             FileOper::ReadFolder $path
             ReadFilesFromDirectory $path $path
-            # puts "aaa[dict values $project "ansible*"]"
         } elseif [file exists $path] {
             ResetModifiedFlag [FileOper::Edit $path]
         }
     }
 } else {
     if {$cfgVariables(opened) ne ""} {
-        puts "<$cfgVariables(opened)"
+        # puts "<$cfgVariables(opened)"
         set activeProject $cfgVariables(opened)
         FileOper::ReadFolder $cfgVariables(opened)
         ReadFilesFromDirectory $cfgVariables(opened) $cfgVariables(opened)
         if {$cfgVariables(editedFiles) ne ""} {
             foreach f [split $cfgVariables(editedFiles) " "] {
-                puts $f
+                # puts $f
                 FileOper::Edit $f
             }
         }
     }
 }
 
-# if [info exists project] {
-   # foreach f [array names project] {
-       # puts "--$f"
-       # puts "----"
-       # foreach a [split $project($f) " "] {
-           # puts $variables($a)
-       # }
-   # }
-# 
