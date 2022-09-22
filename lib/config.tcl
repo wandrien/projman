@@ -25,6 +25,8 @@ set ::configDefault "\[General\]
 cfgModifyDate=''
 opened=
 editedFiles=
+searchCommand=/usr/bin/grep
+searchCommandOptions=-r -n -H
 \[GUI\]
 locale=$locale
 theme=dark
