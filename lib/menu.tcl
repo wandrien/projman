@@ -57,9 +57,9 @@ proc GetEditMenu {m} {
     $m add command -label [::msgcat::mc "Replace"] -command Replace\
     -accelerator "Ctrl+R"
     $m add separator
-    $m add command -label [::msgcat::mc "Find in files"] -command File::Find\
+    $m add command -label [::msgcat::mc "Find in files"] -command "FileOper::FindInFiles"\
     -accelerator "Ctrl+Shift+F"
-    $m add command -label [::msgcat::mc "Replace in files"] -command File::Replace\
+    $m add command -label [::msgcat::mc "Replace in files"] -command FileOper::ReplaceInFiles\
     -accelerator "Ctrl+Shift+RV"
     $m add separator
     $m add command -label [::msgcat::mc "Insert image"] -accelerator "Ctrl+I"\

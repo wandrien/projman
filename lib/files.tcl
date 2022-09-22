@@ -282,8 +282,44 @@ namespace eval FileOper {
         $nbEditor select $itemName
         Editor::ReadStructure $itemName.frmText.t $treeItemName
         GetVariablesFromFile $fileFullPath
+        $itemName.frmText.t.t mark set insert 1.0
+        $itemName.frmText.t.t see 1.0
         focus -force $itemName.frmText.t.t
         
         return $itemName
     }
+    
+    proc FindInFiles {} {
+        global nbEditor activeProject
+        set res ""
+        set txt ""
+        set str ""
+        set nbEditorItem [$nbEditor select]
+        if {$nbEditorItem ne ""} {
+            # set txt $nbEditorItem.frmText.t
+            set txt [focus]
+        
+            set selIndex [$txt tag ranges sel]
+            if {$selIndex ne ""} {
+                set selBegin [lindex [$txt tag ranges sel] 0]
+                set selEnd [lindex [$txt tag ranges sel] 1]
+                set str [$txt get $selBegin $selEnd]
+                puts $str
+                set res [SearchStringInFolder $str]
+            }
+        }
+        FindInFilesDialog $txt $res
+        .find.entryFind delete 0 end
+        .find.entryFind insert end $str
+    }
+
+    proc ReplaceInFiles {} {
+        global nbEditor
+        return
+        # set selIndex [$txt tag ranges sel]
+        # set selBegin [lindex [$txt tag ranges sel] 0]
+        # set selEnd [lindex [$txt tag ranges sel] 1]
+        # puts [$txt get [$txt tag ranges sel]]
+    # }
+    
 }

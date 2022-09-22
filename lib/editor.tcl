@@ -850,7 +850,9 @@ namespace eval Editor {
         
         # $txt mark set insert $pos
         if {[lindex $lstFindIndex 0] ne "" } {
-            $txt see [lindex $lstFindIndex 0]
+            # $txt see [lindex $lstFindIndex 0]
+            $txt mark set insert [lindex $lstFindIndex 0]
+            $text see insert
         }
         # puts $pos
         # # highlight the found word
@@ -996,6 +998,13 @@ namespace eval Editor {
         $w.panelTxt add $frmText -weight 1
 
         $frmText.t see [$w.frmText.t index insert]
+        # $frmText.t mark set insert [$w.frmText.t index insert]
+    }
+    
+    proc GoToLineNumber {text lineNumber} {
+        # puts "\n\n\t>>>>$text $lineNumber\n\n"
+        $text mark set insert $lineNumber.0
+        $text see insert
     }
     
     proc EditorWidget {fr fileType} {
@@ -1040,7 +1049,7 @@ namespace eval Editor {
         puts ">>[dict get $editors $txt procedureList]"
 		# puts ">>>>> $editors"
         
-        if  {[info procs ::Highlight::$fileType] ne ""} {
+        if {[info procs ::Highlight::$fileType] ne ""} {
             Highlight::$fileType $txt
         } else {
             Highlight::Default $txt
