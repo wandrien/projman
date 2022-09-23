@@ -52,10 +52,10 @@ proc GetEditMenu {m} {
     $m add command -label [::msgcat::mc "Cut"] -command Cut\
     -accelerator "Ctrl+Z"
     $m add separator
-    $m add command -label [::msgcat::mc "Find"] -command Find\
+    $m add command -label [::msgcat::mc "Find"] -command {Editor::FindDialog ""}\
     -accelerator "Ctrl+F"
-    $m add command -label [::msgcat::mc "Replace"] -command Replace\
-    -accelerator "Ctrl+R"
+    # $m add command -label [::msgcat::mc "Replace"] -command Replace\
+    # -accelerator "Ctrl+R"
     $m add separator
     $m add command -label [::msgcat::mc "Find in files"] -command "FileOper::FindInFiles"\
     -accelerator "Ctrl+Shift+F"

@@ -296,9 +296,8 @@ namespace eval FileOper {
         set str ""
         set nbEditorItem [$nbEditor select]
         if {$nbEditorItem ne ""} {
-            # set txt $nbEditorItem.frmText.t
-            set txt [focus]
-        
+            set txt $nbEditorItem.frmText.t
+            # set txt [focus]
             set selIndex [$txt tag ranges sel]
             if {$selIndex ne ""} {
                 set selBegin [lindex [$txt tag ranges sel] 0]

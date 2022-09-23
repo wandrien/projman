@@ -373,6 +373,7 @@ proc FindInFilesDialog {txt {args ""}} {
     # puts $txt
     # set txt $w.frmText.t
     if {$txt ne ""} {
+        focus $txt
         set box [$txt bbox insert]
         set x   [expr [lindex $box 0] + [winfo rootx $txt] ]
         set y   [expr [lindex $box 1] + [winfo rooty $txt] + [lindex $box 3] ]

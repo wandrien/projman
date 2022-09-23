@@ -796,7 +796,7 @@ namespace eval Editor {
         wm geom $win +$x+$y
     }
 
-    proc FindReplaceText {txt findString replaceString regexp} {
+proc FindReplaceText {txt findString replaceString regexp} {
         global nbEditor
         puts [focus]
         # set txt [$nbEditor select].frmText.t
@@ -827,8 +827,8 @@ namespace eval Editor {
             set lstFindIndex [$txt search -all -nocase -count matchIndexPair $findString $line.$x end]
             # set symNumbers [string length "$findString"]
         }
-        puts $lstFindIndex
-        puts $matchIndexPair
+        # puts $lstFindIndex
+        # puts $matchIndexPair
         # set lstFindIndex [$txt search -all "$selectionText" 0.0]
         set i 0
         foreach ind $lstFindIndex {
@@ -836,7 +836,7 @@ namespace eval Editor {
             set selFindRow [lindex [split $ind "."] 1]
             # set endInd "$selFindLine.[expr $selFindRow + $symNumbers]"
             set endInd "$selFindLine.[expr [lindex $matchIndexPair $i] + $selFindRow]"
-            puts "$ind; $selFindLine, $selFindRow; $endInd "
+            # puts "$ind; $selFindLine, $selFindRow; $endInd "
             if {$replaceString ne ""} {
                 $txt replace $ind $endInd $replaceString
             }
@@ -852,7 +852,7 @@ namespace eval Editor {
         if {[lindex $lstFindIndex 0] ne "" } {
             # $txt see [lindex $lstFindIndex 0]
             $txt mark set insert [lindex $lstFindIndex 0]
-            $text see insert
+            $txt see insert
         }
         # puts $pos
         # # highlight the found word
@@ -874,18 +874,25 @@ namespace eval Editor {
         variable txt 
         variable win
         variable show
-
-        
         set findString ""
         set replaceString ""
-        
+
+        if {$w ne ""} {
+            set txt $w
+        } else {
+            if {[$nbEditor select] ne ""} {
+                set txt [$nbEditor select].frmText.t
+                puts $txt
+            } else {
+                return
+            }
+        }
         # set txt $w.frmText.t
-        set txt $w
         set win .finddialog
         set regexpSet ""
         set searchAll "-all"
         
-        if { [winfo exists $win] }  { destroy $win }
+        if { [winfo exists $win] }  { des`troy $win }
         toplevel $win
         wm transient $win .
         wm overrideredirect $win 1
@@ -934,8 +941,8 @@ namespace eval Editor {
         grid $win.lblCounter -row 2 -column 2 -sticky we
 
         # set reqWidth [winfo reqwidth $win]
-        set boxX [expr [winfo rootx $w] + [expr [winfo width $nbEditor] - 350]]
-        set boxY [expr [winfo rooty $w] + 10]
+        set boxX [expr [winfo rootx $txt] + [expr [winfo width $nbEditor] - 350]]
+        set boxY [expr [winfo rooty $txt] + 10]
 
         bind $win <Escape> { 
             destroy $Editor::win
