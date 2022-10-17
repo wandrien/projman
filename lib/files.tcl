@@ -100,14 +100,16 @@ namespace eval FileOper {
 	    # puts "close tab $nbItem"
     	   
         if {$nbItem == ""} {return}
-        if {$modified($nbItem) eq "true"} {
-            set answer [tk_messageBox -message [::msgcat::mc "File was modifyed"] \
-                -icon question -type yesnocancel \
-                -detail [::msgcat::mc "Do you want to save it?"]]
-            switch $answer {
-                yes Save
-                no {}
-                cancel {return "cancel"}
+        if [info exists modified($nbItem)] {
+            if {$modified($nbItem) eq "true"} {
+                set answer [tk_messageBox -message [::msgcat::mc "File was modifyed"] \
+                    -icon question -type yesnocancel \
+                    -detail [::msgcat::mc "Do you want to save it?"]]
+                switch $answer {
+                    yes Save
+                    no {}
+                    cancel {return "cancel"}
+                }
             }
         }
         $nbEditor forget $nbItem

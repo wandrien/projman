@@ -168,6 +168,7 @@ proc GetVariableFilePath {txt} {
         return [list $vName $vPath $vValue]
     }
 }
+
 proc FindVariablesDialog {txt args} {
     global editors lexers cfgVariables
     # variable txt 
@@ -253,7 +254,7 @@ proc FindVariablesDialog {txt args} {
         if {$path ne ""} {
             destroy .findVariables
             FileOper::Edit $path
-            Editor::FindFunction "$varName"
+            Editor::FindFunction $t "$varName"
         }
         # $txt tag remove sel 1.0 end
         # focus $Editor::txt.t
@@ -268,7 +269,7 @@ proc FindVariablesDialog {txt args} {
         if {$path ne ""} {
             destroy .findVariables
             FileOper::Edit $path
-            Editor::FindFunction "$varName"
+            Editor::FindFunction $t "$varName"
         }
         break
     }
@@ -513,4 +514,3 @@ proc FindInFilesDialog {txt {args ""}} {
     }
     # $win.lBox focus I001
 }
-

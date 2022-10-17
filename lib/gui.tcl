@@ -104,9 +104,11 @@ pack propagate .frmBody.panel false
 pack .frmBody.frmTool -side left -fill y
 pack .frmBody.panel -side left -fill both -expand true
 
-ttk::button $frmTool.btn_tree  -command  ViewFilesTree  -image tree_24x24
+ttk::button $frmTool.btn_tree  -command  ViewFilesTree -image tree_24x24
+ttk::button $frmTool.btn_search  -command FileOper::FindInFiles -image search_24x24
+ttk::button $frmTool.btn_git -command Git::Dialog -image git_24x24
 
-pack $frmTool.btn_tree -side top -padx 1 -pady 1
+pack $frmTool.btn_tree $frmTool.btn_search $frmTool.btn_git -side top -padx 1 -pady 1
 # #label $frmTool.lbl_logo -image tcl
 # pack $frmTool.btn_quit -side bottom -padx 5 -pady 5
 # #pack $frmTool.lbl_logo -side bottom -padx 5 -pady 5
@@ -121,8 +123,6 @@ set tree [ttk::treeview $frmTree.tree -show tree \
 
 ttk::scrollbar $frmTree.h -orient horizontal -command [list $frmTree.tree xview]
 ttk::scrollbar $frmTree.v -orient vertical -command [list $frmTree.tree yview]
-
-
 
 bind $tree <Double-ButtonPress-1> {Tree::DoublePressItem $tree}
 bind $tree  <ButtonRelease-1> {Tree::PressItem $tree; break}

@@ -23,6 +23,12 @@ namespace eval NB {
                     $nb select $fm
                 }
             }
+            git {
+                set fm [ttk::frame $nb.$item]
+                pack $fm -side top -expand true -fill both
+                $nb add $fm -text Git;# -image close_12x12 -compound right
+                $nb select $fm                
+            }
         }
         # puts "NB item - $fm"
         return $fm

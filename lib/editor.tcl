@@ -620,7 +620,7 @@ namespace eval Editor {
         dict set editors $txt procedureList $procList
         dict set editors $txt variableList $varList
     }
-
+    
     proc FindFunction {txt findString} {
         global nbEditor
         puts $findString
@@ -795,8 +795,8 @@ namespace eval Editor {
         }
         wm geom $win +$x+$y
     }
-
-proc FindReplaceText {txt findString replaceString regexp} {
+    
+    proc FindReplaceText {txt findString replaceString regexp} {
         global nbEditor
         puts [focus]
         # set txt [$nbEditor select].frmText.t

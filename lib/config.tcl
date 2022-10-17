@@ -27,6 +27,7 @@ opened=
 editedFiles=
 searchCommand=/usr/bin/grep
 searchCommandOptions=-r -n -H
+gitCommand=/usr/bin/git
 \[GUI\]
 locale=$locale
 theme=dark
