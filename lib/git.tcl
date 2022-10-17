@@ -35,7 +35,9 @@ namespace eval Git {
         foreach line [split $pipe "\n"] {
             lappend res $line
         }
-        return $res
+        if [info exists res] {
+            return $res
+        }
     }
     
     proc Diff {f} {
