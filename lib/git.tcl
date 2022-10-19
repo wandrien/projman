@@ -145,6 +145,17 @@ namespace eval Git {
         lappend cmd "reflog"
         lappend cmd "--"
         lappend cmd "$activeProject"
+        # if [regexp -nocase -- {^fatal:} $pipe match] {
+            # return 
+        # }
+        puts $cmd
+        catch $cmd pipe
+        puts $pipe
+        foreach line [split $pipe "\n"] {
+            puts "$line"
+            lappend res $line
+        }
+        return $res
     }
     
     proc ListBoxPress {w} {
@@ -185,6 +196,32 @@ namespace eval Git {
             }
         }
     }
+    
+    proc DialogUpdate {w} {
+        global activeProject
+        # Git repo status
+        foreach { word } [Git::Status] {
+            # puts $word
+            if [regexp -nocase -- {([\w\s])([\s\w?]+)\s../(.+?)} $word match v1 v2 fileName] {
+                # puts "$v1 $v2 $fileName"
+                # $fr.body.t delete 1.0 end
+                if {$v1 ne " "} {
+                    $w.body.lCommit insert end $fileName
+                }
+                if {$v2 ne " "} {
+                    $w.body.lBox insert end $fileName
+                }
+            }
+        }
+        
+        # Git commit history
+        foreach { line } [Git::Reflog] {
+            # puts $line
+            $w.body.lLog insert end $line
+        }         
+        # End Git commit history
+    }
+    
     proc Dialog {} {
         global cfgVariables activeProject nbEditor
         variable fr
@@ -198,68 +235,95 @@ namespace eval Git {
         set lblText "$activeProject | [::msgcat::mc "Branch"]: [Git::Branches current]"
         ttk::label $fr.header.$lblName -text $lblText -justify right
         pack $fr.header.$lblName -side right -expand true -fill x
-        pack $fr.header -side top -fill x
+        pack $fr.header -side top -fill x  -padx 3
 
         ttk::frame $fr.body
-        pack $fr.body -side top -expand true -fill both
+        pack $fr.body -side top -expand true -fill both -padx 3
         
-    		set lstFiles [listbox $fr.body.lBox -width 30 -border 0 -yscrollcommand "$fr.body.yscroll set" -border 1]
+        ttk::label $fr.body.lblUnindexed -justify left -padding {3 3} \
+            -text "[::msgcat::mc "Unindexed changes"]:"
+        
+    		listbox $fr.body.lBox -border 0 -yscrollcommand "$fr.body.yscroll set" -width 10
         ttk::scrollbar $fr.body.yscroll -orient vertical -command  "$fr.body.lBox yview"
-        # pack $fr.body.lBox -expand true -fill y -side left
-        # pack $fr.body.yscroll -side left -expand false -fill y
 
-        set txt $fr.body.t
-        # set txt $frmText.t
-        
         # pack [ttk::scrollbar $fr.body.v -command "$fr.body.t yview"] -side right -fill y
-        ttk::scrollbar $fr.body.v -command "$fr.body.t yview"
+        ttk::scrollbar $fr.body.v -orient vertical -command "$fr.body.t yview"
         ttk::scrollbar $fr.body.h -orient horizontal -command "$fr.body.t xview"
-        ctext $txt -xscrollcommand "$fr.body.h set" -yscrollcommand "$fr.body.v set" \
+        ctext $fr.body.t -xscrollcommand "$fr.body.h set" -yscrollcommand "$fr.body.v set" \
             -font $cfgVariables(font) -relief flat -wrap none -linemap 0 \
-            -tabs "[expr {4 * [font measure $cfgVariables(font) 0]}] left" -tabstyle tabular -undo true
+            -tabs "[expr {4 * [font measure $cfgVariables(font) 0]}] left" \
+            -tabstyle tabular -undo true -width 10
         
-        ttk::button $fr.body.bAdd -image forward_20x20 -command "Git::CommitAdd $fr"
-        ttk::button $fr.body.bRemove -state disable -image backward_20x20
-        ttk::button $fr.body.bCommit -image done_20x20  -compound left -text "[::msgcat::mc "Commit changes"]" \
-            -command "Git::Commit $fr.body.tCommit"
-        ttk::button $fr.body.bDone -image doneall_20x20 -compound left -text "[::msgcat::mc "Push changes"]" \
-            -command Git::Push
-
-    		set lstFilesCommit [listbox $fr.body.lCommit -width 30 -border 0 -yscrollcommand "$fr.body.yscroll2 set" -border 1]
-        ttk::scrollbar $fr.body.yscroll2 -orient vertical -command  "$fr.body.lCommit yview"
-
-        ttk::label $fr.body.lblCommitText -text "[::msgcat::mc "Commit description"]"
+        ttk::button $fr.body.bAdd -image forward_20x20 -compound center \
+            -command "Git::CommitAdd $fr"
+        ttk::button $fr.body.bRemove -compound center -image backward_20x20
+        ttk::label $fr.body.lblCommitText -padding {3 3} \
+            -text "[::msgcat::mc "Commit description"]:"
+            
+      		listbox $fr.body.lCommit -border 0 -yscrollcommand "$fr.body.vlCommit set"
+        ttk::scrollbar $fr.body.vlCommit -orient vertical -command  "$fr.body.lCommit yview"
         ttk::scrollbar $fr.body.vCommit -command "$fr.body.tCommit yview"
         ttk::scrollbar $fr.body.hCommit -orient horizontal -command "$fr.body.tCommit xview"
-        ctext $fr.body.tCommit -xscrollcommand "$fr.body.hCommit set" -yscrollcommand "$fr.body.vCommit set" \
-            -font $cfgVariables(font) -relief flat -wrap none -linemap 0 \
-            -tabs "[expr {4 * [font measure $cfgVariables(font) 0]}] left" -tabstyle tabular -undo true
+        ctext $fr.body.tCommit -tabstyle tabular -undo true \
+            -xscrollcommand "$fr.body.hCommit set" -yscrollcommand "$fr.body.vCommit set" \
+            -font $cfgVariables(font) -relief flat -wrap none -linemap 0
+
+        ttk::button $fr.body.bCommit -image done_20x20 -compound left \
+            -text "[::msgcat::mc "Commit changes"]" \
+            -command "Git::Commit $fr.body.tCommit; Git::DialogUpdate $fr"
+        ttk::button $fr.body.bPush -image doneall_20x20 -compound left \
+            -text "[::msgcat::mc "Push changes"]" \
+            -command "Git::Push; Git::DialogUpdate $fr"
+        
+        ttk::label $fr.body.lblLog -padding {3 3} -text "[::msgcat::mc "Commit history"]:"
+    		listbox $fr.body.lLog -border 0 \
+                		-yscrollcommand "$fr.body.vLog set"	-xscrollcommand "$fr.body.hLog set"
+        ttk::scrollbar $fr.body.vLog -orient vertical -command  "$fr.body.lLog yview"
+        ttk::scrollbar $fr.body.hLog -orient horizontal -command  "$fr.body.lLog xview"
+
 
         # pack $txt -fill both -expand 1
         # pack $fr.body.h -side bottom -fill x
-        grid $lstFiles -column 0 -row 0 -sticky nsew -columnspan 3 -rowspan 2
-        grid $fr.body.yscroll -column 3 -row 0 -sticky nsw -rowspan 2
-        grid $txt -column	 4 -row 0 -sticky nsew -columnspan 2
-        grid $fr.body.v -column 5 -row 0 -sticky nsew
-        grid $fr.body.h -column 4 -row 1 -columnspan 3 -sticky nsew
+
+        grid $fr.body.lblUnindexed -column 0 -row 0 -sticky new -columnspan 4
+        
+        grid $fr.body.lBox    -column 0 -row 1 -sticky nsew -rowspan 2 -columnspan 2
+        grid $fr.body.yscroll -column 2 -row 1 -sticky nsw -rowspan 2
+        grid $fr.body.t -column	3 -row 1 -sticky nsew -columnspan 2
+        grid $fr.body.v -column 5 -row 1 -sticky nsw
+        grid $fr.body.h -column 3 -row 2 -sticky new -columnspan 2
+
+        grid $fr.body.bAdd          -column 0 -row 3 -sticky nsew
+        grid $fr.body.bRemove       -column 1 -row 3 -sticky nsew
+        grid $fr.body.lblCommitText -column 3 -row 3 -sticky nsew -columnspan 2
+        
+        grid $fr.body.lCommit  -column 0 -row 4 -sticky nsew -rowspan 3 -columnspan 2
+        grid $fr.body.vlCommit -column 2 -row 4 -sticky nsw -rowspan 3
+        grid $fr.body.tCommit  -column 3 -row 4 -sticky nsew -columnspan 2 
+        grid $fr.body.vCommit  -column 5 -row 4 -sticky nsw
+        grid $fr.body.hCommit  -column 3 -row 5 -sticky new -columnspan 2
+        grid $fr.body.bCommit  -column 3 -row 6 -sticky new
+        grid $fr.body.bPush    -column 4 -row 6 -sticky new
+
+        grid $fr.body.lblLog -column 0 -row 7 -sticky nsew -columnspan 5
+        grid $fr.body.lLog   -column 0 -row 8 -sticky nsew -columnspan 5
+        grid $fr.body.vLog   -column 5 -row 8 -sticky nsw
+        grid $fr.body.hLog   -column 0 -row 9 -sticky new -columnspan 5
+
+
         grid rowconfigure $fr.body $fr.body.t -weight 1
         grid columnconfigure $fr.body $fr.body.t -weight 1
+        grid rowconfigure $fr.body $fr.body.tCommit -weight 1
+        grid columnconfigure $fr.body $fr.body.tCommit -weight 1
+        grid rowconfigure $fr.body $fr.body.lLog -weight 1
+        grid columnconfigure $fr.body $fr.body.lLog -weight 1
 
-        grid $fr.body.bAdd -column 0 -row 3 -sticky nsew
-        grid $fr.body.bRemove -column 1 -row 3 -sticky nsew
-        grid $fr.body.lCommit -column 0 -row 4 -columnspan 3 -rowspan 3 -sticky nsew
-        grid $fr.body.lblCommitText -column 4 -row 3 -sticky nsew -columnspan 2
-        grid $fr.body.tCommit -column 4 -row 4 -sticky nsew -columnspan 2
-        grid $fr.body.vCommit -column 6 -row 4 -sticky nsew
-        grid $fr.body.hCommit -column 4 -row 5 -columnspan 3 -sticky nsew
-        grid $fr.body.bCommit -column 4 -row 6 -sticky nsew
-        grid $fr.body.bDone -column 5 -row 6 -sticky nsew
-
+        # Git repo status
         foreach { word } [Git::Status] {
-            puts $word
+            # puts $word
             if [regexp -nocase -- {([\w\s])([\s\w?]+)\s../(.+?)} $word match v1 v2 fileName] {
                 # puts "$v1 $v2 $fileName"
-                # $fr.body.t delete 1.0 end
+                # $fr.unindexed.t delete 1.0 end
                 if {$v1 ne " "} {
                     $fr.body.lCommit insert end $fileName
                 }
@@ -283,9 +347,16 @@ namespace eval Git {
             Git::ListBoxPress $fr
         }
         
-        ctext::addHighlightClassForRegexp $txt paths #19a2a6 {@@.+@@}
-        ctext::addHighlightClassForRegexp $txt add green {^\+.*$}
-        ctext::addHighlightClassForRegexp $txt gremove grey {^\-.*$}
-        $txt highlight 1.0 end
+        # Git commit history
+        foreach { line } [Git::Reflog] {
+            # puts $line
+            $fr.body.lLog insert end $line
+        }         
+        # End Git commit history
+        
+        ctext::addHighlightClassForRegexp $fr.body.t paths #19a2a6 {@@.+@@}
+        ctext::addHighlightClassForRegexp $fr.body.t add green {^\+.*$}
+        ctext::addHighlightClassForRegexp $fr.body.t gremove grey {^\-.*$}
+        $fr.body.t highlight 1.0 end
     }
 }
