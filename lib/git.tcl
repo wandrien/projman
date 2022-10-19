@@ -200,6 +200,9 @@ namespace eval Git {
     proc DialogUpdate {w} {
         global activeProject
         # Git repo status
+        $w.body.t delete 1.0 end
+        $w.body.lCommit delete 1.0 end
+        $w.body.lBox delete 1.0 end
         foreach { word } [Git::Status] {
             # puts $word
             if [regexp -nocase -- {([\w\s])([\s\w?]+)\s../(.+?)} $word match v1 v2 fileName] {
