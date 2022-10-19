@@ -137,6 +137,15 @@ namespace eval Git {
     proc Merge {} {
         global cfgVariables activeProject
     }
+
+    proc Reflog {} {
+        global cfgVariables activeProject
+        set cmd exec
+        lappend cmd "$cfgVariables(gitCommand)"
+        lappend cmd "reflog"
+        lappend cmd "--"
+        lappend cmd "$activeProject"
+    }
     
     proc ListBoxPress {w} {
         set fileName [$w.body.lBox get [$w.body.lBox curselection]]
