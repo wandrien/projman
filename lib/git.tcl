@@ -204,6 +204,7 @@ namespace eval Git {
         $w.body.tCommit delete 1.0 end
         $w.body.lCommit delete 0 end
         $w.body.lBox delete 0 end
+        $w.body.lLog delete 0 end
         foreach { word } [Git::Status] {
             # puts $word
             if [regexp -nocase -- {([\w\s])([\s\w?]+)\s../(.+?)} $word match v1 v2 fileName] {
