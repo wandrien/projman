@@ -55,7 +55,8 @@ namespace eval FileOper {
         if ![info exists activeProject] {
             set activeProject $fullPath
         }
-       
+        .frmStatus.lblGitLogo configure -image git_logo_20x20
+        .frmStatus.lblGit configure -text "[::msgcat::mc "Branch"]: [Git::Branches current]"
         return $fullPath
     }
 
@@ -81,6 +82,8 @@ namespace eval FileOper {
             $tree delete $treeItem
         }
         set activeProject ""
+        .frmStatus.lblGitLogo configure -image pixel
+        .frmStatus.lblGit configure -text ""
     }
 
     proc CloseAll {} {
@@ -128,6 +131,7 @@ namespace eval FileOper {
             }
         }
         unset modified($nbItem)
+        .frmStatus.lblPosition configure -text ""
     }
     
     proc Save {} {

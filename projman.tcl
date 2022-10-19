@@ -10,7 +10,7 @@ exec wish "$0" -- "$@"
 ######################################################
 # Version: 2.0.0
 # Release: alpha
-# Build: 17102022170001
+# Build: 18102022150316
 ######################################################
 
 # определим текущую версию, релиз и т.д.
@@ -118,6 +118,8 @@ if [info exists opened] {
         }
         if [file isdirectory $path] {
             set activeProject $path
+            .frmStatus.lblGitLogo configure -image git_logo_20x20
+            .frmStatus.lblGit configure -text "[::msgcat::mc "Branch"]: [Git::Branches current]"
             FileOper::ReadFolder $path
             ReadFilesFromDirectory $path $path
         } elseif [file exists $path] {
@@ -128,6 +130,8 @@ if [info exists opened] {
     if {$cfgVariables(opened) ne ""} {
         # puts "<$cfgVariables(opened)"
         set activeProject $cfgVariables(opened)
+        .frmStatus.lblGitLogo configure -image git_logo_20x20
+        .frmStatus.lblGit configure -text "[::msgcat::mc "Branch"]: [Git::Branches current]"
         FileOper::ReadFolder $cfgVariables(opened)
         ReadFilesFromDirectory $cfgVariables(opened) $cfgVariables(opened)
         if {$cfgVariables(editedFiles) ne ""} {
@@ -138,4 +142,3 @@ if [info exists opened] {
         }
     }
 }
-

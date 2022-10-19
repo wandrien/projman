@@ -79,6 +79,8 @@ pack .frmStatus -side top -padx 1 -fill x
 # pack .panel -expand true -fill both
 # pack propagate .panel false
 #pack [label .frmMenu.lbl -text "ddd"]
+pack [ttk::label .frmStatus.lblGitLogo -justify left] -side left
+pack [ttk::label .frmStatus.lblGit] -side left
 pack [ttk::label .frmStatus.lblPosition -justify right] -side right
 
 ttk::menubutton .frmMenu.mnuFile -text [::msgcat::mc "File"] -menu .frmMenu.mnuFile.m

@@ -24,6 +24,9 @@ namespace eval NB {
                 }
             }
             git {
+                if [winfo exists $nb.$item] {
+                    return $nb.$item
+                }
                 set fm [ttk::frame $nb.$item]
                 pack $fm -side top -expand true -fill both
                 $nb add $fm -text Git;# -image close_12x12 -compound right
@@ -44,7 +47,9 @@ namespace eval NB {
             FileOper::Close
         } else {
             set txt [$w select].frmText.t
-            focus -force $txt.t
+            if [winfo exists $txt] {
+                focus -force $txt.t
+            }
         }
     }
 
