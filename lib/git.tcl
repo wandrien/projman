@@ -132,6 +132,42 @@ namespace eval Git {
     
     proc Push {} {
         global cfgVariables activeProject
+        global gitUser gitPassword
+        # set cmd exec
+        # lappend cmd "$cfgVariables(gitCommand)"
+        lappend cmd "push"
+        lappend cmd "--"
+        lappend cmd "$activeProject"
+        set pipe [open "|\"$cfgVariables(gitCommand)\" $cmd" "r"]
+        try {
+            set lst ""
+            set l ""
+            while {[gets $pipe line]>=0} {
+                #puts $line
+                if [regexp -nocase -all -- {username} $line match] {
+                    Git::AuthorizationDialog "[::msgcat::mc "Authorization required"] [::msgcat::mc "for"] Git"
+                    vwait gitUser
+                    vwait gitPassword
+                    if {$gitUser ne ""} {
+                        puts $pipe $gitUser
+                    }
+                }
+                if [regexp -nocase -all -- {password} $line match] {
+                    if {$gitPassword ne ""} {
+                        puts $pipe $gitPassword
+                    }
+                }
+            }
+            close $pipe
+            return $l
+        } on error {result options} {
+            puts  "Handle >$result< "
+            # ErrorParcing $result $options
+            return ""
+            #RunCommand $root $par
+        }
+    
+
     }
     
     proc Merge {} {
@@ -270,6 +306,52 @@ namespace eval Git {
         # End Git commit history
     }
     
+    proc AddToplevel {lbl img {win_name .auth}} {
+        set cmd "destroy $win_name"
+        if [winfo exists $win_name] {destroy $win_name}
+        toplevel $win_name
+        wm transient $win_name .
+        wm title $win_name [::msgcat::mc "Add record"]
+        # wm iconphoto $win_name tcl
+        ttk::label $win_name.lbl -image $img -anchor nw
+        
+        set frm [ttk::labelframe $win_name.frm -text $lbl -labelanchor nw]
+        grid columnconfigure $frm 0 -weight 1
+        grid rowconfigure $frm 0 -weight 1
+        set frm_btn [ttk::frame $win_name.frm_btn ]
+        ttk::button $frm_btn.btn_ok -image done_20x20 -command { }
+        ttk::button $frm_btn.btn_cancel -command $cmd -image cancel_20x20 
+        grid $win_name.lbl -row 0 -column 0 -sticky nsw -padx 0 -pady 1 -rowspan 2 
+        grid $frm -row 0 -column 1 -sticky nw -padx 2 -pady 2
+        grid $frm_btn -row 1 -column 1 -sticky sew -padx 0 -pady 0
+        pack  $frm_btn.btn_cancel $frm_btn.btn_ok -side right -padx 5 -pady 5
+        #pack  $frm_btn.btn_ok  -side right -padx 2
+        bind $win_name <Escape> $cmd
+        return $frm
+    }
+    
+    proc AuthorizationDialog {txt} {
+        global gitUser gitPassword
+        set gitUser ""
+        set gitPassword ""
+        set frm [Git::AddToplevel "$txt" key_64x64 .auth_win]
+        wm title .auth_win [::msgcat::mc "Authorization"]
+        ttk::label $frm.lbl_name -text [::msgcat::mc "User name"]
+        ttk::entry  $frm.ent_name -textvariable gitUser
+        ttk::label $frm.lbl_pwd -text [::msgcat::mc "Password"]
+        ttk::entry $frm.ent_pwd -textvariable gitPassword
+        
+        grid $frm.lbl_name -row 0 -column 0 -sticky nw -padx 5 -pady 5
+        grid $frm.ent_name -row 0 -column 1 -sticky nsew -padx 5 -pady 5
+        grid $frm.lbl_pwd -row 1 -column 0 -sticky nw -padx 5 -pady 5
+        grid $frm.ent_pwd -row 1 -column 1 -sticky nsew -padx 5 -pady 5
+        grid columnconfigure $frm 0 -weight 1
+        grid rowconfigure $frm 0 -weight 1
+        #set frm_btn [frame .add.frm_btn -border 0]
+        .auth_win.frm_btn.btn_ok configure -command {destroy .auth_win}
+        
+        
+    }    
     proc Dialog {} {
         global cfgVariables activeProject nbEditor
         variable fr
