@@ -277,6 +277,9 @@ namespace eval Git {
             $nbEditor select $nbEditor.git_browse
             return
         }
+        if {[info exists activeProject] == 0} {
+            return
+        }
         set fr [NB::InsertItem $nbEditor git_browse "git"]
         ttk::frame $fr.header
         set lblName "lblGit"
@@ -341,11 +344,11 @@ namespace eval Git {
         grid $fr.body.v -column 5 -row 1 -sticky nsw
         grid $fr.body.h -column 3 -row 2 -sticky new -columnspan 2
 
-        grid $fr.body.bAdd          -column 0 -row 3 -sticky nsew
-        grid $fr.body.bRemove       -column 1 -row 3 -sticky nsew
+        grid $fr.body.bAdd          -column 0 -row 3 -sticky nsw
+        grid $fr.body.bRemove       -column 1 -row 3 -sticky nsw
         grid $fr.body.lblCommitText -column 3 -row 3 -sticky nsew -columnspan 2
         
-        grid $fr.body.lCommit  -column 0 -row 4 -sticky nsew -rowspan 3 -columnspan 2
+        grid $fr.body.lCommit  -column 0 -row 4 -sticky nsw -rowspan 3 -columnspan 2
         grid $fr.body.vlCommit -column 2 -row 4 -sticky nsw -rowspan 3
         grid $fr.body.tCommit  -column 3 -row 4 -sticky nsew -columnspan 2 
         grid $fr.body.vCommit  -column 5 -row 4 -sticky nsw
@@ -353,7 +356,7 @@ namespace eval Git {
         grid $fr.body.bCommit  -column 3 -row 6 -sticky new
         grid $fr.body.bPush    -column 4 -row 6 -sticky new
 
-        grid $fr.body.lblLog -column 0 -row 7 -sticky nsew -columnspan 5
+        grid $fr.body.lblLog -column 0 -row 7 -sticky nsw -columnspan 5
         grid $fr.body.lLog   -column 0 -row 8 -sticky nsew -columnspan 5
         grid $fr.body.vLog   -column 5 -row 8 -sticky nsw
         grid $fr.body.hLog   -column 0 -row 9 -sticky new -columnspan 5
@@ -363,8 +366,8 @@ namespace eval Git {
         grid columnconfigure $fr.body $fr.body.t -weight 1
         grid rowconfigure $fr.body $fr.body.tCommit -weight 1
         grid columnconfigure $fr.body $fr.body.tCommit -weight 1
-        grid rowconfigure $fr.body $fr.body.lLog -weight 1
-        grid columnconfigure $fr.body $fr.body.lLog -weight 1
+        # grid rowconfigure $fr.body $fr.body.lLog -weight 1
+        # grid columnconfigure $fr.body $fr.body.lLog -weight 1
 
         # Git repo status
         foreach { word } [Git::Status] {
