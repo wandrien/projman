@@ -158,6 +158,45 @@ namespace eval Git {
         return $res
     }
     
+    #  git show --pretty=format:"%h;%ad;%s"
+    proc Show {w} {
+        global cfgVariables activeProject
+        set commitString [$w.body.lLog get [$w.body.lLog curselection]]
+        set hash [string trim [lindex [split $commitString " "] 0]]
+        $w.body.t delete 1.0 end
+        $w.body.tCommit delete 1.0 end
+        set cmd exec
+        lappend cmd "$cfgVariables(gitCommand)"
+        lappend cmd "show"
+        lappend cmd "--pretty=format:\"%H;%an;%ae;%ad;%s\""
+        lappend cmd $hash
+        lappend cmd "--"
+        lappend cmd "$activeProject"
+
+        puts $cmd
+        catch $cmd pipe
+        puts $pipe
+        set i 0
+        foreach line [split $pipe "\n"] {
+            if {$i == 0} {
+                set str [split $line ";"]
+                $w.body.tCommit inser end "Hash: [string trimleft [lindex $str 0] "\""]\n"
+                $w.body.tCommit inser end "Author: [lindex $str 1]\n"
+                $w.body.tCommit inser end "Email: [lindex $str 2]\n"
+                $w.body.tCommit inser end "Date: [lindex $str 3]\n"
+                $w.body.tCommit inser end "Description: [string trimright [lindex $str 4] "\""]\n"
+            } else {
+                puts "$line"
+                $w.body.t inser end "$line\n"
+            }
+            incr i
+            # lappend res $line
+        }
+        $w.body.t highlight 1.0 end
+        $w.body.tCommit highlight 1.0 end
+        # return $res
+    }
+    
     proc ListBoxPress {w} {
         set fileName [$w.body.lBox get [$w.body.lBox curselection]]
         # puts $values
@@ -268,10 +307,10 @@ namespace eval Git {
       		listbox $fr.body.lCommit -border 0 -yscrollcommand "$fr.body.vlCommit set"
         ttk::scrollbar $fr.body.vlCommit -orient vertical -command  "$fr.body.lCommit yview"
         ttk::scrollbar $fr.body.vCommit -command "$fr.body.tCommit yview"
-        ttk::scrollbar $fr.body.hCommit -orient horizontal -command "$fr.body.tCommit xview"
+        # ttk::scrollbar $fr.body.hCommit -orient horizontal -command "$fr.body.tCommit xview"
         ctext $fr.body.tCommit -tabstyle tabular -undo true \
-            -xscrollcommand "$fr.body.hCommit set" -yscrollcommand "$fr.body.vCommit set" \
-            -font $cfgVariables(font) -relief flat -wrap none -linemap 0
+            -yscrollcommand "$fr.body.vCommit set" \
+            -font $cfgVariables(font) -relief flat -wrap word -linemap 0
 
         ttk::button $fr.body.bCommit -image done_20x20 -compound left \
             -text "[::msgcat::mc "Commit changes"]" \
@@ -306,7 +345,7 @@ namespace eval Git {
         grid $fr.body.vlCommit -column 2 -row 4 -sticky nsw -rowspan 3
         grid $fr.body.tCommit  -column 3 -row 4 -sticky nsew -columnspan 2 
         grid $fr.body.vCommit  -column 5 -row 4 -sticky nsw
-        grid $fr.body.hCommit  -column 3 -row 5 -sticky new -columnspan 2
+        # grid $fr.body.hCommit  -column 3 -row 5 -sticky new -columnspan 2
         grid $fr.body.bCommit  -column 3 -row 6 -sticky new
         grid $fr.body.bPush    -column 4 -row 6 -sticky new
 
@@ -344,6 +383,8 @@ namespace eval Git {
         bind $fr.body.lBox <Double-Button-1> "Git::CommitAdd $fr"
         bind $fr.body.lBox <Button-1><ButtonRelease-1> "Git::ListBoxPress $fr"
         bind $fr.body.lBox <KeyRelease> "Git::Key %K $fr"
+
+        bind $fr.body.lLog <Double-Button-1> "Git::Show $fr"
         
         focus -force $fr.body.lBox
         catch {
@@ -363,5 +404,7 @@ namespace eval Git {
         ctext::addHighlightClassForRegexp $fr.body.t add green {^\+.*$}
         ctext::addHighlightClassForRegexp $fr.body.t gremove grey {^\-.*$}
         $fr.body.t highlight 1.0 end
+        
+        ctext::addHighlightClassForRegexp $fr.body.tCommit stackControl lightblue {^[\w]+:}
     }
 }
