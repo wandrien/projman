@@ -387,7 +387,7 @@ namespace eval Git {
         catch { $fr.body.lBox activate 0 ; $fr.body.lBox selection set 0 0 }
         
         bind $fr.body.lBox <Return> "Git::CommitAdd $fr"
-        bind $fr.body.lBox <Double-Button-1> "catch {Git::CommitAdd $fr}; break"
+        bind $fr.body.lBox <Double-Button-1> "catch {Git::CommitAdd $fr}"
         bind $fr.body.lBox <Button-1><ButtonRelease-1> "Git::ListBoxPress $fr"
         bind $fr.body.lBox <KeyRelease> "Git::Key %K $fr"
 
