@@ -150,9 +150,9 @@ namespace eval Git {
         # }
         puts $cmd
         catch $cmd pipe
-        puts $pipe
+        # puts $pipe
         foreach line [split $pipe "\n"] {
-            puts "$line"
+            # puts "$line"
             lappend res $line
         }
         return $res
@@ -175,7 +175,7 @@ namespace eval Git {
 
         puts $cmd
         catch $cmd pipe
-        puts $pipe
+        # puts $pipe
         set i 0
         foreach line [split $pipe "\n"] {
             if {$i == 0} {
@@ -186,7 +186,7 @@ namespace eval Git {
                 $w.body.tCommit inser end "Date: [lindex $str 3]\n"
                 $w.body.tCommit inser end "Description: [string trimright [lindex $str 4] "\""]\n"
             } else {
-                puts "$line"
+                # puts "$line"
                 $w.body.t inser end "$line\n"
             }
             incr i
@@ -380,11 +380,12 @@ namespace eval Git {
         catch { $fr.body.lBox activate 0 ; $fr.body.lBox selection set 0 0 }
         
         bind $fr.body.lBox <Return> "Git::CommitAdd $fr"
-        bind $fr.body.lBox <Double-Button-1> "Git::CommitAdd $fr"
+        bind $fr.body.lBox <Double-Button-1> "catch {Git::CommitAdd $fr}"
         bind $fr.body.lBox <Button-1><ButtonRelease-1> "Git::ListBoxPress $fr"
         bind $fr.body.lBox <KeyRelease> "Git::Key %K $fr"
 
         bind $fr.body.lLog <Double-Button-1> "Git::Show $fr"
+        bind $fr.body.lLog <Return> "Git::Show $fr"
         
         focus -force $fr.body.lBox
         catch {

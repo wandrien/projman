@@ -114,4 +114,7 @@
     - Added procedure for the horizontal split a text window
     - Fixed untitled file saved
     - Fixed Alt+R (delete row), now will are deleted row with a "\n\r" symbols
-
+    
+20/10/200
+    - Added Git support: add and commit changes, show git log, show each commit...
+    
