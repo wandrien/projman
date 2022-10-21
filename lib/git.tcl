@@ -173,10 +173,13 @@ namespace eval Git {
         lappend cmd "$url"
         # lappend cmd "$activeProject"
         puts "$cmd"
-        # set pipe [open "|$cfgVariables(gitCommand) $cmd" "RDWR"]
-        # fconfigure $pipe -buffering none -blocking no
-        # close $pipe
-        return
+        catch $cmd pipe
+        puts $pipe
+        foreach line [split $pipe "\n"] {
+            # puts "$line"
+            lappend res $line
+        }
+        return $res
     }
         
     proc Merge {} {
