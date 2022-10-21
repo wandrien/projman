@@ -78,6 +78,8 @@ namespace eval Git {
             lappend res $line
         }
         # cd $d
+        
+        .frmStatus.lblGit configure -text "[::msgcat::mc "Branch"]: [Git::Branches current]"
         if [info exists res] {
             return $res
         }
@@ -455,7 +457,7 @@ namespace eval Git {
         # pack $win.yscroll -side left -expand false -fill y
         grid $win.bAdd -column 0 -row 0 -columnspan 2 -sticky new
         grid $win.lBox -column 0 -row 1
-        grid $win.yscroll -column 1 -row 1
+        grid $win.yscroll -column 1 -row 1 -sticky nsw
         
         set lst [Git::Branches all]
         foreach { word } $lst {
