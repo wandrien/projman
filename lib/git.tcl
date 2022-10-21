@@ -45,7 +45,7 @@ namespace eval Git {
         return $res
     }
 
-    proc Branches {opt} {
+    proc Branches {opt {ent ".branch.entBranch"}} {
         global cfgVariables activeProject
         set cmd exec
         set d [pwd]
@@ -53,19 +53,22 @@ namespace eval Git {
             cd $activeProject
         }
         lappend cmd $cfgVariables(gitCommand)
-        lappend cmd "branch"
         # lappend cmd "-s"
         # lappend cmd "--"
         # lappend cmd $activeProject
         switch $opt {
             current {
+                lappend cmd "branch"
                 lappend cmd "--show-current"
             }
             list {
+                lappend cmd "branch"
                 lappend cmd "-l"
             }
             new {
-                lappend cmd "-c"
+                lappend cmd "checkout"
+                lappend cmd "-b"
+                puts "Branch [$ent get]"
             }
         }
         catch $cmd pipe
@@ -395,7 +398,7 @@ namespace eval Git {
     }
     
     proc BranchDialog {x y} {
-        global editors lexers
+        global editors lexers newBranchName
         variable win
         # set txt $w.frmText.t
         set win .branch
@@ -406,8 +409,14 @@ namespace eval Git {
         toplevel $win
         wm transient $win .
         wm overrideredirect $win 1
-        ttk::button $win.bAdd -image new_14x14 -command "Git::Branch new" \
-            -compound left -text "[::msgcat::mc "Add new branch"]"
+        ttk::button $win.bAdd -image new_14x14 -compound left -text "[::msgcat::mc "Add new branch"]" \
+            -command {
+                grid forget .branch.lBox .branch.yscroll
+                grid .branch.entBranch
+                bind .branch <Return> "Git::Branches new .branch.entBranch; destroy .branch"
+            }
+        ttk::entry $win.entBranch -textvariable newBranchName
+        
         listbox $win.lBox -width 30 -border 2 -yscrollcommand "$win.yscroll set" -border 1
         ttk::scrollbar $win.yscroll -orient vertical -command  "$win.lBox yview"
         # pack $win.lBox -expand true -fill y -side left
