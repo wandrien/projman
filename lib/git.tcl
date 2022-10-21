@@ -12,8 +12,8 @@
 namespace eval Git {
     variable gitCommand
     
-    proc GetConfig {} {
-        global activeProject
+    proc GetConfig {option} {
+        global activeProject cfgVariables
         set confOptions {
             remote.origin.url
             user.user
@@ -21,6 +21,28 @@ namespace eval Git {
             init.defaultbranch
             branch.master.remote
         }
+        if {$activeProject ne ""} {
+            cd $activeProject
+        }
+        
+        set cmd exec
+        lappend cmd $cfgVariables(gitCommand)
+        lappend cmd "config"
+        switch $option {
+            all {
+                lappend cmd "-l"
+            }
+            default {
+                lappend cmd "--get"
+                lappend cmd "$option"
+            }
+        }
+        # lappend cmd $activeProject
+        catch $cmd pipe        
+        foreach line [split $pipe "\n"] {
+            lappend res $line
+        }
+        return $res
     }
 
     proc Branches {opt} {
@@ -130,46 +152,33 @@ namespace eval Git {
         global cfgVariables activeProject
     }
     
-    proc Push {} {
-        global cfgVariables activeProject
-        global gitUser gitPassword
+    proc PushPrepare {} {
+        global cfgVariables activeProject gitUser gitPassword
         # set cmd exec
-        # lappend cmd "$cfgVariables(gitCommand)"
-        lappend cmd "push"
-        lappend cmd "--"
-        lappend cmd "$activeProject"
-        set pipe [open "|\"$cfgVariables(gitCommand)\" $cmd" "r"]
-        try {
-            set lst ""
-            set l ""
-            while {[gets $pipe line]>=0} {
-                #puts $line
-                if [regexp -nocase -all -- {username} $line match] {
-                    Git::AuthorizationDialog "[::msgcat::mc "Authorization required"] [::msgcat::mc "for"] Git"
-                    vwait gitUser
-                    vwait gitPassword
-                    if {$gitUser ne ""} {
-                        puts $pipe $gitUser
-                    }
-                }
-                if [regexp -nocase -all -- {password} $line match] {
-                    if {$gitPassword ne ""} {
-                        puts $pipe $gitPassword
-                    }
-                }
-            }
-            close $pipe
-            return $l
-        } on error {result options} {
-            puts  "Handle >$result< "
-            # ErrorParcing $result $options
-            return ""
-            #RunCommand $root $par
+        cd $activeProject
+        set url [Git::GetConfig remote.origin.url]
+        puts $url
+        if [regexp -nocase -all -- {^(http|https)://(.+)} $url match proto address] {
+            Git::AuthorizationDialog "[::msgcat::mc "Authorization required"] [::msgcat::mc "for"] Git" $url
+        } else {
+            Git::Push $url
         }
-    
-
     }
-    
+    proc Push {url} {
+        global cfgVariables activeProject gitUser gitPassword
+        # set cmd exec
+        lappend cmd "$cfgVariables(gitCommand)"
+        cd $activeProject       
+        lappend cmd "push"
+        lappend cmd "$url"
+        # lappend cmd "$activeProject"
+        puts "$cmd"
+        # set pipe [open "|$cfgVariables(gitCommand) $cmd" "RDWR"]
+        # fconfigure $pipe -buffering none -blocking no
+        # close $pipe
+        return
+    }
+        
     proc Merge {} {
         global cfgVariables activeProject
     }
@@ -285,9 +294,9 @@ namespace eval Git {
         $w.body.lBox delete 0 end
         $w.body.lLog delete 0 end
         foreach { word } [Git::Status] {
-            # puts $word
-            if [regexp -nocase -- {([\w\s])([\s\w?]+)\s../(.+?)} $word match v1 v2 fileName] {
-                # puts "$v1 $v2 $fileName"
+            puts ">>$word"
+            if [regexp -nocase -- {([\w\s]+)([\s\w?]+)\s(../|)(.+?)} $word match v1 v2 v3 fileName] {
+                puts "$v1 $v2 $fileName"
                 # $fr.body.t delete 1.0 end
                 if {$v1 ne " "} {
                     $w.body.lCommit insert end $fileName
@@ -329,17 +338,38 @@ namespace eval Git {
         bind $win_name <Escape> $cmd
         return $frm
     }
-    
-    proc AuthorizationDialog {txt} {
+    proc GetAuthData {url} {
         global gitUser gitPassword
-        set gitUser ""
-        set gitPassword ""
+        # puts [.auth_win.frm.ent_name get]
+        # puts [.auth_win.frm.ent_pwd get]	
+        set gitUser [.auth_win.frm.ent_name get]
+        set gitPassword [.auth_win.frm.ent_pwd get]
+        if [regexp -nocase -all -- {^(http|https)://(.+)} $url match proto address] {
+    
+            puts $gitUser
+            puts $gitPassword
+            if {$gitUser ne ""} {
+                append repoUrl "$proto"
+                append repoUrl "://"
+                append repoUrl "$gitUser"
+            }
+            if {$gitPassword ne ""} {
+                append repoUrl ":$gitPassword"
+                append repoUrl "@$address"
+            }
+            puts $repoUrl
+            Git::Push $repoUrl    
+        }
+        destroy .auth_win
+    }
+    proc AuthorizationDialog {txt url} {
+        global gitUser gitPassword
         set frm [Git::AddToplevel "$txt" key_64x64 .auth_win]
         wm title .auth_win [::msgcat::mc "Authorization"]
         ttk::label $frm.lbl_name -text [::msgcat::mc "User name"]
-        ttk::entry  $frm.ent_name -textvariable gitUser
+        ttk::entry  $frm.ent_name
         ttk::label $frm.lbl_pwd -text [::msgcat::mc "Password"]
-        ttk::entry $frm.ent_pwd -textvariable gitPassword
+        ttk::entry $frm.ent_pwd
         
         grid $frm.lbl_name -row 0 -column 0 -sticky nw -padx 5 -pady 5
         grid $frm.ent_name -row 0 -column 1 -sticky nsew -padx 5 -pady 5
@@ -348,9 +378,7 @@ namespace eval Git {
         grid columnconfigure $frm 0 -weight 1
         grid rowconfigure $frm 0 -weight 1
         #set frm_btn [frame .add.frm_btn -border 0]
-        .auth_win.frm_btn.btn_ok configure -command {destroy .auth_win}
-        
-        
+        .auth_win.frm_btn.btn_ok configure -command "Git::GetAuthData $url"
     }    
     proc Dialog {} {
         global cfgVariables activeProject nbEditor
@@ -406,7 +434,7 @@ namespace eval Git {
             -command "Git::Commit $fr.body.tCommit; Git::DialogUpdate $fr"
         ttk::button $fr.body.bPush -image doneall_20x20 -compound left \
             -text "[::msgcat::mc "Push changes"]" \
-            -command "Git::Push; Git::DialogUpdate $fr"
+            -command "Git::PushPrepare; Git::DialogUpdate $fr"
         
         ttk::label $fr.body.lblLog -padding {3 3} -text "[::msgcat::mc "Commit history"]:"
     		listbox $fr.body.lLog -border 0 \
