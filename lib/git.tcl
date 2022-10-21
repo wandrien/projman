@@ -71,7 +71,7 @@ namespace eval Git {
         catch $cmd pipe
         puts $cmd
         puts $pipe
-        if [regexp -nocase -- {^fatal:} $pipe match] {
+        if [regexp -nocase -- {^error:} $pipe match] {
             return 
         }
         foreach line [split $pipe "\n"] {
