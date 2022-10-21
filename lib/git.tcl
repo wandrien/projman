@@ -152,6 +152,8 @@ namespace eval Git {
         global cfgVariables activeProject
     }
     
+    # Вызов диалога авторизации если ссылка на репу по http
+    # Если ссылка по ssh то вызов Push
     proc PushPrepare {} {
         global cfgVariables activeProject gitUser gitPassword
         # set cmd exec
@@ -164,6 +166,9 @@ namespace eval Git {
             Git::Push $url
         }
     }
+    
+    # /usr/bin/git push https://user:pass@git.nuk-svk.ru/repo.git
+    # /usr/bin/git push ssh://git@git.nuk-svk.ru/repo.git
     proc Push {url} {
         global cfgVariables activeProject gitUser gitPassword
         set cmd exec
@@ -172,7 +177,7 @@ namespace eval Git {
         lappend cmd "push"
         lappend cmd "$url"
         # lappend cmd "$activeProject"
-        puts "$cmd"
+        # puts "$cmd"
         catch $cmd pipe
         puts $pipe
         foreach line [split $pipe "\n"] {
@@ -349,8 +354,8 @@ namespace eval Git {
         set gitPassword [.auth_win.frm.ent_pwd get]
         if [regexp -nocase -all -- {^(http|https)://(.+)} $url match proto address] {
     
-            puts $gitUser
-            puts $gitPassword
+            # puts $gitUser
+            # puts $gitPassword
             if {$gitUser ne ""} {
                 append repoUrl "$proto"
                 append repoUrl "://"
@@ -360,7 +365,7 @@ namespace eval Git {
                 append repoUrl ":$gitPassword"
                 append repoUrl "@$address"
             }
-            puts $repoUrl
+            # puts $repoUrl
             Git::Push $repoUrl    
         }
         destroy .auth_win
