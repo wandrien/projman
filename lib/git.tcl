@@ -45,7 +45,7 @@ namespace eval Git {
         return $res
     }
 
-    proc Branches {opt {ent ".branch.entBranch"}} {
+    proc Checkout {opt {ent ".branch.entBranch"}} {
         global cfgVariables activeProject
         set cmd exec
         set d [pwd]
@@ -53,22 +53,54 @@ namespace eval Git {
             cd $activeProject
         }
         lappend cmd $cfgVariables(gitCommand)
+        lappend cmd "checkout"
+        # lappend cmd "-s"
+        # lappend cmd "--"
+        # lappend cmd $activeProject
+        switch $opt {
+            switchBranch {
+                set branch [.branch.lBox get [.branch.lBox curselection]]
+                lappend cmd "[string trim $branch]"
+            }
+            new {
+                lappend cmd "-b"
+                lappend cmd "[$ent get]"
+                # puts "Branch [$ent get]"
+            }
+        }
+        catch $cmd pipe
+        puts $cmd
+        puts $pipe
+        if [regexp -nocase -- {^fatal:} $pipe match] {
+            return 
+        }
+        foreach line [split $pipe "\n"] {
+            lappend res $line
+        }
+        cd $d
+        if [info exists res] {
+            return $res
+        }
+    }
+
+    proc Branches {opt} {
+        global cfgVariables activeProject
+        set cmd exec
+        set d [pwd]
+        if {$activeProject ne ""} {
+            cd $activeProject
+        }
+        lappend cmd $cfgVariables(gitCommand)
+        lappend cmd "branch"
         # lappend cmd "-s"
         # lappend cmd "--"
         # lappend cmd $activeProject
         switch $opt {
             current {
-                lappend cmd "branch"
                 lappend cmd "--show-current"
             }
             list {
-                lappend cmd "branch"
                 lappend cmd "-l"
-            }
-            new {
-                lappend cmd "checkout"
-                lappend cmd "-b"
-                puts "Branch [$ent get]"
             }
         }
         catch $cmd pipe
@@ -413,7 +445,7 @@ namespace eval Git {
             -command {
                 grid forget .branch.lBox .branch.yscroll
                 grid .branch.entBranch
-                bind .branch <Return> "Git::Branches new .branch.entBranch; destroy .branch"
+                bind .branch <Return> "Git::Checkout new .branch.entBranch; destroy .branch"
             }
         ttk::entry $win.entBranch -textvariable newBranchName
         
@@ -445,8 +477,17 @@ namespace eval Git {
             break
         }
         bind $win.lBox <Return> {
+            Git::Checkout switchBranch
+            .frmStatus.lblGit configure -text "[::msgcat::mc "Branch"]: [Git::Branches current]"
+            destroy .branch
         }
         bind $win.lBox <Any-Key> {}
+        bind $win.lBox <Double-Button-1> {
+            Git::Checkout switchBranch
+            .frmStatus.lblGit configure -text "[::msgcat::mc "Branch"]: [Git::Branches current]"
+            destroy .branch
+        }
+        
         # Определям расстояние до края экрана (основного окна) и если
         # оно меньше размера окна со списком то сдвигаем его вверх
         set winGeom [winfo reqheight $win]
@@ -572,7 +613,10 @@ namespace eval Git {
         
         catch { $fr.body.lBox activate 0 ; $fr.body.lBox selection set 0 0 }
 
-        bind $fr.header.lblGit <Button-1><ButtonRelease-1> {catch [Git::BranchDialog %X %Y]}
+        bind $fr.header.lblGit <Button-1><ButtonRelease-1> {
+            Git::BranchDialog %X %Y
+            Git::DialogUpdate $Git::fr
+        }
         bind $fr.body.lBox <Return> "Git::CommitAdd $fr"
         bind $fr.body.lBox <Double-Button-1> "catch {Git::CommitAdd $fr}"
         bind $fr.body.lBox <Button-1><ButtonRelease-1> "Git::ListBoxPress $fr"
