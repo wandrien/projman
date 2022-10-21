@@ -166,7 +166,7 @@ namespace eval Git {
     }
     proc Push {url} {
         global cfgVariables activeProject gitUser gitPassword
-        # set cmd exec
+        set cmd exec
         lappend cmd "$cfgVariables(gitCommand)"
         cd $activeProject       
         lappend cmd "push"
