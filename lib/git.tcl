@@ -64,6 +64,9 @@ namespace eval Git {
             list {
                 lappend cmd "-l"
             }
+            new {
+                lappend cmd "-c"
+            }
         }
         catch $cmd pipe
         if [regexp -nocase -- {^fatal:} $pipe match] {
@@ -296,6 +299,8 @@ namespace eval Git {
     proc DialogUpdate {w} {
         global activeProject
         # Git repo status
+        set lblText "$activeProject | [::msgcat::mc "Branch"]: [Git::Branches current]"
+        ttk::label $w.header.lblGit -text $lblText -justify right
         $w.body.t delete 1.0 end
         $w.body.tCommit delete 1.0 end
         $w.body.lCommit delete 0 end
@@ -387,7 +392,63 @@ namespace eval Git {
         grid rowconfigure $frm 0 -weight 1
         #set frm_btn [frame .add.frm_btn -border 0]
         .auth_win.frm_btn.btn_ok configure -command "Git::GetAuthData $url"
-    }    
+    }
+    
+    proc BranchDialog {x y} {
+        global editors lexers
+        variable win
+        # set txt $w.frmText.t
+        set win .branch
+        # set x [winfo rootx .frmWork]
+        # set y [winfo rooty .frmWork]
+        
+        if { [winfo exists $win] } { destroy $win }
+        toplevel $win
+        wm transient $win .
+        wm overrideredirect $win 1
+        ttk::button $win.bAdd -image new_14x14 -command "Git::Branch new" \
+            -compound left -text "[::msgcat::mc "Add new branch"]"
+        listbox $win.lBox -width 30 -border 2 -yscrollcommand "$win.yscroll set" -border 1
+        ttk::scrollbar $win.yscroll -orient vertical -command  "$win.lBox yview"
+        # pack $win.lBox -expand true -fill y -side left
+        # pack $win.yscroll -side left -expand false -fill y
+        grid $win.bAdd -column 0 -row 0 -columnspan 2 -sticky new
+        grid $win.lBox -column 0 -row 1
+        grid $win.yscroll -column 1 -row 1
+        
+        set lst [Git::Branches all]
+        foreach { word } $lst {
+            $win.lBox insert end $word
+        }
+        
+        focus -force $win.lBox
+        catch { $win.lBox activate 0 ; $win.lBox selection set 0 0 }
+        
+        if { [set height [llength $lst]] > 10 } { set height 10 }
+        $win.lBox configure -height $height
+
+        bind $win <Escape> { 
+            destroy .branch
+            break
+        }
+        bind $win.lBox <Escape> {
+            destroy .branch
+            break
+        }
+        bind $win.lBox <Return> {
+        }
+        bind $win.lBox <Any-Key> {}
+        # Определям расстояние до края экрана (основного окна) и если
+        # оно меньше размера окна со списком то сдвигаем его вверх
+        set winGeom [winfo reqheight $win]
+        set topHeight [winfo height .]
+        # puts "$x, $y, $winGeom, $topHeight"
+        if [expr [expr $topHeight - $y] < $winGeom] {
+            set y [expr $topHeight - $winGeom]
+        }
+        wm geom $win +$x+$y
+    }
+    
     proc Dialog {} {
         global cfgVariables activeProject nbEditor
         variable fr
@@ -400,10 +461,9 @@ namespace eval Git {
         }
         set fr [NB::InsertItem $nbEditor git_browse "git"]
         ttk::frame $fr.header
-        set lblName "lblGit"
         set lblText "$activeProject | [::msgcat::mc "Branch"]: [Git::Branches current]"
-        ttk::label $fr.header.$lblName -text $lblText -justify right
-        pack $fr.header.$lblName -side right -expand true -fill x
+        ttk::label $fr.header.lblGit -text $lblText -justify right
+        pack $fr.header.lblGit -side right -expand true -fill x
         pack $fr.header -side top -fill x  -padx 3
 
         ttk::frame $fr.body
@@ -479,7 +539,6 @@ namespace eval Git {
         grid $fr.body.vLog   -column 5 -row 8 -sticky nsw
         grid $fr.body.hLog   -column 0 -row 9 -sticky new -columnspan 5
 
-
         grid rowconfigure $fr.body $fr.body.t -weight 1
         grid columnconfigure $fr.body $fr.body.t -weight 1
         grid rowconfigure $fr.body $fr.body.tCommit -weight 1
@@ -503,7 +562,8 @@ namespace eval Git {
         }        
         
         catch { $fr.body.lBox activate 0 ; $fr.body.lBox selection set 0 0 }
-        
+
+        bind $fr.header.lblGit <Button-1><ButtonRelease-1> {catch [Git::BranchDialog %X %Y]}
         bind $fr.body.lBox <Return> "Git::CommitAdd $fr"
         bind $fr.body.lBox <Double-Button-1> "catch {Git::CommitAdd $fr}"
         bind $fr.body.lBox <Button-1><ButtonRelease-1> "Git::ListBoxPress $fr"
