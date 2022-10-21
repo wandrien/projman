@@ -300,7 +300,7 @@ namespace eval Git {
         global activeProject
         # Git repo status
         set lblText "$activeProject | [::msgcat::mc "Branch"]: [Git::Branches current]"
-        ttk::label $w.header.lblGit -text $lblText -justify right
+        $w.header.lblGit configure -text $lblText
         $w.body.t delete 1.0 end
         $w.body.tCommit delete 1.0 end
         $w.body.lCommit delete 0 end
