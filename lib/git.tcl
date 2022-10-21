@@ -77,7 +77,7 @@ namespace eval Git {
         foreach line [split $pipe "\n"] {
             lappend res $line
         }
-        cd $d
+        # cd $d
         if [info exists res] {
             return $res
         }
