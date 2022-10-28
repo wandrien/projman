@@ -69,7 +69,7 @@ proc ResetModifiedFlag {w} {
     $w.frmText.t edit modified false
     set modified($w) "false"
     set lbl [string trimleft [$nbEditor tab $w -text] "* "]
-    puts "ResetModifiedFlag: $lbl"
+    # puts "ResetModifiedFlag: $lbl"
     $nbEditor tab $w -text $lbl
 }
 proc SetModifiedFlag {w} {
@@ -77,7 +77,7 @@ proc SetModifiedFlag {w} {
     #$w.frmText.t edit modified false
     set modified($w) "true"
     set lbl [$nbEditor tab $w -text]
-    puts "SetModifiedFlag: $w; $modified($w); >$lbl<"
+    # puts "SetModifiedFlag: $w; $modified($w); >$lbl<"
     if {[regexp -nocase -all -- {^\*} $lbl match] == 0} {
         set lbl "* $lbl"
     }

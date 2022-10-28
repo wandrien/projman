@@ -367,15 +367,107 @@ namespace eval Editor {
 
     }
     
+    proc VarHelper {x y w word} {
+        global editors lexers variables
+        variable txt 
+        variable win
+        # set txt $w.frmText.t
+        set txt $w
+        set win .varhelper
+        # puts "$x $y $w $word"
+        set varList [dict get $editors $txt variableList]
+        set findedVars ""
+        foreach i [lsearch -all $varList $word*] {
+            # puts [lindex $varList $i]
+            set item [lindex [lindex $varList $i] 0]
+            # puts $item
+            if {[lsearch $findedVars $item] eq "-1"} {
+                lappend findedVars $item
+            }
+        }
+        if { [winfo exists $win] } { destroy $win }
+        if {$findedVars eq ""} {
+            return
+        }
+        
+        toplevel $win
+        wm transient $win .
+        wm overrideredirect $win 1
+        
+        listbox $win.lBox -width 30 -border 2 -yscrollcommand "$win.yscroll set" -border 1
+        ttk::scrollbar $win.yscroll -orient vertical -command  "$win.lBox yview"
+        pack $win.lBox -expand true -fill y -side left
+        pack $win.yscroll -side left -expand false -fill y
+        
+        foreach { word } $findedVars {
+            $win.lBox insert end $word
+        }
+        
+        catch { $win.lBox activate 0 ; $win.lBox selection set 0 0 }
+        
+        if { [set height [llength $findedVars]] > 10 } { set height 10 }
+        $win.lBox configure -height $height
+
+        bind $win <Escape> { 
+            destroy $Editor::win
+            focus -force $Editor::txt.t
+            break
+        }
+        bind $win.lBox <Escape> {
+            destroy $Editor::win
+            focus -force $Editor::txt.t
+            break
+        }
+        bind $win.lBox <Return> {
+            set findString [dict get $lexers [dict get $editors $Editor::txt fileType] procFindString]
+            set values [.gotofunction.lBox get [.gotofunction.lBox curselection]]
+            regsub -all {PROCNAME} $findString $values str
+            Editor::FindFunction $Editor::txt "$str"
+            destroy .gotofunction
+            $Editor::txt tag remove sel 1.0 end
+            # focus $Editor::txt.t
+            break
+        }
+        bind $win.lBox <Any-Key> {Editor::ListBoxSearch %W %A}
+        # Определям расстояние до края экрана (основного окна) и если
+        # оно меньше размера окна со списком то сдвигаем его вверх
+        set winGeom [winfo reqheight $win]
+        set topHeight [winfo height .]
+        # puts "$x, $y, $winGeom, $topHeight"
+        if [expr [expr $topHeight - $y] < $winGeom] {
+            set y [expr $topHeight - $winGeom]
+        }
+        wm geom $win +$x+$y
+        
+    }
+    
     proc ReleaseKey {k txt} {
+        global cfgVariables
         set pos [$txt index insert]
+        set lineNum [lindex [split $pos "."] 0]
+        set posNum [lindex [split $pos "."] 1]
         SearchBrackets $txt
+        # set lineStart [$txt index "$pos linestart"]
+        # puts "$pos $lineStart"
+        if {$cfgVariables(variableHelper) eq "true"} {
+            set lastSymbol [string last "$" [$txt get $lineNum.0 $pos]]
+            if {$lastSymbol ne "-1"} {
+                set word [string trim [$txt get $lineNum.[expr $lastSymbol + 1] $pos]]
+                # puts "$pos; $lineNum; $pos; $lastSymbol; $word"
+                set box        [$txt bbox insert]
+                set box_x      [expr [lindex $box 0] + [winfo rootx $txt] ]
+                set box_y      [expr [lindex $box 1] + [winfo rooty $txt] + [lindex $box 3] ]
+                Editor::VarHelper $box_x $box_y $txt $word
+            }
+        }
+        if {$cfgVariables(procedureHelper) eq "true"} {
+            puts "Find proc"
+        }
+
         switch $k {
             Return {
-                set lineNum [lindex [split $pos "."] 0]
-                set posNum [lindex [split $pos "."] 1]
                 regexp {^(\s*)} [$txt get [expr $lineNum - 1].0 [expr $lineNum - 1].end] -> spaceStart
-		# puts "$pos, $lineNum, $posNum, >$spaceStart<"
+		        # puts "$pos, $lineNum, $posNum, >$spaceStart<"
                 $txt insert insert $spaceStart
                 Editor::Indent $txt
             }

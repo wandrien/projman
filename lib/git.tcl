@@ -141,6 +141,7 @@ namespace eval Git {
     proc Diff {f} {
         global cfgVariables activeProject
         set cmd exec
+        set res ""
         lappend cmd $cfgVariables(gitCommand)
         lappend cmd "diff"
         lappend cmd "--"

@@ -56,6 +56,8 @@ selectBorder=0
 editorWrap=word
 lineNumberShow=true
 tabSize=4
+procedureHelper=false
+variableHelper=true
 "
 proc Config::create {dir} {
     set cfgFile [open [file join $dir projman.ini]  "w+"]
