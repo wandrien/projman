@@ -407,8 +407,16 @@ namespace eval Editor {
         
         if { [set height [llength $findedVars]] > 10 } { set height 10 }
         $win.lBox configure -height $height
-
-        bind $win <Escape> { 
+        # bindtags $win.lBox [list VarHelperBind [winfo toplevel $win.lBox] $win.lBox Text sysAfter all]
+        # bind VarHelperBind <Escape>  "bindtags $win.lBox {[list [winfo toplevel $win.lBox] $win.lBox Text sysAfter all]}; catch { destroy .varhelper }"
+        bind $txt <Escape> {
+            bind $Editor::txt <Escape> {}
+            destroy $Editor::win
+            focus -force $Editor::txt.t
+            break
+        }
+        bind $win <Escape> {
+            bind $txt <Escape> {}
             destroy $Editor::win
             focus -force $Editor::txt.t
             break
@@ -420,15 +428,49 @@ namespace eval Editor {
         }
         bind $win.lBox <Return> {
             set findString [dict get $lexers [dict get $editors $Editor::txt fileType] procFindString]
-            set values [.gotofunction.lBox get [.gotofunction.lBox curselection]]
+            set values [.varhelper.lBox get [.varhelper.lBox curselection]]
             regsub -all {PROCNAME} $findString $values str
             Editor::FindFunction $Editor::txt "$str"
-            destroy .gotofunction
-            $Editor::txt tag remove sel 1.0 end
+            destroy .varhelper.lBox
             # focus $Editor::txt.t
+            # bind $Editor::txt <KeyRelease> "Editor::ReleaseKey %K $txt"
+            # bind $Editor::txt <KeyPress> "Editor::PressKey %K $txt"
+            # bind $Editor::txt <Up> ""
+            # bind $Editor::txt <Down> ""
             break
         }
-        bind $win.lBox <Any-Key> {Editor::ListBoxSearch %W %A}
+        
+        # bind $txt <KeyRelease> ""
+        # bind $txt <KeyPress> ""
+        # bind $txt <Down> {
+            # set index [.varhelper.lBox index active]
+            # .varhelper.lBox selection clear $index $index
+            # set index [expr $index + 1]
+            # puts $index
+            # .varhelper.lBox activate $index
+            # .varhelper.lBox selection set $index $index
+            # break
+        # }
+        # bind $txt <Up> {
+            # set index [.varhelper.lBox index active]
+            # .varhelper.lBox selection clear $index $index
+            # if {$index eq "0" } {
+                # set index [.varhelper.lBox size]
+            # } else {
+                # set index [expr $index - 1]
+            # }
+            # puts $index
+            # .varhelper.lBox activate $index
+            # .varhelper.lBox selection set $index $index
+            # break
+        # }
+        # bind $win.lBox <Down> {
+            # set index [.varhelper.lBox curselection]
+            # puts $index
+            # # .varhelper.lBox selection set [incr index] 0
+            # .varhelper.lBox activate $index
+        # }
+        # # bind $win.lBox <Any-Key> {Editor::ListBoxSearch %W %A}
         # Определям расстояние до края экрана (основного окна) и если
         # оно меньше размера окна со списком то сдвигаем его вверх
         set winGeom [winfo reqheight $win]
@@ -594,6 +636,20 @@ namespace eval Editor {
         bind $txt <Alt-b> "$txt delete {insert linestart} insert"
         bind $txt <Alt-e> "$txt delete insert {insert lineend}"
         bind $txt <Alt-s> "Editor::SplitEditorH $w $fileType"
+        bind $txt <Control-o> {
+            set filePath [FileOper::OpenDialog]
+            if {$filePath != ""} {
+                FileOper::Edit $filePath
+            }
+            break
+        }
+        bind $txt <Control-O> {
+            set filePath [FileOper::OpenDialog]
+            if {$filePath != ""} {
+                FileOper::Edit $filePath
+            }
+            break
+        }
     }
     
     proc SearchBrackets {txt} {
