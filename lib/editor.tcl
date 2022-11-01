@@ -367,7 +367,7 @@ namespace eval Editor {
 
     }
     
-    proc VarHelper {x y w word fileType} {
+    proc VarHelper {x y w word} {
         global editors lexers variables
         variable txt 
         variable win
@@ -377,17 +377,12 @@ namespace eval Editor {
         # puts "$x $y $w $word"
         set varList [dict get $editors $txt variableList]
         set findedVars ""
-
-        set lastSymbol [string last "[dict get $lexers $fileType variableSymbol]" $word]
-        if {$lastSymbol ne "-1"} {
-            set word [string trim [string range $word $lastSymbol end]]
-            foreach i [lsearch -all $varList $word*] {
-                # puts [lindex $varList $i]
-                set item [lindex [lindex $varList $i] 0]
-                # puts $item
-                if {[lsearch $findedVars $item] eq "-1"} {
-                    lappend findedVars $item
-                }
+        foreach i [lsearch -all $varList $word*] {
+            # puts [lindex $varList $i]
+            set item [lindex [lindex $varList $i] 0]
+            # puts $item
+            if {[lsearch $findedVars $item] eq "-1"} {
+                lappend findedVars $item
             }
         }
         if { [winfo exists $win] } { destroy $win }
@@ -405,7 +400,7 @@ namespace eval Editor {
         pack $win.lBox -expand true -fill y -side left
         # pack $win.yscroll -side left -expand false -fill y
         
-        foreach { word } [lsort $findedVars] {
+        foreach { word } $findedVars {
             $win.lBox insert end $word
         }
         
@@ -505,21 +500,15 @@ namespace eval Editor {
         set pos [$txt index insert]
         set lineNum [lindex [split $pos "."] 0]
         set posNum [lindex [split $pos "."] 1]
+        set box   [$txt bbox insert]
+        set box_x [expr [lindex $box 0] + [winfo rootx $txt] ]
+        set box_y [expr [lindex $box 1] + [winfo rooty $txt] + [lindex $box 3] ]
         SearchBrackets $txt
-        # set lineStart [$txt index "$pos linestart"]
-        # puts "$pos $lineStart"
-        puts [$txt get [$txt index insert -1 word] $pos]
-        set lastSymbol [string last " " [$txt get $lineNum.0 $pos]]
-        if {$cfgVariables(variableHelper) eq "true"} {
-            set word [string trim [$txt get $lineNum.[expr $lastSymbol + 1] $pos]]
-            set box        [$txt bbox insert]
-            set box_x      [expr [lindex $box 0] + [winfo rootx $txt] ]
-            set box_y      [expr [lindex $box 1] + [winfo rooty $txt] + [lindex $box 3] ]
-            Editor::VarHelper $box_x $box_y $txt $word $fileType
-        }
-        if {$cfgVariables(procedureHelper) eq "true"} {
-            puts "Find proc"
-        }
+        set lpos [split $pos "."]
+        set lblText "[::msgcat::mc "Row"]: [lindex $lpos 0], [::msgcat::mc "Column"]: [lindex $lpos 1]"
+        .frmStatus.lblPosition configure -text $lblText
+        unset lpos
+        $txt tag remove lightSelected 1.0 end 
 
         switch $k {
             Return {
@@ -528,12 +517,47 @@ namespace eval Editor {
                 $txt insert insert $spaceStart
                 Editor::Indent $txt
             }
+            Up {
+                return
+            }
+            Down {
+                return
+            }
+            Left {
+                return
+            }
+            Right {
+                return
+            }
         }
-        set lpos [split $pos "."]
-        set lblText "[::msgcat::mc "Row"]: [lindex $lpos 0], [::msgcat::mc "Column"]: [lindex $lpos 1]"
-        .frmStatus.lblPosition configure -text $lblText
-        unset lpos
-        $txt tag remove lightSelected 1.0 end 
+        # set lineStart [$txt index "$pos linestart"]
+        # puts "$pos $lineStart"
+        if {$cfgVariables(variableHelper) eq "true"} {
+            if {[dict exists $lexers $fileType variableSymbol] != 0} {
+                set varSymbol [dict get $lexers $fileType variableSymbol]
+                set lastSymbol [string last $varSymbol [$txt get $lineNum.0 $pos]]
+                if {$lastSymbol ne "-1"} {
+                    set word  [string trim [$txt get $lineNum.[expr $lastSymbol + 1] $pos]]
+                    Editor::VarHelper $box_x $box_y $txt $word
+                }
+            } else {
+                set ind [$txt search -backwards -regexp {\W} $pos {insert linestart}]
+                if {$ind ne ""} {
+                    set _ [split $ind "."]
+                    set ind [lindex $_ 0].[expr [lindex $_ 1] + 1]
+                    set word [$txt get $ind $pos]
+                    Editor::VarHelper $box_x $box_y $txt $word
+                } else {
+                    # set ind [$txt search -backwards -regexp {^} $pos {insert linestart}]
+                    set word [$txt get {insert linestart} $pos]
+                    Editor::VarHelper $box_x $box_y $txt $word
+                }
+            }
+        }
+        
+        if {$cfgVariables(procedureHelper) eq "true"} {
+            puts "Find proc"
+        }
     }
 
     proc PressKey {k txt} {
