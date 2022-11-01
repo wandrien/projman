@@ -394,10 +394,11 @@ namespace eval Editor {
         wm transient $win .
         wm overrideredirect $win 1
         
-        listbox $win.lBox -width 30 -border 2 -yscrollcommand "$win.yscroll set" -border 1
-        ttk::scrollbar $win.yscroll -orient vertical -command  "$win.lBox yview"
+        # listbox $win.lBox -width 30 -border 2 -yscrollcommand "$win.yscroll set" -border 1
+        # ttk::scrollbar $win.yscroll -orient vertical -command  "$win.lBox yview"
+        listbox $win.lBox -width 30 -border 2 -border 1
         pack $win.lBox -expand true -fill y -side left
-        pack $win.yscroll -side left -expand false -fill y
+        # pack $win.yscroll -side left -expand false -fill y
         
         foreach { word } $findedVars {
             $win.lBox insert end $word
@@ -471,16 +472,27 @@ namespace eval Editor {
             # .varhelper.lBox activate $index
         # }
         # # bind $win.lBox <Any-Key> {Editor::ListBoxSearch %W %A}
+
         # Определям расстояние до края экрана (основного окна) и если
         # оно меньше размера окна со списком то сдвигаем его вверх
-        set winGeom [winfo reqheight $win]
+        set winGeomY [winfo reqheight $win]
+        set winGeomX [winfo reqwidth $win]
+
         set topHeight [winfo height .]
-        # puts "$x, $y, $winGeom, $topHeight"
-        if [expr [expr $topHeight - $y] < $winGeom] {
-            set y [expr $topHeight - $winGeom]
-        }
-        wm geom $win +$x+$y
+        set topWidth [winfo width .]
+        set topLeftUpperX [winfo x .]
+        set topLeftUpperY [winfo y .]
+        set topRightLowerX [expr $topLeftUpperX + $topWidth]
+        set topRightLowerY [expr $topLeftUpperY + $topHeight]
         
+        if {[expr [expr $x + $winGeomX] > $topRightLowerX]} {
+            set x [expr $x - $winGeomX]
+        }
+        if {[expr [expr $y + $winGeomY] > $topRightLowerY]} {
+            set y [expr $y - $winGeomY]
+        }
+
+        wm geom $win +$x+$y
     }
     
     proc ReleaseKey {k txt} {
