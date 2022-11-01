@@ -367,7 +367,7 @@ namespace eval Editor {
 
     }
     
-    proc VarHelper {x y w word} {
+    proc VarHelper {x y w word fileType} {
         global editors lexers variables
         variable txt 
         variable win
@@ -377,12 +377,17 @@ namespace eval Editor {
         # puts "$x $y $w $word"
         set varList [dict get $editors $txt variableList]
         set findedVars ""
-        foreach i [lsearch -all $varList $word*] {
-            # puts [lindex $varList $i]
-            set item [lindex [lindex $varList $i] 0]
-            # puts $item
-            if {[lsearch $findedVars $item] eq "-1"} {
-                lappend findedVars $item
+
+        set lastSymbol [string last "[dict get $lexers $fileType variableSymbol]" $word]
+        if {$lastSymbol ne "-1"} {
+            set word [string trim [string range $word $lastSymbol end]]
+            foreach i [lsearch -all $varList $word*] {
+                # puts [lindex $varList $i]
+                set item [lindex [lindex $varList $i] 0]
+                # puts $item
+                if {[lsearch $findedVars $item] eq "-1"} {
+                    lappend findedVars $item
+                }
             }
         }
         if { [winfo exists $win] } { destroy $win }
@@ -400,7 +405,7 @@ namespace eval Editor {
         pack $win.lBox -expand true -fill y -side left
         # pack $win.yscroll -side left -expand false -fill y
         
-        foreach { word } $findedVars {
+        foreach { word } [lsort $findedVars] {
             $win.lBox insert end $word
         }
         
@@ -495,24 +500,22 @@ namespace eval Editor {
         wm geom $win +$x+$y
     }
     
-    proc ReleaseKey {k txt} {
-        global cfgVariables
+    proc ReleaseKey {k txt fileType} {
+        global cfgVariables lexers
         set pos [$txt index insert]
         set lineNum [lindex [split $pos "."] 0]
         set posNum [lindex [split $pos "."] 1]
         SearchBrackets $txt
         # set lineStart [$txt index "$pos linestart"]
         # puts "$pos $lineStart"
+        puts [$txt get [$txt index insert -1 word] $pos]
+        set lastSymbol [string last " " [$txt get $lineNum.0 $pos]]
         if {$cfgVariables(variableHelper) eq "true"} {
-            set lastSymbol [string last "$" [$txt get $lineNum.0 $pos]]
-            if {$lastSymbol ne "-1"} {
-                set word [string trim [$txt get $lineNum.[expr $lastSymbol + 1] $pos]]
-                # puts "$pos; $lineNum; $pos; $lastSymbol; $word"
-                set box        [$txt bbox insert]
-                set box_x      [expr [lindex $box 0] + [winfo rootx $txt] ]
-                set box_y      [expr [lindex $box 1] + [winfo rooty $txt] + [lindex $box 3] ]
-                Editor::VarHelper $box_x $box_y $txt $word
-            }
+            set word [string trim [$txt get $lineNum.[expr $lastSymbol + 1] $pos]]
+            set box        [$txt bbox insert]
+            set box_x      [expr [lindex $box 0] + [winfo rootx $txt] ]
+            set box_y      [expr [lindex $box 1] + [winfo rooty $txt] + [lindex $box 3] ]
+            Editor::VarHelper $box_x $box_y $txt $word $fileType
         }
         if {$cfgVariables(procedureHelper) eq "true"} {
             puts "Find proc"
@@ -586,7 +589,7 @@ namespace eval Editor {
         global cfgVariables
         #  variable txt
         # set txt $w.frmText.t
-        bind $txt <KeyRelease> "Editor::ReleaseKey %K $txt"
+        bind $txt <KeyRelease> "Editor::ReleaseKey %K $txt $fileType"
         bind $txt <KeyPress> "Editor::PressKey %K $txt"
         # bind $txt <KeyRelease> "Editor::Key %k %K" 
         #$txt tag bind Sel  <Control-/> {puts ">>>>>>>>>>>>>>>>>>>"}
