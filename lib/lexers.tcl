@@ -20,7 +20,7 @@ dict set lexers GO varRegexpCommand {regexp -nocase -all -line -- {^\s*?var\s+([
 #--------------------------------------------------
 # SHELL (Bash)
 dict set lexers SH commentSymbol {#}
-dict set lexers TCL variableSymbol {$}
+dict set lexers SH variableSymbol {$}
 dict set lexers SH procFindString {(function |)\s*?PROCNAME\(\)}
 dict set lexers SH procRegexpCommand {regexp -nocase -all -- {^\s*?(function |)\s*?(.*?)\(()\)} $line match keyWord procName params}
 
