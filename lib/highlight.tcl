@@ -32,7 +32,7 @@ namespace eval Highlight {} {
     
     proc SH {txt} {
         ctext::addHighlightClassForRegexp $txt flags orange {-+[a-zA-Z\-_]+}
-        ctext::addHighlightClass $txt stackControl #19a2a6 {if fi else elseif then while case esac do in exit source echo package mkdir ls rm sed awk grep date jq zip tar gzip mount umount test make curl git iconv less gcc scp rsync cut tr}
+        ctext::addHighlightClass $txt stackControl #19a2a6 {if fi else elseif then while case esac do in exit source echo package mkdir ls rm sed awk grep date jq zip tar gzip mount umount test make curl git iconv less gcc scp rsync cut tr function}
         ctext::addHighlightClassWithOnlyCharStart $txt vars #4471ca "\$"
         ctext::addHighlightClassForRegexp $txt vars_extended #4471ca {\$\{[a-zA-Z0-9\_\-:\./\$\{\}]+\}}
         ctext::addHighlightClass $txt variable_funcs gold {set export}
@@ -72,7 +72,7 @@ namespace eval Highlight {} {
         ctext::addHighlightClassForRegexp $txt qoute #b84a0c {("|'|`).*?("|'|`)}
         ctext::addHighlightClassForRegexp $txt stackControl #19a2a6 {\s*?[\w]+:}
         ctext::addHighlightClassForRegexp $txt vars #4471ca {(\$|\*|\&)[\.a-zA-Z0-9\_\-]+}
-        ctext::addHighlightClassForRegexp $txt vars #4471ca {(\{\{)(\s*?|)[\.a-zA-Z0-9\_\-]+((\s*?|))(\}\})}
+        ctext::addHighlightClassForRegexp $txt varsansible #4471ca {(\{\{)(\s*?|)[\.a-zA-Z0-9\_\-]+((\s*?|))(\}\})}
         ctext::addHighlightClassForSpecialChars $txt brackets green {[]{}()}
         ctext::addHighlightClassForRegexp $txt paths lightblue {\.[a-zA-Z0-9\_\-]+}
         ctext::addHighlightClassForRegexp $txt comments #666666 {(#|//)[^\n\r]*}    
@@ -80,8 +80,8 @@ namespace eval Highlight {} {
     proc YML {txt} {
         ctext::addHighlightClassForRegexp $txt qoute #b84a0c {("|'|`).*?("|'|`)}
         ctext::addHighlightClassForRegexp $txt stackControl #19a2a6 {\s*?[\w]+:}
-        ctext::addHighlightClassForRegexp $txt vars #4471ca {(\$|\*|\&)[\.a-zA-Z0-9\_\-]+}
-        ctext::addHighlightClassForRegexp $txt vars #4471ca {(\{\{)(\s*?|)[\.a-zA-Z0-9\_\-]+((\s*?|))(\}\})}
+        ctext::addHighlightClassForRegexp $txt vars #4471ca {(\$|\*|\&)(\{|)[\.a-zA-Z0-9\_\-]+}
+        ctext::addHighlightClassForRegexp $txt varsansible #4471ca {(\{\{)(\s*?|)[\.a-zA-Z0-9\_\-]+((\s*?|))(\}\})}
         ctext::addHighlightClassForSpecialChars $txt brackets green {[]{}()}
         ctext::addHighlightClassForRegexp $txt paths lightblue {\.[a-zA-Z0-9\_\-]+}
         ctext::addHighlightClassForRegexp $txt comments #666666 {(#|//)[^\n\r]*}    
