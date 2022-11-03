@@ -508,8 +508,12 @@ namespace eval Editor {
         set lblText "[::msgcat::mc "Row"]: [lindex $lpos 0], [::msgcat::mc "Column"]: [lindex $lpos 1]"
         .frmStatus.lblPosition configure -text $lblText
         unset lpos
-        $txt tag remove lightSelected 1.0 end 
-
+        $txt tag remove lightSelected 1.0 end
+        
+        if {$cfgVariables(variableHelper) eq "true"} {
+            if { [winfo exists .varhelper] } { destroy .varhelper }
+        }
+        
         switch $k {
             Return {
                 regexp {^(\s*)} [$txt get [expr $lineNum - 1].0 [expr $lineNum - 1].end] -> spaceStart
@@ -529,6 +533,15 @@ namespace eval Editor {
             Right {
                 return
             }
+            Shift {
+                return
+            }
+            Controll {
+                return
+            }
+            Meta {
+                return
+            }
         }
         # set lineStart [$txt index "$pos linestart"]
         # puts "$pos $lineStart"
@@ -546,10 +559,11 @@ namespace eval Editor {
                     set _ [split $ind "."]
                     set ind [lindex $_ 0].[expr [lindex $_ 1] + 1]
                     set word [$txt get $ind $pos]
-                    Editor::VarHelper $box_x $box_y $txt $word
-                } else {
+                 } else {
                     # set ind [$txt search -backwards -regexp {^} $pos {insert linestart}]
                     set word [$txt get {insert linestart} $pos]
+                }
+                if {$word ne ""} {
                     Editor::VarHelper $box_x $box_y $txt $word
                 }
             }
