@@ -55,6 +55,15 @@ proc ViewLineNumbers {} {
     }
 }
 
+proc ViewHelper {helper} {
+    global cfgVariables
+    # Changed global settigs
+    if {$cfgVariables($helper) eq "true"} {
+        set cfgVariables($helper) false
+    } else {
+        set cfgVariables($helper) true
+    }
+}
 proc Del {} {
     return
 }

@@ -366,6 +366,51 @@ namespace eval Editor {
         }
 
     }
+    proc VarHelperKey { widget K A } {
+        set win .varhelper
+        set ind [$win.lBox curselection]
+        puts ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+        
+        switch -- $K {
+            Prior   {
+                set up   [expr [$win.lBox index active] - [$win.lBox cget -height]]
+                if { $up < 0 } { set up 0 }
+                $win.lBox activate $up
+                $win.lBox selection clear 0 end
+                $win.lBox selection set $up $up
+            }
+            Next    {
+                set down [expr [$win.lBox index active] + [$win.lBox cget -height]]
+                if { $down >= [$win.lBox index end] }  { set down end }
+                $win.lBox activate $down
+                $win.lBox selection clear 0 end
+                $win.lBox selection set $down $down
+            }
+            Up      {
+                set up   [expr [$win.lBox index active] - 1]
+                if { $up < 0 } { set up 0 }
+                $win.lBox activate $up
+                $win.lBox selection clear 0 end
+                $win.lBox selection set $up $up
+            }
+            Down    {
+                set down [expr [$win.lBox index active] + 1]
+                if { $down >= [$win.lBox index end] }  { set down end }
+                $win.lBox activate $down
+                $win.lBox selection clear 0 end
+                $win.lBox selection set $down $down
+            }
+            Return  {
+                $widget delete "insert - 1 chars wordstart" "insert wordend - 1 chars"
+                $widget insert "insert" [$win.lBox get [$win.lBox curselection]]
+                eval [bind VarHelperBind <Escape>]
+            }
+            default {
+                $widget insert "insert" $A
+                eval [bind VarHelperBind <Escape>]
+            }
+        }
+    } ;# proc auto_completition_key
     
     proc VarHelper {x y w word} {
         global editors lexers variables
@@ -375,7 +420,16 @@ namespace eval Editor {
         set txt $w
         set win .varhelper
         # puts "$x $y $w $word"
-        set varList [dict get $editors $txt variableList]
+        if {[dict exists $editors $txt variableList] != 0} {
+            set varList [dict get $editors $txt variableList]
+        }
+        if {[dict exists $editors $txt procedureList] != 0} {
+            set procList [dict get $editors $txt procedureList]
+        }
+        if {[dict exists $editors $txt variableList] == 0 && [dict exists $editors $txt procedureList] == 0} {
+            return
+        }
+        
         set findedVars ""
         foreach i [lsearch -all $varList $word*] {
             # puts [lindex $varList $i]
@@ -385,6 +439,11 @@ namespace eval Editor {
                 lappend findedVars $item
             }
         }
+
+        bindtags $txt [list VarHelperBind [winfo toplevel $txt] $txt Text sysAfter all]
+        bind VarHelperBind <Escape> "bindtags $txt {[list [winfo toplevel $txt] $txt Text sysAfter all]}; catch { destroy .varhelper }"
+        bind VarHelperBind <Key> {Editor::VarHelperKey %W %K %A ; break}
+        
         if { [winfo exists $win] } { destroy $win }
         if {$findedVars eq ""} {
             return
@@ -394,11 +453,8 @@ namespace eval Editor {
         wm transient $win .
         wm overrideredirect $win 1
         
-        # listbox $win.lBox -width 30 -border 2 -yscrollcommand "$win.yscroll set" -border 1
-        # ttk::scrollbar $win.yscroll -orient vertical -command  "$win.lBox yview"
         listbox $win.lBox -width 30 -border 2 -border 1
         pack $win.lBox -expand true -fill y -side left
-        # pack $win.yscroll -side left -expand false -fill y
         
         foreach { word } $findedVars {
             $win.lBox insert end $word
@@ -408,16 +464,8 @@ namespace eval Editor {
         
         if { [set height [llength $findedVars]] > 10 } { set height 10 }
         $win.lBox configure -height $height
-        # bindtags $win.lBox [list VarHelperBind [winfo toplevel $win.lBox] $win.lBox Text sysAfter all]
-        # bind VarHelperBind <Escape>  "bindtags $win.lBox {[list [winfo toplevel $win.lBox] $win.lBox Text sysAfter all]}; catch { destroy .varhelper }"
-        bind $txt <Escape> {
-            bind $Editor::txt <Escape> {}
-            destroy $Editor::win
-            focus -force $Editor::txt.t
-            break
-        }
+
         bind $win <Escape> {
-            bind $txt <Escape> {}
             destroy $Editor::win
             focus -force $Editor::txt.t
             break
@@ -427,51 +475,15 @@ namespace eval Editor {
             focus -force $Editor::txt.t
             break
         }
-        bind $win.lBox <Return> {
-            set findString [dict get $lexers [dict get $editors $Editor::txt fileType] procFindString]
-            set values [.varhelper.lBox get [.varhelper.lBox curselection]]
-            regsub -all {PROCNAME} $findString $values str
-            Editor::FindFunction $Editor::txt "$str"
-            destroy .varhelper.lBox
-            # focus $Editor::txt.t
-            # bind $Editor::txt <KeyRelease> "Editor::ReleaseKey %K $txt"
-            # bind $Editor::txt <KeyPress> "Editor::PressKey %K $txt"
-            # bind $Editor::txt <Up> ""
-            # bind $Editor::txt <Down> ""
-            break
-        }
-        
-        # bind $txt <KeyRelease> ""
-        # bind $txt <KeyPress> ""
-        # bind $txt <Down> {
-            # set index [.varhelper.lBox index active]
-            # .varhelper.lBox selection clear $index $index
-            # set index [expr $index + 1]
-            # puts $index
-            # .varhelper.lBox activate $index
-            # .varhelper.lBox selection set $index $index
+        # bind $win.lBox <Return> {
+            # set findString [dict get $lexers [dict get $editors $Editor::txt fileType] procFindString]
+            # set values [.varhelper.lBox get [.varhelper.lBox curselection]]
+            # regsub -all {PROCNAME} $findString $values str
+            # Editor::FindFunction $Editor::txt "$str"
+            # destroy .varhelper.lBox
+            # # focus $Editor::txt.t
             # break
         # }
-        # bind $txt <Up> {
-            # set index [.varhelper.lBox index active]
-            # .varhelper.lBox selection clear $index $index
-            # if {$index eq "0" } {
-                # set index [.varhelper.lBox size]
-            # } else {
-                # set index [expr $index - 1]
-            # }
-            # puts $index
-            # .varhelper.lBox activate $index
-            # .varhelper.lBox selection set $index $index
-            # break
-        # }
-        # bind $win.lBox <Down> {
-            # set index [.varhelper.lBox curselection]
-            # puts $index
-            # # .varhelper.lBox selection set [incr index] 0
-            # .varhelper.lBox activate $index
-        # }
-        # # bind $win.lBox <Any-Key> {Editor::ListBoxSearch %W %A}
 
         # Определям расстояние до края экрана (основного окна) и если
         # оно меньше размера окна со списком то сдвигаем его вверх

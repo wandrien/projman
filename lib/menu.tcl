@@ -81,12 +81,24 @@ proc GetViewMenu {m} {
     
     menu $m.editorWrap
     $m add cascade -label [::msgcat::mc "Editors word wrapping"] -menu $m.editorWrap
-    $m.editorWrap  add radiobutton -label [::msgcat::mc "None"] -variable cfgVariables(editorWrap) -value none \
-        -command "Editor::SetOption wrap $cfgVariables(editorWrap)"
-    $m.editorWrap  add radiobutton -label [::msgcat::mc "Char"] -variable cfgVariables(editorWrap) -value char \
-        -command "Editor::SetOption wrap $cfgVariables(editorWrap)"
-    $m.editorWrap  add radiobutton -label [::msgcat::mc "Word"] -variable cfgVariables(editorWrap) -value word \
-        -command "Editor::SetOption wrap $cfgVariables(editorWrap)"
+    $m.editorWrap  add radiobutton -label [::msgcat::mc "None"] -variable cfgVariables(editorWrap) \
+        -value none -command "Editor::SetOption wrap $cfgVariables(editorWrap)"
+    $m.editorWrap  add radiobutton -label [::msgcat::mc "Char"] -variable cfgVariables(editorWrap) \
+        -value char -command "Editor::SetOption wrap $cfgVariables(editorWrap)"
+    $m.editorWrap  add radiobutton -label [::msgcat::mc "Word"] -variable cfgVariables(editorWrap) \
+        -value word -command "Editor::SetOption wrap $cfgVariables(editorWrap)"
+
+    $m add separator
+    menu $m.editorHelper
+    $m add cascade -label [::msgcat::mc "Editor helpers"] -menu $m.editorHelper
+    $m.editorHelper add checkbutton -label [::msgcat::mc "Variables"] \
+        -variable cfgVariables(variableHelper) -onvalue true -offvalue false 
+        # -command "ViewHelper variableHelper"
+        
+    $m.editorHelper add checkbutton -label [::msgcat::mc "Procedures"] \
+        -variable cfgVariables(procedureHelper) -onvalue true -offvalue false 
+        # -command "ViewHelper procedureHelper"
+
 }
 
 proc GetHelpMenu {m} {
