@@ -10,6 +10,7 @@ dict set lexers TCL variableSymbol {$}
 dict set lexers TCL procFindString {proc PROCNAME}
 dict set lexers TCL procRegexpCommand {regexp -nocase -all -- {^\s*?(proc) (.*?) \{(.*?)\} \{} $line match keyWord procName params}
 dict set lexers TCL varRegexpCommand {regexp -nocase -all -- {^\s*?set\s+([a-zA-Z0-9\:\-_$]+)\s+(.+?)($|;)} $line match varName varValue lineEnd}
+dict set lexers TCL commands [info commands]
 
 #--------------------------------------------------
 # Go lang

@@ -368,6 +368,7 @@ namespace eval Editor {
     }
     proc VarHelperKey { widget K A } {
         set win .varhelper
+        # if { [winfo exists $win] == 0 	} { return }
         set ind [$win.lBox curselection]
         puts ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
         
@@ -403,46 +404,110 @@ namespace eval Editor {
             Return  {
                 $widget delete "insert - 1 chars wordstart" "insert wordend - 1 chars"
                 $widget insert "insert" [$win.lBox get [$win.lBox curselection]]
-                eval [bind VarHelperBind <Escape>]
+                # eval [bind VarHelperBind <Escape>]
+                Editor::VarHelperEscape $widget
             }
             default {
                 $widget insert "insert" $A
-                eval [bind VarHelperBind <Escape>]
+                # eval [bind VarHelperBind <Escape>]
+                Editor::VarHelperEscape $widget
             }
         }
     } ;# proc auto_completition_key
+    proc VarHelperEscape {w} {
+        puts "VarHelperEscape"
+        bindtags $w.t [list [winfo parent $w.t] $w.t Text sysAfter all]
+        bindtags $w [list [winfo toplevel $w] $w Ctext sysAfter all]
+        catch { destroy .varhelper }
+        puts [bindtags $w]
+        puts [bind $w]
+        puts [bindtags $w.t]
+        puts [bind $w.t]
+    }
     
-    proc VarHelper {x y w word} {
+    proc VarHelper {x y w word wordType} {
         global editors lexers variables
         variable txt 
         variable win
         # set txt $w.frmText.t
         set txt $w
         set win .varhelper
-        # puts "$x $y $w $word"
+        puts "$x $y $w $word $wordType"
+        set fileType [dict get $editors $txt fileType]
+
         if {[dict exists $editors $txt variableList] != 0} {
             set varList [dict get $editors $txt variableList]
+            # puts $varList
         }
         if {[dict exists $editors $txt procedureList] != 0} {
             set procList [dict get $editors $txt procedureList]
         }
-        if {[dict exists $editors $txt variableList] == 0 && [dict exists $editors $txt procedureList] == 0} {
-            return
-        }
-        
-        set findedVars ""
-        foreach i [lsearch -all $varList $word*] {
-            # puts [lindex $varList $i]
-            set item [lindex [lindex $varList $i] 0]
-            # puts $item
-            if {[lsearch $findedVars $item] eq "-1"} {
-                lappend findedVars $item
+        # puts $procList
+        # puts ">>>>>>>[dict get $lexers $fileType commands]"
+        if {[dict exists $lexers $fileType commands] !=0} {
+            foreach i [dict get $lexers $fileType commands] {
+                # puts $i
+                lappend procList $i
             }
         }
 
-        bindtags $txt [list VarHelperBind [winfo toplevel $txt] $txt Text sysAfter all]
-        bind VarHelperBind <Escape> "bindtags $txt {[list [winfo toplevel $txt] $txt Text sysAfter all]}; catch { destroy .varhelper }"
-        bind VarHelperBind <Key> {Editor::VarHelperKey %W %K %A ; break}
+        # if {[dict exists $editors $txt variableList] == 0 && [dict exists $editors $txt procedureList] == 0} {
+            # return
+        # }
+        set findedVars ""
+        switch -- $wordType {
+            vars {
+                foreach i [lsearch -nocase -all $varList $word*] {
+                    # puts [lindex $varList $i]
+                    set item [lindex [lindex $varList $i] 0]
+                    # puts $item
+                    if {[lsearch $findedVars $item] eq "-1"} {
+                        lappend findedVars $item
+                        # puts $item
+                    }
+                }
+            }
+            procedure {
+                foreach i [lsearch -nocase -all $procList $word*] {
+                    # puts [lindex $varList $i]
+                    set item [lindex [lindex $procList $i] 0]
+                    # puts $item
+                    if {[lsearch $findedVars $item] eq "-1"} {
+                        lappend findedVars $item
+                        # puts $item
+                    }
+                }
+            }
+            default {
+                foreach i [lsearch -nocase -all $varList $word*] {
+                    # puts [lindex $varList $i]
+                    set item [lindex [lindex $varList $i] 0]
+                    # puts $item
+                    if {[lsearch $findedVars $item] eq "-1"} {
+                        lappend findedVars $item
+                        # puts $item
+                    }
+                }
+                foreach i [lsearch -nocase -all $procList $word*] {
+                    # puts [lindex $varList $i]
+                    set item [lindex [lindex $procList $i] 0]
+                    # puts $item
+                    if {[lsearch $findedVars $item] eq "-1"} {
+                        lappend findedVars $item
+                        # puts $item
+                    }
+                }
+            }
+        }
+        # unset item
+        # puts $findedVars
+        bindtags $txt [list VarHelperBind [winfo toplevel $txt] $txt Ctext sysAfter all]
+        # bindtags $txt.t [list VarHelperBind [winfo parent $txt.t] $txt.t Text sysAfter all]
+        bind VarHelperBind <Escape> "Editor::VarHelperEscape $txt; break"
+            # bindtags $txt.t {[list [winfo parent $txt.t] $txt.t Text sysAfter all]};
+            # bindtags $txt {[list [winfo toplevel $txt] $txt Ctext sysAfter all]};
+            # catch { destroy .varhelper }"
+        bind VarHelperBind <Key> {Editor::VarHelperKey $Editor::txt %K %A; break}
         
         if { [winfo exists $win] } { destroy $win }
         if {$findedVars eq ""} {
@@ -453,11 +518,11 @@ namespace eval Editor {
         wm transient $win .
         wm overrideredirect $win 1
         
-        listbox $win.lBox -width 30 -border 2 -border 1
+        listbox $win.lBox -width 30 -border 0
         pack $win.lBox -expand true -fill y -side left
         
-        foreach { word } $findedVars {
-            $win.lBox insert end $word
+        foreach { item } $findedVars {
+            $win.lBox insert end $item
         }
         
         catch { $win.lBox activate 0 ; $win.lBox selection set 0 0 }
@@ -522,9 +587,7 @@ namespace eval Editor {
         unset lpos
         $txt tag remove lightSelected 1.0 end
         
-        if {$cfgVariables(variableHelper) eq "true"} {
-            if { [winfo exists .varhelper] } { destroy .varhelper }
-        }
+        if { [winfo exists .varhelper] } { destroy .varhelper }
         
         switch $k {
             Return {
@@ -563,7 +626,7 @@ namespace eval Editor {
                 set lastSymbol [string last $varSymbol [$txt get $lineNum.0 $pos]]
                 if {$lastSymbol ne "-1"} {
                     set word  [string trim [$txt get $lineNum.[expr $lastSymbol + 1] $pos]]
-                    Editor::VarHelper $box_x $box_y $txt $word
+                    Editor::VarHelper $box_x $box_y $txt $word vars
                 }
             } else {
                 set ind [$txt search -backwards -regexp {\W} $pos {insert linestart}]
@@ -576,13 +639,24 @@ namespace eval Editor {
                     set word [$txt get {insert linestart} $pos]
                 }
                 if {$word ne ""} {
-                    Editor::VarHelper $box_x $box_y $txt $word
+                    Editor::VarHelper $box_x $box_y $txt $word {}
                 }
             }
         }
         
         if {$cfgVariables(procedureHelper) eq "true"} {
-            puts "Find proc"
+            set ind [$txt search -backwards -regexp {\W} $pos {insert linestart}]
+            if {$ind ne ""} {
+                set _ [split $ind "."]
+                set ind [lindex $_ 0].[expr [lindex $_ 1] + 1]
+                set word [$txt get $ind $pos]
+             } else {
+                # set ind [$txt search -backwards -regexp {^} $pos {insert linestart}]
+                set word [$txt get {insert linestart} $pos]
+            }
+            if {$word ne ""} {
+                Editor::VarHelper $box_x $box_y $txt $word procedure
+            }
         }
     }
 
@@ -639,8 +713,10 @@ namespace eval Editor {
         global cfgVariables
         #  variable txt
         # set txt $w.frmText.t
-        bind $txt <KeyRelease> "Editor::ReleaseKey %K $txt $fileType"
+        bind $txt <KeyRelease> "catch {Editor::ReleaseKey %K $txt $fileType}"
         bind $txt <KeyPress> "Editor::PressKey %K $txt"
+        # bind $txt.t <KeyRelease> "Editor::ReleaseKey %K $txt.t $fileType"
+        # bind $txt.t <KeyPress> "Editor::PressKey %K $txt.t"
         # bind $txt <KeyRelease> "Editor::Key %k %K" 
         #$txt tag bind Sel  <Control-/> {puts ">>>>>>>>>>>>>>>>>>>"}
         #bind $txt <Control-slash> {puts "/////////////////"}
