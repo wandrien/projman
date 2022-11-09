@@ -642,6 +642,7 @@ namespace eval Git {
         }         
         # End Git commit history
         
+        ctext::addHighlightClassForRegexp $fr.body.t files yellow {^diff.*$}
         ctext::addHighlightClassForRegexp $fr.body.t paths #19a2a6 {@@.+@@}
         ctext::addHighlightClassForRegexp $fr.body.t add green {^\+.*$}
         ctext::addHighlightClassForRegexp $fr.body.t gremove grey {^\-.*$}
