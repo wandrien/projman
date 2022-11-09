@@ -370,7 +370,6 @@ namespace eval Editor {
         set win .varhelper
         # if { [winfo exists $win] == 0 	} { return }
         set ind [$win.lBox curselection]
-        puts ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
         
         switch -- $K {
             Prior   {
