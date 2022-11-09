@@ -23,4 +23,5 @@ dpkg-buildpackage
 
 #cp ../projman_${VERSION}-${RELEASE}_amd64.deb /files/
 
-rm projman
+rm -v projman
+rm -r -v debian/projman
