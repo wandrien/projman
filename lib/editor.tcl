@@ -720,7 +720,7 @@ namespace eval Editor {
         #$txt tag bind Sel  <Control-/> {puts ">>>>>>>>>>>>>>>>>>>"}
         #bind $txt <Control-slash> {puts "/////////////////"}
         #     #bind $txt <Control-g> GoToLine
-        #     bind $txt <Control-g> {focus .frmTool.frmGoto.entGoTo; .frmTool.frmGoto.entGoTo delete 0 end}
+        bind $txt <Control-g> "Editor::GoToLineNumberDialog $txt"
         bind $txt <Control-agrave> "Editor::FindDialog $w"
         bind $txt <Control-f> "Editor::FindDialog $txt"
         bind $txt <Control-F> "Editor::FindDialog $txt"
@@ -1302,6 +1302,57 @@ namespace eval Editor {
         $text see insert
     }
     
+    proc GoToLineNumberDialog {w} {
+        global editors lexers
+        variable txt 
+        variable win
+        # set txt $w.frmText.t
+        set txt $w
+        set win .gotoline
+        set box [$txt bbox insert]
+        set x   [expr [lindex $box 0] + [winfo rootx $txt] ]
+        set y   [expr [lindex $box 1] + [winfo rooty $txt] + [lindex $box 3] ]
+    
+        if { [winfo exists $win] } { destroy $win }
+        toplevel $win
+        wm transient $win .
+        wm overrideredirect $win 1
+        
+        ttk::entry $win.ent
+        pack $win.ent -expand true -fill y -side left
+
+        bind $win <Escape> { 
+            destroy $Editor::win
+            focus -force $Editor::txt.t
+            break
+        }
+        bind $win.ent <Escape> {
+            destroy $Editor::win
+            focus -force $Editor::txt.t
+            break
+        }
+        bind $win.ent <Return> {
+            set lineNumber [.gotoline.ent get]
+            # $txt see insert $lineNumber
+            puts $Editor::txt
+            $Editor::txt mark set insert $lineNumber.0
+            $Editor::txt see insert
+            focus $Editor::txt.t
+            destroy .gotoline
+            break
+        }
+        # Определям расстояние до края экрана (основного окна) и если
+        # оно меньше размера окна со списком то сдвигаем его вверх
+        set winGeom [winfo reqheight $win]
+        set topHeight [winfo height .]
+        # puts "$x, $y, $winGeom, $topHeight"
+        if [expr [expr $topHeight - $y] < $winGeom] {
+            set y [expr $topHeight - $winGeom]
+        }
+        wm geom $win +$x+$y
+        focus $win.ent
+    }    
+
     proc EditorWidget {fr fileType} {
         global cfgVariables editors
         

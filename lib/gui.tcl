@@ -81,7 +81,7 @@ pack .frmStatus -side top -padx 1 -fill x
 #pack [label .frmMenu.lbl -text "ddd"]
 
 pack [ttk::label .frmStatus.lblGitLogo -justify left] -side left
-pack [ttk::label .frmStatus.lblGit] -side left -exp	and true -fill x
+pack [ttk::label .frmStatus.lblGit] -side left -expand true -fill x
 bind .frmStatus.lblGit <Button-1><ButtonRelease-1> {
     Git::BranchDialog %X %Y
 }

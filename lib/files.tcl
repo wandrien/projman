@@ -15,7 +15,7 @@ namespace eval FileOper {
         {"All files" *}
     }
     
-    proc GetFileType {fileFullPath {opt ""}} {
+    proc GetFileMimeType {fileFullPath {opt ""}} {
         global cfgVariables
         # Проверям наличие программы в системе, если есть то добавляем опции
         # если нет то используем тиклевый пакет
@@ -32,7 +32,7 @@ namespace eval FileOper {
         # lappend cmd $activeProject
         lappend cmd $fileFullPath
         catch $cmd pipe 
-        puts $pipe
+        # puts $pipe
         if [regexp -nocase -- {(\w+)/([[:alnum:]-]+); charset=([[:alnum:]-]+)} $pipe m fType fExt fCharset] {
             puts "$fType $fExt $fCharset"
         }
@@ -360,7 +360,7 @@ namespace eval FileOper {
             return false
         } else {
             # puts [::fileutil::magic::filetype $fileFullPath]
-            set fileType [FileOper::GetFileType $fileFullPath]
+            set fileType [FileOper::GetFileMimeType $fileFullPath]
         }
         switch $fileType {
             "text" {
@@ -393,7 +393,7 @@ namespace eval FileOper {
         $itemName.frmText.t.t see 1.0
         focus -force $itemName.frmText.t.t
         .frmStatus.lblSize configure -text [GetFileAttr $fileFullPath "size"]
-        .frmStatus.lblEncoding configure -text [GetFileType $fileFullPath "charset"]
+        .frmStatus.lblEncoding configure -text [GetFileMimeType $fileFullPath "charset"]
         return $itemName
     }
     
