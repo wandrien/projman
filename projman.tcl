@@ -10,7 +10,7 @@ exec wish "$0" -- "$@"
 ######################################################
 # Version: 2.0.0
 # Release: alpha
-# Build: 09112022145404
+# Build: 09112022170027
 ######################################################
 
 # определим текущую версию, релиз и т.д.
@@ -47,6 +47,7 @@ package require ctext
 package require base64
 package require fileutil
 package require Thread
+package require fileutil::magic::filetype
 
 # Устанавливаем текущий каталог
 set dir(root) [pwd]

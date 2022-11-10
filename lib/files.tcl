@@ -13,7 +13,95 @@ namespace eval FileOper {
     
     set ::types {
         {"All files" *}
-    }        
+    }
+    
+    proc GetFileType {fileFullPath {opt ""}} {
+        global cfgVariables
+        # Проверям наличие программы в системе, если есть то добавляем опции
+        # если нет то используем тиклевый пакет
+        if [file exists $cfgVariables(fileTypeCommand)] {
+            set cmd exec
+            lappend cmd $cfgVariables(fileTypeCommand)
+            foreach _ [split $cfgVariables(fileTypeCommandOptions) " "] {
+                lappend cmd $_
+            }
+        } else {
+            set cmd [list eval ::fileutil::magic::filetype]
+        }
+
+        # lappend cmd $activeProject
+        lappend cmd $fileFullPath
+        catch $cmd pipe 
+        puts $pipe
+        if [regexp -nocase -- {(\w+)/([[:alnum:]-]+); charset=([[:alnum:]-]+)} $pipe m fType fExt fCharset] {
+            puts "$fType $fExt $fCharset"
+        }
+        switch $opt {
+            "charset" {
+                if [info exists fCharset] {
+                    return $fCharset
+                }
+            }
+        }
+        switch $fType {
+            "application" {
+                if {$fExt ne "json"} {
+                    return false
+                }
+            }
+            "text" {
+                return text
+            }
+            "image" {
+                return false
+            }
+            default {
+                return false
+            }
+        }
+    }
+    ## GETTING FILE ATTRIBUTES ##
+    proc GetFileAttr {file {opt ""}} {
+        global tcl_platform
+        set fileAttribute ""
+        # get file modify time
+        switch $opt {
+            attr {
+                if {$tcl_platform(platform) == "windows"} {
+                    set unixTime [file mtime $file]
+                    set modifyTime [clock format $unixTime -format "%d/%m/%Y, %H:%M"]
+                } elseif {$tcl_platform(platform) == "mac"} {
+            
+                } elseif {$tcl_platform(platform) == "unix"} {
+                    set unixTime [file mtime $file]
+                    set modifyTime [clock format $unixTime -format "%d/%m/%Y, %H:%M"]
+                }
+                return $modifyTime
+            }
+            size {
+                # get file size
+                set size [file size $file]
+                if {$size < 1024} {
+                    set fileSize "$size b"
+                }
+                if {$size >= 1024} {
+                    set s [expr ($size.0) / 1024]
+                    set dot [string first "\." $s]
+                    set int [string range $s 0 [expr $dot - 1]]
+                    set dec [string range $s [expr $dot + 1] [expr $dot + 2]]
+                    set fileSize "$int.$dec Kb"
+                }
+                if {$size >= 1048576} {
+                    set s [expr ($size.0) / 1048576]
+                    set dot [string first "\." $s]
+                    set int [string range $s 0 [expr $dot - 1]]
+                    set dec [string range $s [expr $dot + 1] [expr $dot + 2]]
+                    set fileSize "$int.$dec Mb"
+                }
+                return $fileSize
+            }
+        }
+    }
     
     proc OpenDialog {} {
         global env project activeProject
@@ -270,8 +358,21 @@ namespace eval FileOper {
         global nbEditor tree
         if {[file exists $fileFullPath] == 0} {
             return false
+        } else {
+            # puts [::fileutil::magic::filetype $fileFullPath]
+            set fileType [FileOper::GetFileType $fileFullPath]
         }
-        
+        switch $fileType {
+            "text" {
+                # return text
+            }
+            "image" {
+                # return image
+            }
+            false {
+                return
+            }
+        }
         set filePath [file dirname $fileFullPath]
         set fileName [file tail $fileFullPath]
         regsub -all {\.|/|\\|\s} $fileFullPath "_" itemName
@@ -291,7 +392,8 @@ namespace eval FileOper {
         $itemName.frmText.t.t mark set insert 1.0
         $itemName.frmText.t.t see 1.0
         focus -force $itemName.frmText.t.t
-        
+        .frmStatus.lblSize configure -text [GetFileAttr $fileFullPath "size"]
+        .frmStatus.lblEncoding configure -text [GetFileType $fileFullPath "charset"]
         return $itemName
     }
     

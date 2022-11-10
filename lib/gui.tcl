@@ -79,13 +79,15 @@ pack .frmStatus -side top -padx 1 -fill x
 # pack .panel -expand true -fill both
 # pack propagate .panel false
 #pack [label .frmMenu.lbl -text "ddd"]
+
 pack [ttk::label .frmStatus.lblGitLogo -justify left] -side left
-pack [ttk::label .frmStatus.lblGit] -side left
+pack [ttk::label .frmStatus.lblGit] -side left -exp	and true -fill x
 bind .frmStatus.lblGit <Button-1><ButtonRelease-1> {
     Git::BranchDialog %X %Y
 }
-
-pack [ttk::label .frmStatus.lblPosition -justify right] -side right
+pack [ttk::label .frmStatus.lblSize -justify center] -side left -expand true -fill x
+pack [ttk::label .frmStatus.lblEncoding -justify center] -side left -expand true -fill x
+pack [ttk::label .frmStatus.lblPosition -justify right] -side right -expand true -fill x
 
 ttk::menubutton .frmMenu.mnuFile -text [::msgcat::mc "File"] -menu .frmMenu.mnuFile.m
 GetFileMenu [menu .frmMenu.mnuFile.m]

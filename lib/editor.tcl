@@ -1355,6 +1355,17 @@ namespace eval Editor {
 
     proc Editor {fileFullPath nb itemName} {
         global cfgVariables editors
+        set imageType {
+            PNG
+            JPG
+            JPEG
+            WEBP
+            GIF
+            TIFF
+            JP2
+            ICO
+            XPM
+        }
         set fr $itemName
         if ![string match "*untitled*" $itemName] {
              set lblText $fileFullPath
@@ -1386,8 +1397,11 @@ namespace eval Editor {
         pack propagate $fr.panelTxt false 
         pack $fr.panelTxt -side top -fill both -expand true
 
-        set frmText [Editor::EditorWidget $fr $fileType]
-        
+        if {[lsearch -exact $imageType $fileType] != -1} {
+            ImageViewer $fileFullPath $itemName $fr
+        } else {
+            set frmText [Editor::EditorWidget $fr $fileType]
+        }
         $fr.panelTxt add $frmText -weight 0
 
         return $fr
