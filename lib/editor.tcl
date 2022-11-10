@@ -1319,7 +1319,7 @@ namespace eval Editor {
         wm overrideredirect $win 1
         
         ttk::entry $win.ent
-        pack $win.ent -expand true -fill y -side left
+        pack $win.ent -expand true -fill y -side left -padx 3 -pady 3
 
         bind $win <Escape> { 
             destroy $Editor::win
