@@ -125,7 +125,9 @@ pack $frmTool.btn_tree $frmTool.btn_search $frmTool.btn_git -side top -padx 1 -p
 set frmTree [ttk::frame .frmBody.frmTree]
 
 set tree [ttk::treeview $frmTree.tree -show tree \
-    -xscrollcommand [list .frmBody.frmTree.h set] -yscrollcommand [list .frmBody.frmTree.v set]]
+    -xscrollcommand [list .frmBody.frmTree.h set] \
+    -yscrollcommand [list .frmBody.frmTree.v set]]
+
 # $tree heading #0 -text "Files tree"
 # $tree column #0 -anchor e
 

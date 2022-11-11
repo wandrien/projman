@@ -40,23 +40,27 @@ namespace eval ttk::theme::dark {
         # Theme defaults
         #
         ttk::style configure . \
-        -background $colors(-frame) \
-        -foreground #ffffff \
-        -bordercolor $colors(-darkest) \
-        -darkcolor $colors(-dark) \
-        -lightcolor $colors(-lighter) \
-        -troughcolor $colors(-darker) \
-        -selectbackground $colors(-selectbg) \
-        -selectforeground $colors(-selectfg) \
-        -selectborderwidth 0 \
-        -font "{Droid Sans Mono} 9" 
-        
+            -background $colors(-frame) \
+            -foreground #ffffff \
+            -bordercolor $colors(-darkest) \
+            -darkcolor $colors(-dark) \
+            -lightcolor $colors(-lighter) \
+            -troughcolor $colors(-darker) \
+            -selectborderwidth 1 \
+            -font "{Droid Sans Mono} 9" \
+            -selectbackground $colors(-selectbg) \
+            -selectforeground $colors(-selectfg) \
+
         ttk::style map "." \
-        -background [list disabled $colors(-frame) \
-        active $colors(-lighter)] \
-        -foreground [list disabled $colors(-disabledfg)] \
-        -selectbackground [list  !focus $colors(-darkest)] \
-        -selectforeground [list  !focus #ffffff]
+            -background [list disabled $colors(-frame) \
+            active $colors(-lighter)] \
+            -foreground [list disabled $colors(-disabledfg)] \
+            -selectbackground [list  !focus $colors(-darkest)] \
+            -selectforeground [list  !focus #ffffff]
+            
+        # \
+        # -selectbackground [list  !focus $colors(-darkest)] \
+        # -selectforeground [list  !focus #ffffff]
         
         # ttk widgets.
         ttk::style configure TButton \
@@ -81,7 +85,7 @@ namespace eval ttk::theme::dark {
             -fieldbackground $colors(-lightframe) \
             -foreground #ffffff
         
-        ttk::style configure TNotebook 
+        # ttk::style configure TNotebook 
             # -bordercolor $colors(-frame)
         ttk::style configure TNotebook.Tab \
         -padding {6 2 6 2}
@@ -93,7 +97,7 @@ namespace eval ttk::theme::dark {
         ttk::style map Menu \
         -background [list active $colors(-lighter)] \
         -foreground [list disabled $colors(-disabledfg)]
-        
+
         ttk::style configure Treeview \
             -background $colors(-treebg) -itembackground {gray60 gray50} \
             -itemfill #ffffff -itemaccentfill yellow \
@@ -102,6 +106,10 @@ namespace eval ttk::theme::dark {
             # -indicatorsize -1 \
             # -padding 0
 
+        ttk::style configure TreeCtrl \
+            -background gray30 -itembackground {gray60 gray50} \
+            -itemfill white -itemaccentfill yellow
+        
         ttk::style configure Text \
             -linemapbg [list active $colors(-linemapbg)]\
             -linemapfg [list active $colors(-linemapfg)]\

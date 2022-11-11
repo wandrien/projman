@@ -73,7 +73,7 @@ namespace eval Tree {
         set id [$tree selection]
         $tree tag remove selected
         $tree item $id -tags selected
-        
+
         set values [$tree item $id -values]
         set key [lindex [split $id "::"] 0]
         if {$values eq "" || $key eq ""} {return}
@@ -95,7 +95,7 @@ namespace eval Tree {
         set id [$tree selection]
         $tree tag remove selected
         $tree item $id -tags selected
-        
+
         set values [$tree item $id -values]
         set key [lindex [split $id "::"] 0]
         if {$values eq "" || $key eq ""} {return}
