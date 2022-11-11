@@ -159,16 +159,20 @@ namespace eval Git {
     
     proc Commit {w} {
         global cfgVariables activeProject
-        set txt [string trim [$w get 0.0 end]]
-        puts $txt
+        set txt $w.body.tCommit
+        set listBox $w.body.lCommit 
+        set description [string trim [$txt get 0.0 end]]
+        puts $description
         set cmd exec
         append cmd " $cfgVariables(gitCommand)"
         append cmd " commit"
         append cmd " -m"
-        append cmd " \"$txt\""
+        append cmd " \"$description\""
         append cmd " --"
-        append cmd " $activeProject"
-        if {$txt eq ""} {
+        foreach item [$listBox get 0 [$listBox size]] {
+            append cmd " [file join $activeProject $item]"
+        }
+        if {$description eq ""} {
             set answer [tk_messageBox -message [::msgcat::mc "Empty commit description"] \
                 -icon info -type ok \
                 -detail [::msgcat::mc "You must enter a commit description"]]
@@ -552,7 +556,7 @@ namespace eval Git {
 
         ttk::button $fr.body.bCommit -image done_20x20 -compound left \
             -text "[::msgcat::mc "Commit changes"]" \
-            -command "Git::Commit $fr.body.tCommit; Git::DialogUpdate $fr"
+            -command "Git::Commit $fr; Git::DialogUpdate $fr"
         ttk::button $fr.body.bPush -image doneall_20x20 -compound left \
             -text "[::msgcat::mc "Push changes"]" \
             -command "Git::PushPrepare; Git::DialogUpdate $fr"
