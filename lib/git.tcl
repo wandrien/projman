@@ -625,7 +625,7 @@ namespace eval Git {
             Git::DialogUpdate $Git::fr
         }
         bind $fr.body.lBox <Return> "Git::CommitAdd $fr"
-        bind $fr.body.lBox <Double-Button-1> "catch {Git::CommitAdd $fr}"
+        bind $fr.body.lBox <Double-Button-1> "catch {Git::CommitAdd $fr; $fr.body.t delete 0.0 end; $fr.body.tCommit delete 0.0 end}"
         bind $fr.body.lBox <Button-1><ButtonRelease-1> "Git::ListBoxPress $fr"
         bind $fr.body.lBox <KeyRelease> "Git::Key %K $fr"
 
