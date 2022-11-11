@@ -220,6 +220,8 @@ namespace eval FileOper {
         }
         unset modified($nbItem)
         .frmStatus.lblPosition configure -text ""
+        .frmStatus.lblEncoding configure -text ""
+        .frmStatus.lblSize configure -text ""
     }
     
     proc Save {} {

@@ -189,6 +189,9 @@ proc FindVariablesDialog {txt args} {
     set y   [expr [lindex $box 1] + [winfo rooty $txt] + [lindex $box 3] ]
 
     set win .findVariables
+    if [winfo exists .varhelper] {
+       destroy .varhelper
+    }
 
     if { [winfo exists $win] }  { destroy $win }
     toplevel $win
