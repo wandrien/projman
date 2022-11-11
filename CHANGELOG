@@ -117,4 +117,9 @@
     
 20/10/200
     - Added Git support: add and commit changes, show git log, show each commit...
-    
+
+11/11/2022
+    - Added GoTo Line dialog
+    - Fixed Git commit procedure
+    - Added variable and procedure helper
+
