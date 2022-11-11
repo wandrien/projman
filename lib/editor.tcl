@@ -429,6 +429,10 @@ namespace eval Editor {
         variable txt 
         variable win
         # set txt $w.frmText.t
+        # блокировка открытия диалога если запущен другой
+        if [winfo exists .findVariables] {
+           return
+        }
         set txt $w
         set win .varhelper
         puts "$x $y $w $word $wordType"
@@ -587,7 +591,7 @@ namespace eval Editor {
         $txt tag remove lightSelected 1.0 end
         
         if { [winfo exists .varhelper] } { destroy .varhelper }
-        
+        puts $k
         switch $k {
             Return {
                 regexp {^(\s*)} [$txt get [expr $lineNum - 1].0 [expr $lineNum - 1].end] -> spaceStart
@@ -607,13 +611,22 @@ namespace eval Editor {
             Right {
                 return
             }
-            Shift {
+            # Shift_L {
+                # return
+            # }
+            # Shift_R {
+                # return
+            # }
+            Control_L {
                 return
             }
-            Controll {
+            Control_R {
                 return
             }
-            Meta {
+            Alt_L {
+                return
+            }
+            Alt_R {
                 return
             }
         }
@@ -714,59 +727,19 @@ namespace eval Editor {
         # set txt $w.frmText.t
         bind $txt <KeyRelease> "catch {Editor::ReleaseKey %K $txt $fileType}"
         bind $txt <KeyPress> "Editor::PressKey %K $txt"
-        # bind $txt.t <KeyRelease> "Editor::ReleaseKey %K $txt.t $fileType"
-        # bind $txt.t <KeyPress> "Editor::PressKey %K $txt.t"
-        # bind $txt <KeyRelease> "Editor::Key %k %K" 
-        #$txt tag bind Sel  <Control-/> {puts ">>>>>>>>>>>>>>>>>>>"}
-        #bind $txt <Control-slash> {puts "/////////////////"}
-        #     #bind $txt <Control-g> GoToLine
-        bind $txt <Control-g> "Editor::GoToLineNumberDialog $txt"
-        bind $txt <Control-agrave> "Editor::FindDialog $w"
-        bind $txt <Control-f> "Editor::FindDialog $txt"
-        bind $txt <Control-F> "Editor::FindDialog $txt"
-        #     bind $txt <F3> {FindNext $w.text 1}
-        #     bind $txt <Control-ecircumflex> ReplaceDialog
-        #     bind $txt <Control-r> ReplaceDialog
-        #     bind $txt <F4> {ReplaceCommand $w.text 1}
-        #     bind $txt <Control-ucircumflex> {FileDialog [$noteBookFiles raise] save}
-        #     bind $txt <Control-s> {FileDialog [$noteBookFiles raise] save}
-        #     bind $txt <Control-ocircumflex> {FileDialog [$noteBookFiles raise] save_as}
-        #     bind $txt <Shift-Control-s> {FileDialog [$noteBookFiles raise] save_as}
-        bind $txt <Control-odiaeresis> FileOper::Close
-        bind $txt <Control-w> FileOper::Close
-        #     bind $txt <Control-division> "tk_textCut $w.text;break"
-        #     bind $txt <Control-x> "tk_textCut $w.text;break"
-        #     bind $txt <Control-ntilde> "tk_textCopy $txt"
-        #     bind $txt <Control-c> "tk_textCopy $txt"
         bind $txt <Control-igrave> "Editor::SelectionPaste $txt"
         bind $txt <Control-v> "Editor::SelectionPaste $txt"
-        
-        #bind $txt <Control-adiaeresis> "auto_completition $txt"
-        bind $txt <Control-l> "SearchVariable $txt"
-        # bind $txt <Control-icircumflex> ""
-        # bind $txt <Control-j> ""
+        bind $txt <Control-l> "SearchVariable $txt; break"
         bind $txt <Control-i> "ImageBase64Encode $txt"
-
         bind $txt <Control-bracketleft> "Editor::InsertTabular $txt"
         bind $txt <Control-bracketright> "Editor::DeleteTabular $txt"
-
         bind $txt <Control-comma> "Editor::Comment $txt $fileType"
         bind $txt <Control-period> "Editor::Uncomment $txt $fileType"
         bind $txt <Control-eacute> Find
-        #bind . <Control-m> PageTab
-        #bind . <Control-udiaeresis> PageTab
         bind $txt <Insert> {OverWrite}
         bind $txt <ButtonRelease-1> "Editor::SearchBrackets $txt"
-        # bind <Button-1> [bind sysAfter <Any-Key>]
-        # bind $txt <Button-3> {catch [PopupMenuEditor %X %Y]}
-        # bind $txt <Button-4> "%W yview scroll -3 units"
-        # bind $txt <Button-5> "%W yview scroll  3 units"
-        #bind $txt <Shift-Button-4> "%W xview scroll -2 units"
-        #bind $txt <Shift-Button-5> "%W xview scroll  2 units"
         bind $txt <Button-1><ButtonRelease-1> "Editor::SelectionHighlight $txt"
-        # bind $txt <<Selection>> "Editor::SelectionHighlight $txt"
         bind $txt <<Modified>> "SetModifiedFlag $w"
-        # bind $txt <<Selection>> "Editor::SelectionGet $txt"
         bind $txt <Control-i> ImageBase64Encode
         bind $txt <Control-u> "Editor::SearchBrackets %W"
         bind $txt <Control-J> "catch {Editor::GoToFunction $txt}"
@@ -776,6 +749,12 @@ namespace eval Editor {
         bind $txt <Alt-b> "$txt delete {insert linestart} insert"
         bind $txt <Alt-e> "$txt delete insert {insert lineend}"
         bind $txt <Alt-s> "Editor::SplitEditorH $w $fileType"
+        bind $txt <Control-g> "Editor::GoToLineNumberDialog $txt"
+        bind $txt <Control-agrave> "Editor::FindDialog $w"
+        bind $txt <Control-f> "Editor::FindDialog $txt"
+        bind $txt <Control-F> "Editor::FindDialog $txt"
+        bind $txt <Control-odiaeresis> FileOper::Close
+        bind $txt <Control-w> FileOper::Close
         bind $txt <Control-o> {
             set filePath [FileOper::OpenDialog]
             if {$filePath != ""} {
@@ -790,6 +769,38 @@ namespace eval Editor {
             }
             break
         }
+        # bind $txt.t <KeyRelease> "Editor::ReleaseKey %K $txt.t $fileType"
+        # bind $txt.t <KeyPress> "Editor::PressKey %K $txt.t"
+        # bind $txt <KeyRelease> "Editor::Key %k %K" 
+        #$txt tag bind Sel  <Control-/> {puts ">>>>>>>>>>>>>>>>>>>"}
+        #bind $txt <Control-slash> {puts "/////////////////"}
+        #     #bind $txt <Control-g> GoToLine
+        #     bind $txt <F3> {FindNext $w.text 1}
+        #     bind $txt <Control-ecircumflex> ReplaceDialog
+        #     bind $txt <Control-r> ReplaceDialog
+        #     bind $txt <F4> {ReplaceCommand $w.text 1}
+        #     bind $txt <Control-ucircumflex> {FileDialog [$noteBookFiles raise] save}
+        #     bind $txt <Control-s> {FileDialog [$noteBookFiles raise] save}
+        #     bind $txt <Control-ocircumflex> {FileDialog [$noteBookFiles raise] save_as}
+        #     bind $txt <Shift-Control-s> {FileDialog [$noteBookFiles raise] save_as}
+        #     bind $txt <Control-division> "tk_textCut $w.text;break"
+        #     bind $txt <Control-x> "tk_textCut $w.text;break"
+        #     bind $txt <Control-ntilde> "tk_textCopy $txt"
+        #     bind $txt <Control-c> "tk_textCopy $txt"
+        
+        #bind $txt <Control-adiaeresis> "auto_completition $txt"
+        # bind $txt <Control-icircumflex> ""
+        # bind $txt <Control-j> ""
+        #bind . <Control-m> PageTab
+        #bind . <Control-udiaeresis> PageTab
+        # bind <Button-1> [bind sysAfter <Any-Key>]
+        # bind $txt <Button-3> {catch [PopupMenuEditor %X %Y]}
+        # bind $txt <Button-4> "%W yview scroll -3 units"
+        # bind $txt <Button-5> "%W yview scroll  3 units"
+        #bind $txt <Shift-Button-4> "%W xview scroll -2 units"
+        #bind $txt <Shift-Button-5> "%W xview scroll  2 units"
+        # bind $txt <<Selection>> "Editor::SelectionHighlight $txt"
+        # bind $txt <<Selection>> "Editor::SelectionGet $txt"
     }
     
     proc SearchBrackets {txt} {
@@ -1458,40 +1469,3 @@ namespace eval Editor {
         return $fr
     }
 }
-
-# ctextBindings.tcl
-#
-# Copyright (C) 2012 Sedat Serper
-# A similar script and functionality is implemented in tG² as of v1.06.01.41 
-#
-# proc ctext_binding4Tag {w tags} {
-  # # foreach tag $tags {
-    # $w tag bind $tag <Enter> {%W config -cursor hand2}
-    # $w tag bind $tag <Leave> {%W config -cursor xterm}
-    # $w tag bind $tag <ButtonRelease-1> {
-      # set cur [::tk::TextClosestGap %W %x %y]
-      # if {[catch {%W index anchor}]} {%W mark set anchor $cur}
-      # set anchor [%W index anchor]
-      # set last  [::tk::TextNextPos %W "$cur - 1c" tcl_wordBreakAfter]
-      # set first [::tk::TextPrevPos %W anchor tcl_wordBreakBefore]
-      # if {![catch {set tmp [%W get $first $last]}]} {
-        # ctext_execTagCmd $tmp
-      # }
-    # }
-  # }
-# }
-# 
-# 
-# THE DEMO
-# 
-# # ----------------------- demo -------------------------------------------
-# # Open a new wish console and copy/paste the following complete script.
-# # Clicking on parts that are highlighted and observe the console output...
-# # Adjust procedure 'ctext_execTagCmd' to customize the handling 4 your application.
-# package require ctext
-# pack [ctext .t] -fill both -expand 1
-# ctext::addHighlightClass .t bindings purple [list <Enter> <Leave> <ButtonRelease-1>]
-# ctext::addHighlightClass .t commands orange [list foreach proc if set catch]
-# .t fastinsert end [info body ctext_binding4Tag]
-# .t highlight 1.0 end
-# ctext_binding4Tag .t {bindings commands}
