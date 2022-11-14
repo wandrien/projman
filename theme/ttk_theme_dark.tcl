@@ -84,6 +84,8 @@ namespace eval ttk::theme::dark {
         ttk::style configure TSpinbox \
             -fieldbackground $colors(-lightframe) \
             -foreground #ffffff
+
+        ttk::style configure TScrollbar -relief flat -border 0
         
         # ttk::style configure TNotebook 
             # -bordercolor $colors(-frame)

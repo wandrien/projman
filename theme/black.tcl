@@ -61,7 +61,7 @@ namespace eval ttk::theme::black {
         -selectbackground $colors(-selectbg) \
         -selectforeground $colors(-selectfg) \
         -selectborderwidth 0 \
-        -font TkDefaultFont \
+        -font "{Droid Sans Mono} 9" \
         ;
 
     $styleCmd map "." \
@@ -74,17 +74,17 @@ namespace eval ttk::theme::black {
 
     # ttk widgets.
     $styleCmd configure TButton \
-        -width -8 -padding {5 1} -relief raised
-    $styleCmd configure TMenubutton \
-        -width -11 -padding {5 1} -relief raised
+        -width -8 -padding {5 1} -relief link
+    $styleCmd configure TMenubutton\
+        -relief flat -arrowsize 0
     $styleCmd configure TCheckbutton \
-        -indicatorbackground "#ffffff" -indicatormargin {1 1 4 1}
+        -indicatorbackground $colors(-lighter) -indicatormargin {1 1 4 1}
     $styleCmd configure TRadiobutton \
-        -indicatorbackground "#ffffff" -indicatormargin {1 1 4 1}
+        -indicatorbackground $colors(-lighter) -indicatormargin {1 1 4 1}
 
     $styleCmd configure TEntry \
-        -fieldbackground white -foreground black \
-        -padding {2 0}
+        -fieldbackground gray20 -foreground black \
+        -padding {2 0} -border -1
     $styleCmd configure TCombobox \
         -fieldbackground white -foreground black \
         -padding {2 0}
@@ -108,10 +108,11 @@ namespace eval ttk::theme::black {
         -itemfill white -itemaccentfill yellow
 
     $styleCmd map Treeview \
-        -background [list selected $colors(-selectbg)] \
+        -background [list selected $colors(-lighter)] \
         -foreground [list selected $colors(-selectfg)]
+        # -background [list selected $colors(-selectbg)] \
 
-    $styleCmd configure Treeview -fieldbackground $colors(-lighter)
+    $styleCmd configure Treeview -fieldbackground gray25
   }
 }
 
