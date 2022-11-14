@@ -33,7 +33,7 @@ namespace eval FileOper {
         lappend cmd $fileFullPath
         catch $cmd pipe 
         # puts $pipe
-        if [regexp -nocase -- {(\w+)/([[:alnum:]-]+); charset=([[:alnum:]-]+)} $pipe m fType fExt fCharset] {
+        if [regexp -nocase -- {(\w+)/([\w\-_\.]+); charset=([[:alnum:]-]+)} $pipe m fType fExt fCharset] {
             puts "$fType $fExt $fCharset"
         }
         switch $opt {
