@@ -120,6 +120,7 @@ namespace eval Git {
     
     proc Status {} {
         global cfgVariables activeProject
+        cd $activeProject
         set cmd exec
         lappend cmd $cfgVariables(gitCommand)
         lappend cmd "status"
@@ -127,6 +128,7 @@ namespace eval Git {
         lappend cmd "--"
         lappend cmd $activeProject
         catch $cmd pipe
+        puts $cmd
         if [regexp -nocase -- {^fatal:} $pipe match] {
             return 
         }
@@ -605,9 +607,9 @@ namespace eval Git {
 
         # Git repo status
         foreach { word } [Git::Status] {
-            # puts $word
-            if [regexp -nocase -- {([\w\s])([\s\w?]+)\s../(.+?)} $word match v1 v2 fileName] {
-                # puts "$v1 $v2 $fileName"
+            puts $word
+            if [regexp -nocase -- {([\w\s\?])([\s\w\\*\?]+)\s(.+?)} $word match v1 v2 fileName] {
+                puts "$v1 $v2 $fileName"
                 # $fr.unindexed.t delete 1.0 end
                 if {$v1 ne " "} {
                     $fr.body.lCommit insert end $fileName
@@ -625,7 +627,8 @@ namespace eval Git {
             Git::DialogUpdate $Git::fr
         }
         bind $fr.body.lBox <Return> "Git::CommitAdd $fr"
-        bind $fr.body.lBox <Double-Button-1> "catch {Git::CommitAdd $fr; $fr.body.t delete 0.0 end; $fr.body.tCommit delete 0.0 end}"
+        bind $fr.body.lBox <Double-Button-1> \
+            "catch {Git::CommitAdd $fr; $fr.body.t delete 0.0 end; $fr.body.tCommit delete 0.0 end}"
         bind $fr.body.lBox <Button-1><ButtonRelease-1> "Git::ListBoxPress $fr"
         bind $fr.body.lBox <KeyRelease> "Git::Key %K $fr"
 
