@@ -70,7 +70,7 @@ if [info exists cfgVariables(theme)] {
 }
 
 ttk::frame .frmMenu -border 0 -relief raised
-ttk::frame .frmBody -border 1 -relief raised
+ttk::frame .frmBody -border 0 -relief raised
 ttk::frame .frmStatus -border 0 -relief raised 
 pack .frmMenu -side top -padx 1 -fill x
 pack .frmBody -side top -padx 1 -fill both -expand true
@@ -122,7 +122,7 @@ pack $frmTool.btn_tree $frmTool.btn_search $frmTool.btn_git -side top -padx 1 -p
 # #pack $frmTool.lbl_logo -side bottom -padx 5 -pady 5
 # 
 # # Дерево с полосами прокрутки
-set frmTree [ttk::frame .frmBody.frmTree]
+set frmTree [ttk::frame .frmBody.frmTree -border 0]
 
 set tree [ttk::treeview $frmTree.tree -show tree \
     -xscrollcommand [list .frmBody.frmTree.h set] \
@@ -135,7 +135,7 @@ ttk::scrollbar $frmTree.h -orient horizontal -command [list $frmTree.tree xview]
 ttk::scrollbar $frmTree.v -orient vertical -command [list $frmTree.tree yview]
 
 bind $tree <Double-ButtonPress-1> {Tree::DoublePressItem $tree}
-bind $tree  <ButtonRelease-1> {Tree::PressItem $tree; break}
+bind $tree  <ButtonRelease-1> {Tree::PressItem $tree; 	break}
 
 grid $tree -row 0 -column 0 -sticky nsew
 grid $frmTree.v -row 0 -column 1 -sticky nsew

@@ -92,8 +92,11 @@ namespace eval ttk::theme::black {
         -fieldbackground white -foreground black \
         -padding {2 0}
 
+    $styleCmd configure TNotebook \
+        -border -1
     $styleCmd configure TNotebook.Tab \
-        -padding {6 2 6 2}
+        -padding {6 2 6 2} \
+        -border -1
 
     $styleCmd map TNotebook.Tab -background [list \
         selected $colors(-lighter)]
@@ -105,15 +108,16 @@ namespace eval ttk::theme::black {
 
     $styleCmd configure TreeCtrl \
         -background gray30 -itembackground {gray60 gray50} \
-        -itemfill white -itemaccentfill yellow
+        -itemfill white -itemaccentfill yellow -border -1
 
-    $styleCmd map Treeview \
+    $styleCmd map Treeview\
         -background [list selected $colors(-lighter)] \
         -foreground [list selected $colors(-selectfg)]
         # -background [list selected $colors(-selectbg)] \
 
     $styleCmd configure Treeview -fieldbackground gray25
   }
+  puts [ttk::style element names]
 }
 
 # A few tricks for Tablelist.
