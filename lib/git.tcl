@@ -321,18 +321,21 @@ namespace eval Git {
     proc CommitAdd {w} {
         global activeProject cfgVariables
         # puts $values
+        set selectedItems [$w.body.lBox curselection]
         set cmd exec
         lappend cmd $cfgVariables(gitCommand)
         lappend cmd "add"
-        foreach itemNumber [$w.body.lBox curselection] {
+        foreach itemNumber [lsort -integer -increasing $selectedItems] {
             set fileName [$w.body.lBox get $itemNumber]
             lappend cmd [file join $activeProject $fileName]
+            $w.body.lCommit insert end $fileName
+        }
+        foreach itemNumber [lsort -integer -decreasing $selectedItems] {
             $w.body.lBox delete $itemNumber
         }
         catch $cmd pipe
         puts $cmd
-        $w.body.lCommit insert end $fileName
-
+        $w.body.t delete 1.0 end
     }
     proc Key {k fr} {
         # puts [Editor::Key $k]
