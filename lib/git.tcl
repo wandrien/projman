@@ -531,7 +531,8 @@ namespace eval Git {
         ttk::label $fr.body.lblUnindexed -justify left -padding {3 3} \
             -text "[::msgcat::mc "Unindexed changes"]:"
         
-    		listbox $fr.body.lBox -border 0 -yscrollcommand "$fr.body.yscroll set" -width 10
+    		listbox $fr.body.lBox selectmode multiple -border 0 \
+            -yscrollcommand "$fr.body.yscroll set" -width 10
         ttk::scrollbar $fr.body.yscroll -orient vertical -command  "$fr.body.lBox yview"
 
         # pack [ttk::scrollbar $fr.body.v -command "$fr.body.t yview"] -side right -fill y
