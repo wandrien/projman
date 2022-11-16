@@ -299,11 +299,14 @@ namespace eval Git {
     
     proc ListBoxPress {w} {
         if {[$w.body.lBox curselection] ne ""} {
-            set fileName [$w.body.lBox get [$w.body.lBox curselection]]
+            if {[llength [$w.body.lBox curselection]] == 1} {
+                set fileName [$w.body.lBox get [$w.body.lBox curselection]]
+            } else {
+                set fileName [$w.body.lBox get [$w.body.lBox index active]]
+            }
         } else {
             return
         }
-        # puts $values
         $w.body.t delete 1.0 end
         set i 0
         foreach line [Git::Diff $fileName] {
@@ -317,16 +320,19 @@ namespace eval Git {
     }
     proc CommitAdd {w} {
         global activeProject cfgVariables
-        set fileName [$w.body.lBox get [$w.body.lBox curselection]]
         # puts $values
         set cmd exec
         lappend cmd $cfgVariables(gitCommand)
         lappend cmd "add"
-        lappend cmd [file join $activeProject $fileName]
+        foreach itemNumber [$w.body.lBox curselection] {
+            set fileName [$w.body.lBox get $itemNumber]
+            lappend cmd [file join $activeProject $fileName]
+            $w.body.lBox delete $itemNumber
+        }
         catch $cmd pipe
         puts $cmd
         $w.body.lCommit insert end $fileName
-        $w.body.lBox delete [$w.body.lBox curselection]
+
     }
     proc Key {k fr} {
         # puts [Editor::Key $k]
@@ -531,7 +537,7 @@ namespace eval Git {
         ttk::label $fr.body.lblUnindexed -justify left -padding {3 3} \
             -text "[::msgcat::mc "Unindexed changes"]:"
         
-    		listbox $fr.body.lBox selectmode multiple -border 0 \
+    		listbox $fr.body.lBox -selectmode extended -border 0 \
             -yscrollcommand "$fr.body.yscroll set" -width 10
         ttk::scrollbar $fr.body.yscroll -orient vertical -command  "$fr.body.lBox yview"
 
@@ -549,7 +555,8 @@ namespace eval Git {
         ttk::label $fr.body.lblCommitText -padding {3 3} \
             -text "[::msgcat::mc "Commit description"]:"
             
-      		listbox $fr.body.lCommit -border 0 -yscrollcommand "$fr.body.vlCommit set"
+      		listbox $fr.body.lCommit -selectmode multiple -border 0 \
+      		    -yscrollcommand "$fr.body.vlCommit set"
         ttk::scrollbar $fr.body.vlCommit -orient vertical -command  "$fr.body.lCommit yview"
         ttk::scrollbar $fr.body.vCommit -command "$fr.body.tCommit yview"
         # ttk::scrollbar $fr.body.hCommit -orient horizontal -command "$fr.body.tCommit xview"
@@ -630,7 +637,8 @@ namespace eval Git {
         bind $fr.body.lBox <Return> "Git::CommitAdd $fr"
         bind $fr.body.lBox <Double-Button-1> \
             "catch {Git::CommitAdd $fr; $fr.body.t delete 0.0 end; $fr.body.tCommit delete 0.0 end}"
-        bind $fr.body.lBox <Button-1><ButtonRelease-1> "Git::ListBoxPress $fr"
+        # bind $fr.body.lBox <Button-1><ButtonPress-1> "Git::ListBoxPress $fr"
+        bind $fr.body.lBox <<ListboxSelect>> "Git::ListBoxPress $fr"
         bind $fr.body.lBox <KeyRelease> "Git::Key %K $fr"
 
         bind $fr.body.lLog <Double-Button-1> "Git::Show $fr"
