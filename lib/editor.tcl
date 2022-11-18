@@ -110,7 +110,6 @@ namespace eval Editor {
             puts "$match, $v1, $v2, $v3"
             return [list [lindex [split $v2] 0] [lindex [split $v3] 0]]
         } else {
-            puts "FUCK"
             return 0
         }
     }
@@ -1183,7 +1182,7 @@ namespace eval Editor {
         set regexpSet ""
         set searchAll "-all"
         
-        if { [winfo exists $win] }  { des`troy $win }
+        if { [winfo exists $win] }  { destroy $win }
         toplevel $win
         wm transient $win .
         wm overrideredirect $win 1
