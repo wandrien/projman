@@ -1084,14 +1084,16 @@ if {$argc > 1} {
         puts "Usage: $argv0 <sampleFile>"
 } elseif {$argc == 1} {
         set filename [lindex $argv 0]
-        set file [open $filename]
-        set data [read $file [file size $filename]]
-        close $file
-
-        # memorize location
-        set regexp::data(v:dir) [file dirname $filename]
-        set regexp::data(v:file) [file tail $filename]
-
+        if [file exists $filename] {
+            set file [open $filename]
+            set data [read $file [file size $filename]]
+            close $file
+            # memorize location
+            set regexp::data(v:dir) [file dirname $filename]
+            set regexp::data(v:file) [file tail $filename]
+        } else {
+            set data [lindex $argv 0]
+        }
         regexp::sample:set $data
         unset data
 }
@@ -1363,7 +1365,6 @@ proc make-regexp::make-regexp {words} {
         set regexp
 }
 #==============================================================================================
-
 
 
 
