@@ -72,6 +72,7 @@ namespace eval Git {
         puts $cmd
         puts $pipe
         if [regexp -nocase -- {^error:} $pipe match] {
+            ShowMessage "Command: '$cmd' error" $pipe
             return 
         }
         foreach line [split $pipe "\n"] {
@@ -80,6 +81,8 @@ namespace eval Git {
         # cd $d
         
         .frmStatus.lblGit configure -text "[::msgcat::mc "Branch"]: [Git::Branches current]"
+        FileOper::ReadFolder $activeProject
+        
         if [info exists res] {
             return $res
         }

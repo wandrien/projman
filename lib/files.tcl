@@ -289,6 +289,9 @@ namespace eval FileOper {
         }
         set parent [Tree::InsertItem $tree $parent $directory "directory" [file tail $directory]]
         $tree selection set $parent
+        foreach i [$tree children $parent] {
+            $tree delete $i
+        }
         # if {[ $tree  item $parent -open] eq "false"} {
             # $tree  item $parent -open true
         # } else {
