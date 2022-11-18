@@ -110,6 +110,7 @@ namespace eval Git {
         }
         catch $cmd pipe
         if [regexp -nocase -- {^fatal:} $pipe match] {
+            ShowMessage "Command: '$cmd' error" $pipe
             return 
         }
         foreach line [split $pipe "\n"] {
@@ -133,6 +134,7 @@ namespace eval Git {
         catch $cmd pipe
         puts $cmd
         if [regexp -nocase -- {^fatal:} $pipe match] {
+            ShowMessage "Command: '$cmd' error" $pipe
             return 
         }
         foreach line [split $pipe "\n"] {
@@ -154,6 +156,7 @@ namespace eval Git {
         catch $cmd pipe
         puts $cmd
         if [regexp -nocase -- {^fatal:} $pipe match] {
+            ShowMessage "Command: '$cmd' error" $pipe
             return 
         }
         foreach line [split $pipe "\n"] {
@@ -191,6 +194,7 @@ namespace eval Git {
             catch $cmd pipe
             puts $pipe
             if [regexp -nocase -- {^fatal:} $pipe match] {
+                ShowMessage "Command: '$cmd' error" $pipe
                 return 
             }
             foreach line [split $pipe "\n"] {
