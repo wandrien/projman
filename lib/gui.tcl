@@ -56,8 +56,8 @@ bind . <Control-K> {
 }
 bind . <Control-s> {FileOper::Save}
 bind . <Control-S> {FileOper::Save}
-bind . <Alt-p> ViewFilesTree
-
+bind . <Alt-p> {ViewFilesTree true}
+bind . <Button-3> {catch [PopupMenu %X %Y]}
 
 #ttk::style configure TPanedwindow -background blue
 #ttk::style configure Sash -sashthickness 5
@@ -71,10 +71,17 @@ if [info exists cfgVariables(theme)] {
 
 ttk::frame .frmMenu -border 0 -relief raised
 ttk::frame .frmBody -border 0 -relief raised
-ttk::frame .frmStatus -border 0 -relief raised 
-pack .frmMenu -side top -padx 1 -fill x
+ttk::frame .frmStatus -border 0 -relief raised
+
+if {$cfgVariables(menuShow) eq "true"} {
+    pack .frmMenu -side top -padx 1 -fill x
+}
+
 pack .frmBody -side top -padx 1 -fill both -expand true
-pack .frmStatus -side top -padx 1 -fill x
+
+if {$cfgVariables(statusBarShow) eq "true"} {
+    pack .frmStatus -side top -padx 1 -fill x
+}
 
 # pack .panel -expand true -fill both
 # pack propagate .panel false
@@ -104,12 +111,19 @@ ttk::menubutton .frmMenu.mnuHelp -text [::msgcat::mc "Help"] -menu .frmMenu.mnuH
 GetHelpMenu [menu .frmMenu.mnuHelp.m]
 pack .frmMenu.mnuHelp -side right
 
+# PopUP menu
+menu .popup
+GetFileMenu .popup
+GetEditMenu .popup
+GetViewMenu .popup
 
 set frmTool [ttk::frame .frmBody.frmTool]
 ttk::panedwindow .frmBody.panel -orient horizontal -style TPanedwindow
 pack propagate .frmBody.panel false
 
-pack .frmBody.frmTool -side left -fill y
+if {$cfgVariables(toolBarShow) eq "true"} {
+    pack .frmBody.frmTool -side left -fill y
+}
 pack .frmBody.panel -side left -fill both -expand true
 
 ttk::button $frmTool.btn_tree  -command  ViewFilesTree -image tree_24x24

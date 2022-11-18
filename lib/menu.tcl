@@ -69,16 +69,30 @@ proc GetEditMenu {m} {
 
 proc GetViewMenu {m} {
     global cfgVariables
-    $m add command -label [::msgcat::mc "View panel"] -command ViewFilesTree
+    $m add checkbutton -label [::msgcat::mc "View panel"] -command ViewFilesTree \
+        -variable cfgVariables(filesPanelShow) -onvalue true -offvalue false \
+        -accelerator "Alt+P"
     menu $m.panelSide 
     $m add cascade -label [::msgcat::mc "Panel side"] -menu $m.panelSide 
-    
-    $m.panelSide  add radiobutton -label [::msgcat::mc "Left"] -variable cfgVariables(filesPanelPlace) -value left
-    $m.panelSide  add radiobutton -label [::msgcat::mc "Right"]  -variable cfgVariables(filesPanelPlace) -value right
+    $m.panelSide  add radiobutton -label [::msgcat::mc "Left"] \
+        -variable cfgVariables(filesPanelPlace) -value left
+    $m.panelSide  add radiobutton -label [::msgcat::mc "Right"] \
+        -variable cfgVariables(filesPanelPlace) -value right
+        
+    $m add checkbutton -label [::msgcat::mc "Show the Menu"] -command ViewMenu \
+        -variable cfgVariables(menuShow) -onvalue true -offvalue false
+    $m add checkbutton -label [::msgcat::mc "Toolbar"] -command ViewToolBar \
+        -variable cfgVariables(toolBarShow) -onvalue true -offvalue false 
+        $m add checkbutton -label [::msgcat::mc "Statusbar"] -command ViewStatusBar \
+        -variable cfgVariables(statusBarShow) -onvalue true -offvalue false
 
     $m add separator
-    $m add command -label [::msgcat::mc "View line numbers"] -command ViewLineNumbers
-    
+    # $m add command -label [::msgcat::mc "View line numbers"] \
+        # -command ViewLineNumbers
+    $m add checkbutton -label [::msgcat::mc "View line numbers"] \
+        -variable cfgVariables(lineNumberShow) -onvalue true -offvalue false \
+        -command ViewLineNumbers
+        
     menu $m.editorWrap
     $m add cascade -label [::msgcat::mc "Editors word wrapping"] -menu $m.editorWrap
     $m.editorWrap  add radiobutton -label [::msgcat::mc "None"] -variable cfgVariables(editorWrap) \
@@ -103,4 +117,8 @@ proc GetViewMenu {m} {
 
 proc GetHelpMenu {m} {
     $m add command -label [::msgcat::mc "About ..."] -command Help::About
+}
+
+proc PopupMenu {x y} {
+    tk_popup .popup $x $y
 }

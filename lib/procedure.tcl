@@ -19,11 +19,18 @@ proc Quit {} {
     }
 }
 
-proc ViewFilesTree {} {
+proc ViewFilesTree {{hotkey "false"}} {
     global cfgVariables
-    if {$cfgVariables(filesPanelShow) eq "true"} {
+    if {$hotkey eq "true"} {
+        if {$cfgVariables(filesPanelShow) eq "false"} {
+            set cfgVariables(filesPanelShow) true
+        } else {
+            set cfgVariables(filesPanelShow) false
+        }
+    }
+    if {$cfgVariables(filesPanelShow) eq "false"} {
         .frmBody.panel forget .frmBody.frmTree
-        set cfgVariables(filesPanelShow) false
+        # set cfgVariables(filesPanelShow) true
     } else {
         switch $cfgVariables(filesPanelPlace) {
         "left" {        
@@ -36,22 +43,50 @@ proc ViewFilesTree {} {
                 .frmBody.panel insert 0 .frmBody.frmTree
             }
         }
-        set cfgVariables(filesPanelShow) true
+        # set cfgVariables(filesPanelShow) false
     }
 }
+proc ViewToolBar {} {
+    global cfgVariables
+    if {$cfgVariables(toolBarShow) eq "false"} {
+        pack forget .frmBody.frmTool
+    } else {
+        # pack
+    }
+}
+proc ViewStatusBar {} {
+    global cfgVariables
+    if {$cfgVariables(statusBarShow) eq "false"} {
+        pack forget .frmStatus
+    } else {
+        # pack
+    }
+}
+proc ViewMenu {} {
+    global cfgVariables
+    if {$cfgVariables(menuShow) eq "false"} {
+        pack forget .frmMenu
+    } else {
+        # pack
+    }
+}
+
 
 # Enable/Disabled line numbers in editor
 proc ViewLineNumbers {} {
     global cfgVariables nbEditor
+
     # Changed global settigs
-    if {$cfgVariables(lineNumberShow) eq "true"} {
-        set cfgVariables(lineNumberShow) false
-    } else {
-        set cfgVariables(lineNumberShow) true
-    }
+    # if {$cfgVariables(lineNumberShow) eq "true"} {
+        # set cfgVariables(lineNumberShow) false
+    # } else {
+        # set cfgVariables(lineNumberShow) true
+    # }
     # apply changes for opened tabs
     foreach node [$nbEditor tabs] {
-        $node.frmText.t configure -linemap $cfgVariables(lineNumberShow)
+        if [winfo exists $node.frmText.t] {
+            $node.frmText.t configure -linemap $cfgVariables(lineNumberShow)
+        }
     }
 }
 
