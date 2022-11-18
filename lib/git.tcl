@@ -377,8 +377,13 @@ namespace eval Git {
         foreach { line } [Git::Reflog] {
             # puts $line
             $w.body.lLog insert end $line
-        }         
-        # End Git commit history
+        }
+        focus -force $w.body.lBox
+        catch {
+            $w.body.lBox activate 0
+            $w.body.lBox selection set 0 0
+            Git::ListBoxPress $w
+        }
     }
     
     proc AddToplevel {lbl img {win_name .auth}} {
@@ -531,7 +536,10 @@ namespace eval Git {
         ttk::frame $fr.header
         set lblText "$activeProject | [::msgcat::mc "Branch"]: [Git::Branches current]"
         ttk::label $fr.header.lblGit -text $lblText -justify right
-        pack $fr.header.lblGit -side right -expand true -fill x
+        ttk::button $fr.header.btnRefresh -image refresh_11x11 \
+            -command "Git::DialogUpdate $fr"
+        pack $fr.header.lblGit -side left -expand true -fill x
+        pack $fr.header.btnRefresh -side right
         pack $fr.header -side top -fill x  -padx 3
 
         ttk::frame $fr.body

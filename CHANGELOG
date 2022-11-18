@@ -123,3 +123,7 @@
     - Fixed Git commit procedure
     - Added variable and procedure helper
 
+18/11/2022
+    - Add Refresh button into Git Dialog
+    - Fixed FindFunction
+
