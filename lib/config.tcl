@@ -36,6 +36,7 @@ locale=$locale
 theme=dark
 toolBarShow=true
 menuShow=true
+statusbarShow=true
 filesPanelShow=true
 filesPanelPlace=left
 geometry=1024x768
