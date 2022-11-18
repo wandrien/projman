@@ -169,6 +169,7 @@ namespace eval Git {
         append cmd " $cfgVariables(gitCommand)"
         append cmd " commit"
         append cmd " -m"
+        regsub -all {\"|\'} $description {'} description
         append cmd " \"$description\""
         append cmd " --"
         foreach item [$listBox get 0 [$listBox size]] {
@@ -183,6 +184,7 @@ namespace eval Git {
             }
         } else {
             puts $cmd
+            puts $description
             catch $cmd pipe
             puts $pipe
             if [regexp -nocase -- {^fatal:} $pipe match] {
@@ -258,7 +260,28 @@ namespace eval Git {
         return $res
     }
     
-    #  git show --pretty=format:"%h;%ad;%s"
+    proc Reset {w} {
+        global activeProject cfgVariables
+        # puts $values
+        set selectedItems [$w.body.lCommit curselection]
+        if {$selectedItems eq ""} {return}
+        set cmd exec
+        lappend cmd $cfgVariables(gitCommand)
+        lappend cmd "reset"
+        foreach itemNumber [lsort -integer -increasing $selectedItems] {
+            set fileName [$w.body.lCommit get $itemNumber]
+            $w.body.lBox insert end $fileName
+            lappend cmd [file join $activeProject $fileName]
+        }
+        foreach itemNumber [lsort -integer -decreasing $selectedItems] {
+            $w.body.lCommit delete $itemNumber
+        }
+        catch $cmd pipe
+        puts $cmd
+        $w.body.t delete 1.0 end
+    }
+
+#  git show --pretty=format:"%h;%ad;%s"
     proc Show {w} {
         global cfgVariables activeProject
         set commitString [$w.body.lLog get [$w.body.lLog curselection]]
@@ -562,7 +585,8 @@ namespace eval Git {
         
         ttk::button $fr.body.bAdd -image forward_20x20 -compound center \
             -command "Git::CommitAdd $fr"
-        ttk::button $fr.body.bRemove -compound center -image backward_20x20
+        ttk::button $fr.body.bRemove -compound center -image backward_20x20 \
+            -command "Git::Reset $fr"
         ttk::label $fr.body.lblCommitText -padding {3 3} \
             -text "[::msgcat::mc "Commit description"]:"
             
