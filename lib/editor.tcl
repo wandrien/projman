@@ -921,31 +921,23 @@ namespace eval Editor {
     }
     
     proc FindFunction {txt findString} {
-        global nbEditor
-        puts $findString
         set pos "0.0"
-        # set txt [$nbEditor select].frmText.t
         $txt see $pos
         set line [lindex [split $pos "."] 0]
         set x [lindex [split $pos "."] 1]
-        # set pos [$txt search -nocase $findString $line.$x end]
-        set pos [$txt search -nocase -regexp $findString $line.$x end]
+        set pattern "$findString\\W"
+        set pos [$txt search -nocase -regexp $pattern $line.$x end]
         $txt mark set insert $pos
         $txt see $pos
-        puts $pos
-        # highlight the found word
         set line [lindex [split $pos "."] 0]
-        # set x [lindex [split $pos "."] 1]
-        # set x [expr {$x + [string length $findString]}]
         $txt tag remove sel 1.0 end
         $txt tag add sel $pos $line.end
-        # #$text tag configure sel -background $editor(selectbg) -foreground $editor(fg)
         $txt tag raise sel
         focus -force $txt.t
-        # Position
         return 1
     }
-        # "Alexander Dederer (aka Korwin)
+
+    # "Alexander Dederer (aka Korwin)
     ## Search close bracket in editor widget
     proc _searchCloseBracket { widget o_bracket c_bracket start_pos end_pos } {
         # puts "_searchCloseBracket: $widget $o_bracket $c_bracket $start_pos $end_pos"
