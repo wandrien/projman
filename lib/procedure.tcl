@@ -526,3 +526,13 @@ proc FindInFilesDialog {txt {args ""}} {
     }
     # $win.lBox focus I001
 }
+
+proc ShowMessage {title msg} {
+        set answer [
+        tk_messageBox -message $title \
+        -icon info -type ok -detail $msg
+    ]
+    switch $answer {
+        ok {return}
+    }
+}
