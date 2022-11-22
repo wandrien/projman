@@ -167,11 +167,26 @@ namespace eval FileOper {
                     Close
                 }
             }
+            set nextProj [$tree next $treeItem]
+            # puts $nextProj
+            set prevProj [$tree prev $treeItem]
+            # puts $prevProj
+            if {$nextProj ne ""} {
+                set activeProject [$tree item $nextProj -values]
+                puts $activeProject
+            } elseif {$prevProj ne ""} {
+                set activeProject [$tree item $prevProj -values]
+                puts $activeProject
+            } else {
+                unset activeProject
+                .frmStatus.lblGitLogo configure -image pixel
+                .frmStatus.lblGit configure -text ""
+            }
             $tree delete $treeItem
+            unset nextProj
+            unset prevProj
         }
-        set activeProject ""
-        .frmStatus.lblGitLogo configure -image pixel
-        .frmStatus.lblGit configure -text ""
+
     }
 
     proc CloseAll {} {

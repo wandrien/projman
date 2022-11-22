@@ -135,7 +135,7 @@ grid .frmBody.panel -row 0 -column 1 -sticky nesw
 grid columnconfigure .frmBody .frmBody.panel -weight 1
 grid rowconfigure .frmBody .frmBody.panel -weight 1
 
-ttk::button $frmTool.btn_tree  -command  "ViewFilesTree true" -image tree_24x24
+ttk::button $frmTool.btn_tree  -command ToolBtnTreePress -image tree_24x24
 ttk::button $frmTool.btn_search  -command FileOper::FindInFiles -image search_24x24
 ttk::button $frmTool.btn_git -command Git::Dialog -image git_24x24
 

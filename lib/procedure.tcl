@@ -112,6 +112,68 @@ proc ViewHelper {helper} {
         set cfgVariables($helper) true
     }
 }
+proc WelcomeDialog {} {
+    set win .welcome
+    set x [winfo rootx .frmWork]
+    set y [winfo rooty .frmWork]
+
+    if { [winfo exists $win] } {
+        destroy $win
+        return
+    }
+    toplevel $win
+    wm transient $win .
+    wm overrideredirect $win 1
+    
+    ttk::button $win.btnOpenFolder -text [::msgcat::mc "Open folder"] -command {
+        destroy .welcome
+        set folderPath [FileOper::OpenFolderDialog]
+        if {$folderPath != ""} {
+            set activeProject $folderPath
+            FileOper::ReadFolder $folderPath
+            ReadFilesFromDirectory $folderPath $folderPath
+        }
+    }
+    ttk::button $win.btnOpenFile -text [::msgcat::mc "Open file"] -command {
+        destroy .welcome
+        set filePath [FileOper::OpenDialog]
+        if {$filePath != ""} {
+            FileOper::Edit $filePath
+        }
+    }
+    ttk::button $win.btnNewFile -compound center -text [::msgcat::mc "New file"] \
+        -command {
+            destroy .welcome
+            Editor::New
+        }
+    
+    pack $win.btnOpenFolder -expand true -fill x -side top -padx 3 -pady 3
+    pack $win.btnOpenFile -expand true -fill x -side top -padx 3 -pady 3
+    pack $win.btnNewFile -expand true -fill x -side top -padx 3 -pady 3
+
+    bind $win <Escape> "destroy $win"
+    # Определям расстояние до края экрана (основного окна) и если
+    # оно меньше размера окна со списком то сдвигаем его вверх
+    set winGeom [winfo reqheight $win]
+    set topHeight [winfo height .]
+    # puts "$x, $y, $winGeom, $topHeight"
+    if [expr [expr $topHeight - $y] < $winGeom] {
+        set y [expr $topHeight - $winGeom]
+    }
+    wm geom $win +$x+$y
+    focus $win.btnOpenFolder
+}    
+
+proc ToolBtnTreePress {} {
+    global cfgVariables activeProject
+    if [info exists activeProject] {
+        if {$activeProject ne ""} {
+            ViewFilesTree true
+        }
+    } else {
+        WelcomeDialog
+    }
+}
 
 proc Del {} {
     return
