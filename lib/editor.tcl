@@ -672,7 +672,7 @@ namespace eval Editor {
     }
 
     proc PressKey {k txt} {
-        # puts [Editor::Key $k]
+        # puts [Editor::Key $k ""]
         switch $k {
             apostrophe {
                QuotSelection $txt {'}
@@ -719,7 +719,13 @@ namespace eval Editor {
         if {$key >= 79 && $key <= 91} {return "true"}
         if {$key == 63 || $key == 107 || $key == 108 || $key == 112} {return "true"}
     }
-    
+    proc TextCopy {txt} {
+       # $txt tag remove sel 1.0 end
+       $txt tag add sel {insert linestart} {insert lineend + 1char}
+       tk_textCopy $txt
+       $txt tag remove sel {insert linestart} {insert lineend + 1char}
+       return
+    }
     proc BindKeys {w txt fileType} {
         global cfgVariables
         #  variable txt
@@ -743,11 +749,15 @@ namespace eval Editor {
         bind $txt <Control-u> "Editor::SearchBrackets %W"
         bind $txt <Control-J> "catch {Editor::GoToFunction $txt}"
         bind $txt <Control-j> "catch {Editor::GoToFunction $txt}; break"
-        bind $txt <Alt-w> "$txt delete {insert wordstart} {insert wordend}"
-        bind $txt <Alt-r> "$txt delete {insert linestart} {insert lineend + 1char}"
+        bind $txt <Alt-w>           "$txt delete {insert wordstart} {insert wordend}"
+        bind $txt <Alt-odiaeresis>  "$txt delete {insert wordstart} {insert wordend}"
+        bind $txt <Alt-r>           "$txt delete {insert linestart} {insert lineend + 1char}"
+        bind $txt <Alt-ecircumflex> "$txt delete {insert linestart} {insert lineend + 1char}"
         bind $txt <Alt-b> "$txt delete {insert linestart} insert"
         bind $txt <Alt-e> "$txt delete insert {insert lineend}"
-        bind $txt <Alt-s> "Editor::SplitEditorH $w $fileType"
+        bind $txt <Alt-s>           "Editor::SplitEditorH $w $fileType"
+        bind $txt <Alt-ucircumflex> "Editor::SplitEditorH $w $fileType"
+        bind $txt <Alt-y> "Editor::TextCopy $txt"
         bind $txt <Control-g> "Editor::GoToLineNumberDialog $txt"
         bind $txt <Control-agrave> "Editor::FindDialog $w"
         bind $txt <Control-f> "Editor::FindDialog $txt"
