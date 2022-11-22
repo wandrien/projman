@@ -79,7 +79,7 @@ proc GetViewMenu {m} {
     $m.panelSide  add radiobutton -label [::msgcat::mc "Right"] \
         -variable cfgVariables(filesPanelPlace) -value right
         
-    $m add checkbutton -label [::msgcat::mc "Show the Menu"] -command ViewMenu \
+    $m add checkbutton -label [::msgcat::mc "Show the Menu"] -command ViewMenuBar \
         -variable cfgVariables(menuShow) -onvalue true -offvalue false
     $m add checkbutton -label [::msgcat::mc "Toolbar"] -command ViewToolBar \
         -variable cfgVariables(toolBarShow) -onvalue true -offvalue false 

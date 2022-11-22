@@ -44,43 +44,58 @@ proc ViewFilesTree {{hotkey "false"}} {
         }
     }
 }
-proc ViewToolBar {} {
+
+proc ViewMenuBar {{hotkey "false"}} {
     global cfgVariables
-    if {$cfgVariables(toolBarShow) eq "false"} {
-        pack forget .frmBody.frmTool
-    } else {
-        # pack
+    if {$hotkey eq "true"} {
+        if {$cfgVariables(menuShow) eq "false"} {
+            set cfgVariables(menuShow) true
+        } else {
+            set cfgVariables(menuShow) false
+        }
     }
-}
-proc ViewStatusBar {} {
-    global cfgVariables
-    if {$cfgVariables(statusBarShow) eq "false"} {
-        pack forget .frmStatus
-    } else {
-        # pack
-    }
-}
-proc ViewMenu {} {
-    global cfgVariables
     if {$cfgVariables(menuShow) eq "false"} {
-        pack forget .frmMenu
+        grid remove .frmMenu
     } else {
-        # pack
+        grid .frmMenu -row 0 -column 0 -sticky new
     }
 }
 
+proc ViewStatusBar {{hotkey "false"}} {
+    global cfgVariables
+    if {$hotkey eq "true"} {
+        if {$cfgVariables(statusBarShow) eq "false"} {
+            set cfgVariables(statusBarShow) true
+        } else {
+            set cfgVariables(statusBarShow) false
+        }
+    }
+    if {$cfgVariables(statusBarShow) eq "false"} {
+        grid remove .frmStatus
+    } else {
+        grid .frmStatus -row 2 -column 0 -sticky sew
+    }
+}
+
+proc ViewToolBar {{hotkey "false"}} {
+    global cfgVariables
+    if {$hotkey eq "true"} {
+        if {$cfgVariables(toolBarShow) eq "false"} {
+            set cfgVariables(toolBarShow) true
+        } else {
+            set cfgVariables(toolBarShow) false
+        }
+    }
+    if {$cfgVariables(toolBarShow) eq "false"} {
+        grid remove .frmBody.frmTool
+    } else {
+        grid .frmBody.frmTool -row 0 -column 0 -sticky nsw
+    }
+}
 
 # Enable/Disabled line numbers in editor
 proc ViewLineNumbers {} {
     global cfgVariables nbEditor
-
-    # Changed global settigs
-    # if {$cfgVariables(lineNumberShow) eq "true"} {
-        # set cfgVariables(lineNumberShow) false
-    # } else {
-        # set cfgVariables(lineNumberShow) true
-    # }
-    # apply changes for opened tabs
     foreach node [$nbEditor tabs] {
         if [winfo exists $node.frmText.t] {
             $node.frmText.t configure -linemap $cfgVariables(lineNumberShow)
@@ -97,6 +112,7 @@ proc ViewHelper {helper} {
         set cfgVariables($helper) true
     }
 }
+
 proc Del {} {
     return
 }

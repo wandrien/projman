@@ -74,14 +74,19 @@ ttk::frame .frmBody -border 0 -relief raised
 ttk::frame .frmStatus -border 0 -relief raised
 
 if {$cfgVariables(menuShow) eq "true"} {
-    pack .frmMenu -side top -padx 1 -fill x
+    # pack  -side top -padx 1 -fill x
+    grid .frmMenu -row 0 -column 0 -sticky new
 }
 
-pack .frmBody -side top -padx 1 -fill both -expand true
+# pack .frmBody -side top -padx 1 -fill both -expand true
+grid .frmBody -row 1 -column 0 -sticky nsew
 
 if {$cfgVariables(statusBarShow) eq "true"} {
-    pack .frmStatus -side top -padx 1 -fill x
+    # pack .frmStatus -side top -padx 1 -fill x
+    grid .frmStatus -row 2 -column 0 -sticky sew
 }
+grid columnconfigure . .frmBody -weight 1
+grid rowconfigure . .frmBody	 -weight 1
 
 # pack .panel -expand true -fill both
 # pack propagate .panel false
@@ -119,12 +124,16 @@ GetViewMenu .popup
 
 set frmTool [ttk::frame .frmBody.frmTool]
 ttk::panedwindow .frmBody.panel -orient horizontal -style TPanedwindow
-pack propagate .frmBody.panel false
+# pack propagate .frmBody.panel false
 
 if {$cfgVariables(toolBarShow) eq "true"} {
-    pack .frmBody.frmTool -side left -fill y
+    # pack .frmBody.frmTool -side left -fill y
+    grid .frmBody.frmTool -row 0 -column 0 -sticky nsw
 }
-pack .frmBody.panel -side left -fill both -expand true
+# pack .frmBody.panel -side left -fill both -expand true
+grid .frmBody.panel -row 0 -column 1 -sticky nesw
+grid columnconfigure .frmBody .frmBody.panel -weight 1
+grid rowconfigure .frmBody .frmBody.panel -weight 1
 
 ttk::button $frmTool.btn_tree  -command  "ViewFilesTree true" -image tree_24x24
 ttk::button $frmTool.btn_search  -command FileOper::FindInFiles -image search_24x24
