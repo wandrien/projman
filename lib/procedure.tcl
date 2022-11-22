@@ -30,7 +30,6 @@ proc ViewFilesTree {{hotkey "false"}} {
     }
     if {$cfgVariables(filesPanelShow) eq "false"} {
         .frmBody.panel forget .frmBody.frmTree
-        # set cfgVariables(filesPanelShow) true
     } else {
         switch $cfgVariables(filesPanelPlace) {
         "left" {        
@@ -43,7 +42,6 @@ proc ViewFilesTree {{hotkey "false"}} {
                 .frmBody.panel insert 0 .frmBody.frmTree
             }
         }
-        # set cfgVariables(filesPanelShow) false
     }
 }
 proc ViewToolBar {} {

@@ -126,7 +126,7 @@ if {$cfgVariables(toolBarShow) eq "true"} {
 }
 pack .frmBody.panel -side left -fill both -expand true
 
-ttk::button $frmTool.btn_tree  -command  ViewFilesTree -image tree_24x24
+ttk::button $frmTool.btn_tree  -command  "ViewFilesTree true" -image tree_24x24
 ttk::button $frmTool.btn_search  -command FileOper::FindInFiles -image search_24x24
 ttk::button $frmTool.btn_git -command Git::Dialog -image git_24x24
 
