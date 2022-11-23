@@ -31,7 +31,8 @@ proc GetFileMenu {m} {
         }
     }    
     $m add command -label [::msgcat::mc "Close folder"] -command {FileOper::CloseFolder}
-    
+    $m add command -label [::msgcat::mc "Close all"] -command {FileOper::CloseAll}
+
     #$m add command -label [::msgcat::mc "Open"] -command {FileDialog $tree open}\
     #-font $fontNormal -accelerator "Ctrl+O"        -state disable
     $m add separator
