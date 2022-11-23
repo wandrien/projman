@@ -367,6 +367,22 @@ namespace eval Git {
         puts $cmd
         $w.body.t delete 1.0 end
     }
+    
+    proc Clone {repo dir} {
+        global activeProject cfgVariables
+        # puts $values
+        set cmd exec
+        lappend cmd $cfgVariables(gitCommand)
+        lappend cmd "clone"
+        lappend cmd $repo
+        lappend cmd $dir
+        puts $cmd
+
+        catch $cmd pipe
+        puts $pipe
+        return
+    }
+    
     proc Key {k fr} {
         # puts [Editor::Key $k]
         switch $k {
@@ -552,6 +568,63 @@ namespace eval Git {
         wm geom $win +$x+$y
     }
     
+    proc CloneDialog {} {
+        set win .clone
+        set x [winfo rootx .frmWork]
+        set y [winfo rooty .frmWork]
+    
+        if { [winfo exists $win] } {
+            destroy $win
+            return
+        }
+        toplevel $win
+
+        wm transient $win .
+        wm overrideredirect $win 1
+        
+        ttk::entry $win.entUrl
+        ttk::entry $win.entFolder
+        ttk::button $win.btnFolder -image folder -command {
+            set folderPath [tk_chooseDirectory  -initialdir $env(HOME) -parent .]
+            .clone.entFolder insert end $folderPath
+        }
+
+        ttk::button $win.btnClone -compound left -image done_20x20 \
+            -text [::msgcat::mc "Clone repository"] \
+            -command {
+                set folderPath [.clone.entFolder get]
+                set repo [.clone.entUrl get]
+                if {$repo eq ""} {return}
+                if {$folderPath eq ""} {
+                    set folderPath [tk_chooseDirectory  -initialdir $env(HOME) -parent .]
+                    if {$folderPath eq ""} {return}
+                }
+                set repoDir [file join $folderPath [string trimright [file rootname [file tail $repo]] "."]]
+                Git::Clone $repo $repoDir
+                FileOper::ReadFolder $repoDir
+                ReadFilesFromDirectory $repoDir $repoDir
+                destroy .clone
+            }
+        grid $win.entUrl -row 0 -column 0 -columnspan 2 -sticky new
+        grid $win.entFolder -row 1 -column 0 -sticky new
+        grid $win.btnFolder -row 1 -column 1 -sticky e
+        grid $win.btnClone -row 2 -column 0 -columnspan 2 -sticky new
+    
+        bind $win <Escape> "destroy $win"
+        
+        # Определям расстояние до края экрана (основного окна) и если
+        # оно меньше размера окна со списком то сдвигаем его вверх
+        set winGeom [winfo reqheight $win]
+        set topHeight [winfo height .]
+        # puts "$x, $y, $winGeom, $topHeight"
+        if [expr [expr $topHeight - $y] < $winGeom] {
+            set y [expr $topHeight - $winGeom]
+        }
+        wm geom $win +$x+$y
+        focus $win.entUrl
+    }    
+    
+
     proc Dialog {} {
         global cfgVariables activeProject nbEditor
         variable fr
@@ -564,6 +637,7 @@ namespace eval Git {
             return
         }
         if {[info exists activeProject] == 0} {
+            Git::CloneDialog
             return
         }
         set fr [NB::InsertItem $nbEditor git_browse "git"]
