@@ -556,7 +556,11 @@ namespace eval Git {
         global cfgVariables activeProject nbEditor
         variable fr
         if [winfo exists $nbEditor.git_browse] {
-            $nbEditor select $nbEditor.git_browse
+            if {[$nbEditor select] eq "$nbEditor.git_browse"} {
+                destroy $nbEditor.git_browse
+            } else {
+                $nbEditor select $nbEditor.git_browse
+            }
             return
         }
         if {[info exists activeProject] == 0} {
