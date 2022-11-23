@@ -38,8 +38,13 @@ namespace eval NB {
     }
 
     proc PressTab {w x y} {
+        global tree
         if {[$w identify tab $x $y] ne ""} {
             $w select [$w identify tab $x $y]
+            set nbItem [string trimleft [$w select] "$w."]
+            # puts  $nbItem
+            append treeItemName "file" "::" $nbItem
+            Tree::SelectItem $treeItemName
         } else {
             return
         }
@@ -54,6 +59,7 @@ namespace eval NB {
     }
 
     proc NextTab {w step} {
+        global tree
         set i [expr [$w index end] - 1]
         set nbItemIndex [$w index [$w select]]
         if {$nbItemIndex eq 0 && $step eq "-1"} {
@@ -63,7 +69,14 @@ namespace eval NB {
         } else {
             $w select [expr $nbItemIndex + $step]
         }
+        set nbItem [string trimleft [$w select] "$w."]
+        # puts  $nbItem
+        append treeItemName "file" "::" $nbItem
+        Tree::SelectItem $treeItemName
+        
         set txt [$w select].frmText.t
-        focus -force $txt.t
+        if [winfo exists $txt] {
+            focus -force $txt.t
+        }
     }
 }

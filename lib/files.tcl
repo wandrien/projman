@@ -398,6 +398,10 @@ namespace eval FileOper {
         regsub -all {\.|/|\\|\s} $fileFullPath "_" itemName
         set itemName "$nbEditor.$itemName"
         set treeItemName [Tree::InsertItem $tree {} $fileFullPath "file" $fileName]
+        
+        # переместим указатель на нужный файл в дереве
+        Tree::SelectItem $treeItemName
+        
         if {[winfo exists $itemName] == 0} {
             NB::InsertItem $nbEditor $fileFullPath "file"
             Editor::Editor $fileFullPath $nbEditor $itemName

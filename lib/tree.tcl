@@ -136,4 +136,12 @@ namespace eval Tree {
             return [$tree item $item -values]
         }
     }
+    
+    proc SelectItem {treeItemName} {
+        global tree
+        if [$tree exists $treeItemName] {
+            $tree see $treeItemName
+            $tree selection set $treeItemName
+        }
+    }
 }
