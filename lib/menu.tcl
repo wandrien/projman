@@ -22,6 +22,10 @@ proc GetFileMenu {m} {
         -accelerator "Ctrl+S"
     $m add command -label [::msgcat::mc "Close file"] -command {FileOper::Close}\
         -accelerator "Ctrl+w"
+    $m add command -label [::msgcat::mc "Close all"] -command {FileOper::CloseAll}
+
+    $m add separator
+
     $m add command -label [::msgcat::mc "Open folder"] -accelerator "Ctrl+K" -command {
         set folderPath [FileOper::OpenFolderDialog]
         if {$folderPath != ""} {
@@ -31,7 +35,6 @@ proc GetFileMenu {m} {
         }
     }    
     $m add command -label [::msgcat::mc "Close folder"] -command {FileOper::CloseFolder}
-    $m add command -label [::msgcat::mc "Close all"] -command {FileOper::CloseAll}
 
     #$m add command -label [::msgcat::mc "Open"] -command {FileDialog $tree open}\
     #-font $fontNormal -accelerator "Ctrl+O"        -state disable
