@@ -75,9 +75,9 @@ proc GetViewMenu {m} {
     menu $m.panelSide 
     $m add cascade -label [::msgcat::mc "Panel side"] -menu $m.panelSide 
     $m.panelSide  add radiobutton -label [::msgcat::mc "Left"] \
-        -variable cfgVariables(filesPanelPlace) -value left
+        -variable cfgVariables(filesPanelPlace) -value left -command ViewFilesTree
     $m.panelSide  add radiobutton -label [::msgcat::mc "Right"] \
-        -variable cfgVariables(filesPanelPlace) -value right
+        -variable cfgVariables(filesPanelPlace) -value right -command ViewFilesTree
         
     $m add checkbutton -label [::msgcat::mc "Show the Menu"] -command ViewMenuBar \
         -variable cfgVariables(menuShow) -onvalue true -offvalue false

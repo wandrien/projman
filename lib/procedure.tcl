@@ -32,10 +32,13 @@ proc ViewFilesTree {{hotkey "false"}} {
         .frmBody.panel forget .frmBody.frmTree
     } else {
         switch $cfgVariables(filesPanelPlace) {
-        "left" {        
+            "left" {        
                 .frmBody.panel insert 0 .frmBody.frmTree
             }
             "right" {
+                if {[lsearch -exact [.frmBody.panel panes] .frmBody.frmTree] != -1} {
+                    .frmBody.panel forget .frmBody.frmTree
+                }
                 .frmBody.panel add .frmBody.frmTree
             }
             default {
