@@ -61,6 +61,9 @@ namespace eval NB {
     proc NextTab {w step} {
         global tree
         set i [expr [$w index end] - 1]
+        if {[$w select] eq ""} {
+            return
+        }
         set nbItemIndex [$w index [$w select]]
         if {$nbItemIndex eq 0 && $step eq "-1"} {
             $w select $i

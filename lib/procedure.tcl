@@ -511,7 +511,7 @@ proc FindInFilesDialog {txt {args ""}} {
     }
     set win .find
         
-    if { [winfo exists $win] }  { destroy $win }
+    if { [winfo exists $win] }  { destroy $win; return false}
     toplevel $win
     wm transient $win .
     wm overrideredirect $win 1
@@ -639,6 +639,7 @@ proc FindInFilesDialog {txt {args ""}} {
         focus -force $win.entryFind
     }
     # $win.lBox focus I001
+    return true
 }
 
 proc ShowMessage {title msg} {

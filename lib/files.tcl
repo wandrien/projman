@@ -233,10 +233,13 @@ namespace eval FileOper {
                 $tree delete $treeItem
             }
         }
-        unset modified($nbItem)
+        if [info exists modified($nbItem)] {
+            unset modified($nbItem)
+        }
         .frmStatus.lblPosition configure -text ""
         .frmStatus.lblEncoding configure -text ""
         .frmStatus.lblSize configure -text ""
+        NB::NextTab $nbEditor 0
     }
     
     proc Save {} {
@@ -439,9 +442,10 @@ namespace eval FileOper {
                 set res [SearchStringInFolder $str]
             }
         }
-        FindInFilesDialog $txt $res
-        .find.entryFind delete 0 end
-        .find.entryFind insert end $str
+        if [FindInFilesDialog $txt $res] {
+            .find.entryFind delete 0 end
+            .find.entryFind insert end $str
+        }
     }
 
     proc ReplaceInFiles {} {
