@@ -94,7 +94,10 @@ namespace eval Git {
         set d [pwd]
         if {$activeProject ne ""} {
             cd $activeProject
+        } else {
+            return ""
         }
+        puts $activeProject
         lappend cmd $cfgVariables(gitCommand)
         lappend cmd "branch"
         # lappend cmd "-s"

@@ -135,16 +135,16 @@ namespace eval FileOper {
             set dir $env(HOME)
         }
         set fullPath [tk_chooseDirectory  -initialdir $dir -parent .]
-        set file [string range $fullPath [expr [string last "/" $fullPath]+1] end]
-        regsub -all "." $file "_" node
-        set dir [file dirname $fullPath]
-        #     EditFile .frmBody.frmCat.noteBook.ffiles.frmTreeFiles.treeFiles $node $fullPath
-        # puts $fullPath
-        if ![info exists activeProject] {
-            set activeProject $fullPath
-        }
-        .frmStatus.lblGitLogo configure -image git_logo_20x20
-        .frmStatus.lblGit configure -text "[::msgcat::mc "Branch"]: [Git::Branches current]"
+        # set file [string range $fullPath [expr [string last "/" $fullPath]+1] end]
+        # regsub -all "." $file "_" node
+        # set dir [file dirname $fullPath]
+        # #     EditFile .frmBody.frmCat.noteBook.ffiles.frmTreeFiles.treeFiles $node $fullPath
+        # # puts $fullPath
+        # if ![info exists activeProject] {
+            # set activeProject $fullPath
+        # }
+        # .frmStatus.lblGitLogo configure -image git_logo_20x20
+        # .frmStatus.lblGit configure -text "[::msgcat::mc "Branch"]: [Git::Branches current]"
         return $fullPath
     }
 
@@ -172,10 +172,10 @@ namespace eval FileOper {
             set prevProj [$tree prev $treeItem]
             # puts $prevProj
             if {$nextProj ne ""} {
-                set activeProject [$tree item $nextProj -values]
+                SetActiveProject [$tree item $nextProj -values]
                 puts $activeProject
             } elseif {$prevProj ne ""} {
-                set activeProject [$tree item $prevProj -values]
+                SetActiveProject [$tree item $prevProj -values]
                 puts $activeProject
             } else {
                 unset activeProject

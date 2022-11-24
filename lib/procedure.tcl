@@ -651,3 +651,20 @@ proc ShowMessage {title msg} {
         ok {return}
     }
 }
+
+proc SetActiveProject {path} {
+    global activeProject projman
+    set activeProject $path
+    set titleFolder [file tail $path]
+    wm title . "ProjMan \($projman(Version)-$projman(Release)\) - $titleFolder"
+    # set file [string range $fullPath [expr [string last "/" $fullPath]+1] end]
+    # regsub -all "." $file "_" node
+    # set dir [file dirname $fullPath]
+    #     EditFile .frmBody.frmCat.noteBook.ffiles.frmTreeFiles.treeFiles $node $fullPath
+    # puts $fullPath
+    # if ![info exists activeProject] {
+        # set activeProject $fullPath
+    # }
+    .frmStatus.lblGitLogo configure -image git_logo_20x20
+    .frmStatus.lblGit configure -text "[::msgcat::mc "Branch"]: [Git::Branches current]"
+}
