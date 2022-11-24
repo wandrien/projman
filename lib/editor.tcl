@@ -930,11 +930,12 @@ namespace eval Editor {
     }
     
     proc FindFunction {txt findString} {
+        puts "txt: $txt, $findString"
         set pos "0.0"
         $txt see $pos
         set line [lindex [split $pos "."] 0]
         set x [lindex [split $pos "."] 1]
-        set pattern "$findString\\W"
+        set pattern "$findString\(\\W\|\$\)"
         set pos [$txt search -nocase -regexp $pattern $line.$x end]
         $txt mark set insert $pos
         $txt see $pos
