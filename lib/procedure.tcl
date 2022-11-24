@@ -553,16 +553,16 @@ proc FindInFilesDialog {txt {args ""}} {
     bind $win.entryFind <Return> $cmd
     
     grid $win.entryFind -row 0 -column 0 -sticky nsew
-    grid $win.entryReplace -row 1 -column 0 -sticky nsew
-    grid $win.bForward -row 0 -column 1 -sticky e
-    grid $win.bDoneAll -row 1 -column 1 -sticky e
+    grid $win.entryReplace -row 1 -column 0 -sticky nsew 
+    grid $win.bForward -row 0 -column 2 -sticky e -columnspan 2
+    grid $win.bDoneAll -row 1 -column 2 -sticky e -columnspan 2
     # grid $win.chkRegexp -row 2 -column 0 -sticky w
     # grid $win.chkAll -row 2 -column 1  -sticky w
-    grid $win.lblCounter -row 2 -column 0 -columnspan 2 -sticky we
+    grid $win.lblCounter -row 2 -column 0 -columnspan 4 -sticky we
         
-    grid $win.lBox -row 3 -column 0 -columnspan 2 -sticky nsew
-    grid $win.v -row 3 -column 2 -sticky nsew
-    grid $win.h -row 4 -column 0 -sticky nsew
+    grid $win.lBox -row 3 -column 0 -columnspan 3 -sticky nsew
+    grid $win.v -row 3 -column 3 -sticky nsew
+    grid $win.h -row 4 -column 0 -sticky nsew -columnspan 4
     grid columnconfigure $win 0 -weight 1
     grid rowconfigure $win 0 -weight 1
 
