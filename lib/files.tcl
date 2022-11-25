@@ -147,7 +147,7 @@ namespace eval FileOper {
         # .frmStatus.lblGit configure -text "[::msgcat::mc "Branch"]: [Git::Branches current]"
         return $fullPath
     }
-
+    
     proc CloseFolder {} {
         global tree nbEditor activeProject
 
@@ -157,14 +157,18 @@ namespace eval FileOper {
             set treeItem $parent
             set parent [$tree parent $treeItem]
         }
+        set upper [Tree::GetUpperItem $tree $treeItem]
         if {$parent eq "" && [string match "directory::*" $treeItem] == 1} {
             # puts "tree root item: $treeItem"
+            set proj [string trimleft $upper "directory::"]
             foreach nbItem [$nbEditor tabs] {
                 set item [string trimleft [file extension $nbItem] "."]
-                # puts $item
-                if [$tree exists "file::$item"] {
-                    $nbEditor select $nbItem
-                    Close
+                # puts "$upper $item"
+                if [string match "$proj*" $item] {
+                    if [$tree exists "file::$item"] {
+                        $nbEditor select $nbItem
+                        Close
+                    }
                 }
             }
             set nextProj [$tree next $treeItem]
@@ -173,10 +177,10 @@ namespace eval FileOper {
             # puts $prevProj
             if {$nextProj ne ""} {
                 SetActiveProject [$tree item $nextProj -values]
-                puts $activeProject
+                # puts $activeProject
             } elseif {$prevProj ne ""} {
                 SetActiveProject [$tree item $prevProj -values]
-                puts $activeProject
+                # puts $activeProject                
             } else {
                 unset activeProject
                 .frmStatus.lblGitLogo configure -image pixel
