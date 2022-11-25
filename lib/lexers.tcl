@@ -48,4 +48,12 @@ dict set lexers YML procRegexpCommand {regexp -nocase -all -- {^\s*?- (name):\s(
 dict set lexers YML varRegexpCommand {regexp -nocase -all -- {^(\s*?)([a-zA-Z0-9\-_$]+):\s+(.+?)(\s*$)} $line match indent varName varValue lineEnd}
 dict set lexers YML varRegexpCommandMultiline {regexp -all -line -- {^(\s*)(set_fact|vars):$} $line match indent keyWord}
 
+#--------------------------------------------------
+# MD (markdown)
+dict set lexers MD tabSize 2
+dict set lexers MD procFindString {(#+?)\s*?PROCNAME}
+dict set lexers MD procRegexpCommand {regexp -nocase -all -- {^\s*?(#+?)\s(.+?)$} $line match keyWord procName}
+# dict set lexers YML varRegexpCommandMultiline {regexp -all -line -- {^(\s*)(set_fact|vars):$} $line match indent keyWord}
+
+# -------------------------------------------------
 dict set lexers ALL varDirectory {variables vars group_vars host_vars defaults}
