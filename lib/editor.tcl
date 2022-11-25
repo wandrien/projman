@@ -683,6 +683,9 @@ namespace eval Editor {
             grave {
                 QuotSelection $txt {`}
             }
+            underscore {
+                QuotSelection $txt {_}
+            }
             parenleft {
                 # QuotSelection $txt {)}
             }
