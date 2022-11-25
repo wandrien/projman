@@ -108,13 +108,14 @@ namespace eval Highlight {} {
         ctext::addHighlightClassForRegexp $txt namespaces #4f64ff {::}
     }
     proc MD {txt} {
+        ctext::addHighlightClassForRegexp $txt comments #666666 {^\s+?(#|//).*$}
         ctext::addHighlightClassForRegexp $txt lists #4471ca {(\*|-|\+)+}
         ctext::addHighlightClassForSpecialChars $txt brackets green {[]{}()}
-        ctext::addHighlightClassForRegexp $txt url #19a2a6 {(http|http|ftp|ssh)(://)(\w|\.|-)+?}
+        ctext::addHighlightClassForRegexp $txt url #19a2a6 {(http|https|ftp|ssh)(://)(\w|\.|-|/)+?}
         ctext::addHighlightClassForRegexp $txt email #467a7b {(\w|\.|-)+?(@)(\w|\.|-)+?($|\s)}
         ctext::addHighlightClassForRegexp $txt qoute #b84a0c {("|'|`).*?("|'|`)}
-        ctext::addHighlightClassForRegexp $txt sharp #975db4 {(#+?)\s(.*?)$}
+        ctext::addHighlightClassForRegexp $txt sharp #975db4 {^(#+?)\s(.*?)$}
         ctext::addHighlightClassForRegexp $txt quotedtext #a9b36c {^(\s*?)(>+).+?$}
-        ctext::addHighlightClassForRegexp $txt italictext #dff74e {((_|\*)+?)(.+?)((_|\*)+?)}
+        ctext::addHighlightClassForRegexp $txt italictext #dff74e {((_|\*)+?)(\w+?)((_|\*)+?)}
     }
 }

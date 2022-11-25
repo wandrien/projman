@@ -52,7 +52,7 @@ dict set lexers YML varRegexpCommandMultiline {regexp -all -line -- {^(\s*)(set_
 # MD (markdown)
 dict set lexers MD tabSize 2
 dict set lexers MD procFindString {(#+?)\s*?PROCNAME}
-dict set lexers MD procRegexpCommand {regexp -nocase -all -- {^\s*?(#+?)\s(.+?)$} $line match keyWord procName}
+dict set lexers MD procRegexpCommand {regexp -nocase -all -- {^(#+?)\s(.+?)$} $line match keyWord procName}
 # dict set lexers YML varRegexpCommandMultiline {regexp -all -line -- {^(\s*)(set_fact|vars):$} $line match indent keyWord}
 
 # -------------------------------------------------
