@@ -3,5 +3,5 @@ lib/*.tcl	/usr/share/projman/lib
 lib/msgs/*	/usr/share/projman/lib/msgs
 theme	/usr/share/projman/
 README.md /usr/share/doc/projman
-debian/projman.desktop	/usr/share/applications
-projman-48.png /usr/share/pixmaps
+projman.desktop	/usr/share/applications
+projman.png /usr/share/pixmaps

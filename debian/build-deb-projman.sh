@@ -3,10 +3,10 @@
 cd ../
 
 VERSION=$(grep Version projman.tcl | grep -oE '\b[0-9]{1,2}\.[0-9]{1,2}\.[0-9]{1,2}\b')
-RELEASE=$(grep Release projman.tcl | grep -oE '\b[0-9A-Za-z]{1,3}\b')
+RELEASE=$(grep Release projman.tcl | grep -oE '[0-9A-Za-z]+$')
 BUILD_DATE=$(date +%d%m%Y%H%M%S)
 TXT="# Build: ${BUILD_DATE}"
-
+echo "$VERSION, $RELEASE, $BUILD_DATE"
 sed -i "/# Build:.*/c$TXT" projman.tcl
 
 cp projman.tcl projman
@@ -25,4 +25,3 @@ dpkg-buildpackage
 
 rm -v projman
 rm -r -v debian/{projman,.debhelper}
-
