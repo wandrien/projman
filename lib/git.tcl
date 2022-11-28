@@ -665,7 +665,9 @@ namespace eval Git {
                 ReadFilesFromDirectory $activeProject $activeProject
                 destroy .clone
             }
-        
+        if ![info exists activeProject] {
+             $win.btnInit configure -state disable
+         }
         grid $win.entUrl -row 0 -column 0 -columnspan 2 -sticky new
         grid $win.entFolder -row 1 -column 0 -sticky new
         grid $win.btnFolder -row 1 -column 1 -sticky ew
