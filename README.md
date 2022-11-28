@@ -96,7 +96,7 @@ Or type "projman" into terminal, Or choose the name of the program "Projman" on 
 - Ctrl-V - Paste text from buffer
 
 - Alt-P - Show/Hide the file tree panel
-- Alt-W - Delete the word
+- Alt-W - Delete the current word
 - Alt-E - Delete text from current position to end of line
 - Alt-B - Delete text from current position to begin of line
 - Alt-R - Delete current line

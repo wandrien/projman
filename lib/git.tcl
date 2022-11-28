@@ -92,8 +92,11 @@ namespace eval Git {
         global cfgVariables activeProject
         set cmd exec
         set d [pwd]
-        if {$activeProject ne ""} {
+        if {$activeProject ne "" && [file isdirectory $activeProject] == 1} {
             cd $activeProject
+            if ![file exists .git] {
+                return
+            }
         } else {
             return ""
         }
@@ -127,7 +130,14 @@ namespace eval Git {
     
     proc Status {} {
         global cfgVariables activeProject
-        cd $activeProject
+        if [file isdirectory $activeProject] {
+            cd $activeProject
+            if ![file exists .git] {
+                return
+            }
+        } else {
+            return false
+        }
         set cmd exec
         lappend cmd $cfgVariables(gitCommand)
         lappend cmd "status"
