@@ -249,6 +249,10 @@ namespace eval Git {
         # puts "$cmd"
         catch $cmd pipe
         puts $pipe
+        if [regexp -nocase -- {^fatal:} $pipe match] {
+            ShowMessage "Command: '$cmd' error" $pipe
+            return 
+        }
         foreach line [split $pipe "\n"] {
             # puts "$line"
             lappend res $line
@@ -394,6 +398,40 @@ namespace eval Git {
         catch $cmd pipe
         puts $pipe
         return
+    }
+    proc Config {repo user email} {
+        global activeProject cfgVariables
+        # puts $values
+        set cmd exec
+        lappend cmd $cfgVariables(gitCommand)
+        lappend cmd "config"
+        lappend cmd $repo
+        lappend cmd $dir
+        puts $cmd
+
+        # catch $cmd pipe
+        # puts $pipe
+        return
+    }
+    proc Init {} {
+        global activeProject cfgVariables
+        # puts $values
+        if [file isdirectory $activeProject] {
+            cd $activeProject
+        } else {
+            return false
+        }
+        set cmd exec
+        lappend cmd $cfgVariables(gitCommand)
+        lappend cmd "init"
+        lappend cmd $activeProject
+        puts $cmd
+
+        catch $cmd pipe
+        if [regexp -nocase -- {^fatal:} $pipe match] {
+            ShowMessage "Command: '$cmd' error" $pipe
+            return 
+        }
     }
     
     proc Key {k fr} {
@@ -582,6 +620,7 @@ namespace eval Git {
     }
     
     proc CloneDialog {} {
+        global activeProject
         set win .clone
         set x [winfo rootx .frmWork]
         set y [winfo rooty .frmWork]
@@ -618,10 +657,20 @@ namespace eval Git {
                 ReadFilesFromDirectory $repoDir $repoDir
                 destroy .clone
             }
+
+        ttk::button $win.btnInit -compound left -image new_20x20 \
+            -text [::msgcat::mc "Init repository"] -command {
+                Git::Init
+                FileOper::ReadFolder $activeProject
+                ReadFilesFromDirectory $activeProject $activeProject
+                destroy .clone
+            }
+        
         grid $win.entUrl -row 0 -column 0 -columnspan 2 -sticky new
         grid $win.entFolder -row 1 -column 0 -sticky new
-        grid $win.btnFolder -row 1 -column 1 -sticky e
+        grid $win.btnFolder -row 1 -column 1 -sticky ew
         grid $win.btnClone -row 2 -column 0 -columnspan 2 -sticky new
+        grid $win.btnInit -row 3 -column 0 -columnspan 2 -sticky new
     
         bind $win <Escape> "destroy $win"
         
@@ -649,7 +698,7 @@ namespace eval Git {
             }
             return
         }
-        if {[info exists activeProject] == 0} {
+        if {[info exists activeProject] == 0 || [file exists [file join $activeProject .git]] == 0} {
             Git::CloneDialog
             return
         }
