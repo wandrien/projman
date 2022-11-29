@@ -15,6 +15,5 @@ steps:
 
 - name: build RPM
   commands:
-  - cd redhat
+  - cd ../redhat
   - ./build-rpm.sh
-
