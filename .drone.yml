@@ -17,3 +17,7 @@ steps:
   commands:
   - cd ../redhat
   - ./build-rpm.sh
+  
+trigger:
+  branch:
+  - master
