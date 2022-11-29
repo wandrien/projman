@@ -141,6 +141,10 @@ proc ReadFilesFromDirectory {directory root {type ""}} {
             while {[gets $f line] >= 0} {
                 if [regexp -nocase -all -- {^\s*inventory\s*=\s*(\.\/|)(.+?)$} $line match v1 fileName] {
                     # puts "Inventory file is a: $line"
+                    if ![file exists [file join $root $directory $fileName]] {
+                        ShowMessage "Error in ansible.cfg" "Inventory File '[file join $root $directory $fileName]' does not exists"
+                        continue
+                    }
                     if {[lsearch $project($root) [file join $root $directory $fileName]] eq "-1"} {
                     lappend project($root) [file join $root $directory $fileName]
                         set variables([file join $root $directory $fileName]) \
