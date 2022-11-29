@@ -19,5 +19,7 @@ steps:
   - ./build-rpm.sh
   
 trigger:
-  branch:
-  - master
+  event:
+    include:
+    - push
+    
