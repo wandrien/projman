@@ -195,9 +195,15 @@ namespace eval FileOper {
 
     proc CloseAll {} {
         global nbEditor modified
+        foreach nb2Item [.frmWork.nbEditor2 tabs] {
+            .frmWork.nbEditor2 forget $nb2Item
+        }
+        if {[lsearch -exact [.frmWork.panelNB panes] .frmWork.nbEditor2] != -1} {
+            .frmWork.panelNB forget .frmWork.nbEditor2
+        }
         foreach nbItem [array names modified] {
-            if {$modified($nbItem) eq "true"} {
-                $nbEditor select $nbItem
+            if {[info exists modified($nbItem)] == 1 && $modified($nbItem) eq "true"} {
+                catch {$nbEditor select $nbItem}
                 # puts "close tab $nbItem"
                 if {[Close] eq "cancel"} {return "cancel"}
             }
@@ -277,7 +283,7 @@ namespace eval FileOper {
         puts -nonewline $f $editedText
         puts "$f was saved"
         close $f
-        ResetModifiedFlag $nbEditorItem
+        ResetModifiedFlag $nbEditorItem $nbEditor
     }
     
     proc SaveAll {} {
@@ -381,8 +387,8 @@ namespace eval FileOper {
         $txt see 1.0
     }
     
-    proc Edit {fileFullPath} {
-        global nbEditor tree
+    proc Edit {fileFullPath {nbEditor .frmWork.nbEditor}} {
+        global tree
         if {[file exists $fileFullPath] == 0} {
             return false
         } else {
@@ -414,7 +420,7 @@ namespace eval FileOper {
             Editor::Editor $fileFullPath $nbEditor $itemName
             ReadFile $fileFullPath $itemName
             $itemName.frmText.t highlight 1.0 end
-            ResetModifiedFlag $itemName
+            ResetModifiedFlag $itemName $nbEditor
             $itemName.frmText.t see 1.1
         }
         $nbEditor select $itemName

@@ -107,7 +107,7 @@ namespace eval Tree {
                 # $tree item $id -open false
             }
             file {
-                set v [FileOper::Edit $values]
+                set v [FileOper::Edit $values $nbEditor]
                 if {$v eq false} {
                     $tree delete $id
                 }
@@ -115,7 +115,7 @@ namespace eval Tree {
             }
             I[0-9]*? {
                 destroy .findVariables
-                FileOper::Edit [lindex $values 2]
+                FileOper::Edit [lindex $values 2] $nbEditor
             }
             default {
                 set parentItem [$tree parent $id]

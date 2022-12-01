@@ -729,7 +729,7 @@ namespace eval Editor {
        $txt tag remove sel {insert linestart} {insert lineend + 1char}
        return
     }
-    proc BindKeys {w txt fileType} {
+    proc BindKeys {w txt fileType nb} {
         global cfgVariables
         #  variable txt
         # set txt $w.frmText.t
@@ -747,7 +747,7 @@ namespace eval Editor {
         bind $txt <Insert> {OverWrite}
         bind $txt <ButtonRelease-1> "Editor::SearchBrackets $txt"
         bind $txt <Button-1><ButtonRelease-1> "Editor::SelectionHighlight $txt"
-        bind $txt <<Modified>> "SetModifiedFlag $w"
+        bind $txt <<Modified>> "SetModifiedFlag $w $nb"
         bind $txt <Control-i> ImageBase64Encode
         bind $txt <Control-u> "Editor::SearchBrackets %W"
         bind $txt <Control-J> "catch {Editor::GoToFunction $txt}"
@@ -1272,7 +1272,7 @@ namespace eval Editor {
     }
 
     # Horizontal split the Editor text widget
-    proc SplitEditorH {w fileType} {
+    proc SplitEditorH {w fileType nb} {
         global cfgVariables
         puts [$w.panelTxt panes]
         if [winfo exists $w.frmText2] {
@@ -1281,7 +1281,7 @@ namespace eval Editor {
             focus -force $w.frmText.t.t
             return
         }
-        set frmText [Editor::EditorWidget $w $fileType]
+        set frmText [Editor::EditorWidget $w $fileType $nb]
         $frmText.t insert end [$w.frmText.t get 0.0 end]
 
         # $w.panelTxt add $w.frmText -weight 0  
@@ -1291,25 +1291,34 @@ namespace eval Editor {
         ReadStructure $frmText.t ""
         focus -force $frmText.t.t
     }
-
-    proc SplitEditorV {w fileType} {
+    
+    proc SplitEditorV {fileFullPath} {
         global cfgVariables
-        .frmBody.panel add $frmTree -weight 0
-
-        puts [$w.panelTxt panes]
-        if [winfo exists $w.frmText2] {
-            $w.panelTxt forget $w.frmText2
-            destroy $w.frmText2
+        regsub -all {\.|/|\\|\s} $fileFullPath "_" itemName
+        set itemName ".frmWork.nbEditor2.$itemName"
+        # puts $itemName
+        if {[winfo exists $itemName] == 1} {
+            .frmWork.nbEditor2 forget $itemName
+            destroy $itemName
+            if {[llength [.frmWork.nbEditor2 tabs]] == 0} {
+                if [lsearch -exact [.frmWork.panelNB panes] .frmWork.nbEditor2] {
+                    grid forget .frmWork.nbEditor2
+                    .frmWork.panelNB forget .frmWork.nbEditor2
+                }
+            }
             return
         }
-        set frmText [Editor::EditorWidget $w $fileType]
-        $frmText.t insert end [$w.frmText.t get 0.0 end]
+        pack .frmWork.nbEditor2 -side left -fill both -expand true
+        pack propagate .frmWork.nbEditor2 false
+        # grid .frmWork.nbEditor2 -row 0 -column 1 -sticky nsew
+        # grid columnconfigure .frmWork .frmWork.nbEditor -weight 1
+        # grid rowconfigure .frmWork .frmWork.nbEditor -weight 1
+        # grid columnconfigure .frmWork .frmWork.nbEditor2 -weight 1
+        # grid rowconfigure .frmWork .frmWork.nbEditor2 -weight 1
+        .frmWork.panelNB add .frmWork.nbEditor2 -weight 0
+        puts [FileOper::Edit $fileFullPath .frmWork.nbEditor2]
+        
 
-        # $w.panelTxt add $w.frmText -weight 0  
-        $w.panelTxt add $frmText -weight 1
-
-        $frmText.t see [$w.frmText.t index insert]
-        # $frmText.t mark set insert [$w.frmText.t index insert]
     }
     
     proc GoToLineNumber {text lineNumber} {
@@ -1369,7 +1378,7 @@ namespace eval Editor {
         focus $win.ent
     }    
 
-    proc EditorWidget {fr fileType} {
+    proc EditorWidget {fr fileType nb} {
         global cfgVariables editors
         
         if [winfo exists $fr.frmText] {
@@ -1416,7 +1425,7 @@ namespace eval Editor {
         } else {
             Highlight::Default $txt
         }
-        BindKeys $fr $txt $fileType        
+        BindKeys $fr $txt $fileType $nb     
         return $frmText
     }
 
@@ -1451,9 +1460,9 @@ namespace eval Editor {
         set btnSplitV "btnSplitV[string range $itemName [expr [string last "." $itemName] +1] end]"
         set btnSplitH "btnSplitH[string range $itemName [expr [string last "." $itemName] +1] end]"
         ttk::button $fr.header.$btnSplitH -image split_horizontal_11x11 \
-            -command "Editor::SplitEditorH $fr $fileType"
+            -command "Editor::SplitEditorH $fr $fileType $nb"
         ttk::button $fr.header.$btnSplitV -image split_vertical_11x11 \
-            -command "Editor::SplitEditorV $fr $fileType" -state disable
+            -command "Editor::SplitEditorV $fileFullPath"
         # pack $fr.$btnSplitH $fr.$btnSplitV  -side right  -anchor e
         pack $fr.header.$lblName -side left -expand true -fill x
         pack $fr.header.$btnSplitV $fr.header.$btnSplitH -side right
@@ -1467,7 +1476,7 @@ namespace eval Editor {
         if {[lsearch -exact $imageType $fileType] != -1} {
             ImageViewer $fileFullPath $itemName $fr
         } else {
-            set frmText [Editor::EditorWidget $fr $fileType]
+            set frmText [Editor::EditorWidget $fr $fileType $nb]
         }
         $fr.panelTxt add $frmText -weight 0
 

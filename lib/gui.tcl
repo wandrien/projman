@@ -168,10 +168,19 @@ grid rowconfigure $frmTree 0 -weight 1
 
 set frmWork [ttk::frame .frmWork -border 0 -relief flat]
 
+ttk::panedwindow $frmWork.panelNB -orient horizontal -style TPanedwindow
+# grid $frmWork.panelNB -row 0 -column 0 -sticky nesw
+pack $frmWork.panelNB -side left -fill both -expand true
+
 set nbEditor [ttk::notebook $frmWork.nbEditor]
 pack $nbEditor -side left -fill both -expand true
+# grid $nbEditor -row 0 -column 0 -sticky nsew
+# grid columnconfigure $frmWork $nbEditor -weight 1
+# grid rowconfigure $frmWork $nbEditor -weight 1
 
-# set nbEditor2 [ttk::notebook $frmWork.nbEditor2]
+set nbEditor2 [ttk::notebook $frmWork.nbEditor2]
+
+$frmWork.panelNB add $nbEditor -weight 10
 # pack $nbEditor2 -side left -fill both -expand true
 # 
 # Create an image CLOSE for tab

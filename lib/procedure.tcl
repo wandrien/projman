@@ -187,16 +187,16 @@ proc YScrollCommand {txt canv} {
     $canv yview"
 }
 
-proc ResetModifiedFlag {w} {
-    global modified nbEditor
+proc ResetModifiedFlag {w nbEditor} {
+    global modified 
     $w.frmText.t edit modified false
     set modified($w) "false"
     set lbl [string trimleft [$nbEditor tab $w -text] "* "]
     # puts "ResetModifiedFlag: $lbl"
     $nbEditor tab $w -text $lbl
 }
-proc SetModifiedFlag {w} {
-    global modified nbEditor
+proc SetModifiedFlag {w nbEditor} {
+    global modified
     #$w.frmText.t edit modified false
     set modified($w) "true"
     set lbl [$nbEditor tab $w -text]
