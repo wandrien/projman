@@ -127,3 +127,10 @@
     - Add Refresh button into Git Dialog
     - Fixed FindFunction
 
+07/12/2022
+    - Added Perl language support
+    - Added INI-files support
+    - Added MD-files structure navigation
+    - Fixed saving user session and opening files and folders at the next start
+    - Added buttons "Git clone" and "Git init" in the dialog box displayed when the Git button is pressed
+    
