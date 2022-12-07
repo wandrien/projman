@@ -211,7 +211,7 @@ namespace eval FileOper {
     }
 
     proc Close {} {
-        global nbEditor modified tree
+        global nbEditor modified tree editors
         set nbItem [$nbEditor select]
 	    # puts "close tab $nbItem"
     	   
@@ -246,6 +246,8 @@ namespace eval FileOper {
         if [info exists modified($nbItem)] {
             unset modified($nbItem)
         }
+        # puts $nbItem
+        set editors [dict remove $editors $nbItem.frmText.t]
         .frmStatus.lblPosition configure -text ""
         .frmStatus.lblEncoding configure -text ""
         .frmStatus.lblSize configure -text ""

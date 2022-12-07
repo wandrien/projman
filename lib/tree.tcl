@@ -82,7 +82,7 @@ namespace eval Tree {
         set key [lindex [split $id "::"] 0]
         if {$values eq "" || $key eq ""} {return}
         
-        puts "$key $tree $values"
+        # puts "$key $tree $values"
         switch $key {
             directory {
                 FileOper::ReadFolder  $values             
@@ -104,7 +104,7 @@ namespace eval Tree {
         set key [lindex [split $id "::"] 0]
         if {$values eq "" || $key eq ""} {return}
         
-        puts "$key $tree $values"
+        # puts "$key $tree $values"
         switch -regexp $key {
             directory {
                 FileOper::ReadFolder  $values

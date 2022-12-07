@@ -590,7 +590,7 @@ namespace eval Editor {
         $txt tag remove lightSelected 1.0 end
         
         if { [winfo exists .varhelper] } { destroy .varhelper }
-        puts $k
+        # puts $k
         switch $k {
             Return {
                 regexp {^(\s*)} [$txt get [expr $lineNum - 1].0 [expr $lineNum - 1].end] -> spaceStart
@@ -1477,6 +1477,7 @@ namespace eval Editor {
             ImageViewer $fileFullPath $itemName $fr
         } else {
             set frmText [Editor::EditorWidget $fr $fileType $nb]
+            dict set editors $frmText.t fileFullPath $fileFullPath
         }
         $fr.panelTxt add $frmText -weight 0
 
