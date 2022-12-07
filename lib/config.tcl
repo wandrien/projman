@@ -23,8 +23,6 @@ if [info exists env(LANG)] {
 
 set ::configDefault "\[General\]
 cfgModifyDate=''
-opened=
-editedFiles=
 searchCommand=/usr/bin/grep
 searchCommandOptions=-r -n -H
 gitCommand=/usr/bin/git
@@ -36,7 +34,7 @@ locale=$locale
 theme=dark
 toolBarShow=true
 menuShow=true
-statusbarShow=true
+statusBarShow=true
 filesPanelShow=true
 filesPanelPlace=left
 geometry=1024x768
@@ -62,6 +60,9 @@ lineNumberShow=true
 tabSize=4
 procedureHelper=false
 variableHelper=true
+\[UserSession\]
+opened=
+editedFiles=
 "
 proc Config::create {dir} {
     set cfgFile [open [file join $dir projman.ini]  "w+"]
@@ -81,7 +82,7 @@ proc Config::read {dir} {
 }
 
 proc Config::write {dir} {
-    global activeProject
+    global activeProject editors
     set cfgFile [ini::open [file join $dir projman.ini] "w"]
     foreach section  [array names ::cfgINIsections] {
         foreach key $::cfgINIsections($section) {
@@ -91,14 +92,27 @@ proc Config::write {dir} {
     set systemTime [clock seconds]
     # Set a config modify time (i don't know why =))'
     ini::set $cfgFile "General" cfgModifyDate [clock format $systemTime -format "%D %H:%M:%S"]
-  
+    ini::set $cfgFile "UserSession" editedFiles ""
+    
     # Save an top level window geometry into config
     ini::set $cfgFile "GUI" geometry [wm geometry .]
     if {[info exists activeProject] !=0 && $activeProject ne ""} {
-        ini::set $cfgFile "General" opened $activeProject
+        ini::set $cfgFile "UserSession" opened $activeProject
+        # Добавим пути к открытым в редакторе файлам в переменную
+        if [info exists editors] {
+            foreach i [dict keys $editors] {
+                lappend edited [dict get $editors $i fileFullPath]
+            }
+            if [info exists edited] {
+                ini::set $cfgFile "UserSession" editedFiles $edited
+            }
+        }
     } else {
-        ini::set $cfgFile "General" opened ""
+        ini::set $cfgFile "UserSession" opened ""
+        ini::set $cfgFile "UserSession" editedFiles ""
     }
+    # puts $editors
+    
     ini::commit $cfgFile
     ini::close $cfgFile
 }
