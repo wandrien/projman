@@ -55,5 +55,14 @@ dict set lexers MD procFindString {(#+?)\s*?PROCNAME}
 dict set lexers MD procRegexpCommand {regexp -nocase -all -- {^(#+?)\s(.+?)$} $line match keyWord procName}
 # dict set lexers YML varRegexpCommandMultiline {regexp -all -line -- {^(\s*)(set_fact|vars):$} $line match indent keyWord}
 
+#--------------------------------------------------
+# Perl
+dict set lexers PL commentSymbol {#}
+dict set lexers PL variableSymbol {$}
+dict set lexers PL tabSize 4
+dict set lexers PL procFindString {(sub )\s*?PROCNAME}
+dict set lexers PL procRegexpCommand {regexp -nocase -all -- {^\s*?(sub)\s([a-zA-Z0-9\-_:]+?)($|\(.+?\))} $line match keyWord procName params}
+dict set lexers PL varRegexpCommand {regexp -nocase -all -- {^(\s*?)\$([a-zA-Z0-9\-_$]+)\s+=\s+(.+?)(\s*;$)} $line match indent varName varValue lineEnd}
+
 # -------------------------------------------------
 dict set lexers ALL varDirectory {variables vars group_vars host_vars defaults}

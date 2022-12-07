@@ -118,4 +118,17 @@ namespace eval Highlight {} {
         ctext::addHighlightClassForRegexp $txt quotedtext #a9b36c {^(\s*?)(>+).+?$}
         ctext::addHighlightClassForRegexp $txt italictext #dff74e {((_|\*)+?)(\w+?)((_|\*)+?)}
     }
+    
+    proc PL {txt} {
+        ctext::addHighlightClassForRegexp $txt qoute #b84a0c {("|'|`).*?("|'|`)}
+        ctext::addHighlightClassForRegexp $txt flags orange {\s-[a-zA-Z]+}
+        ctext::addHighlightClass $txt stackControl #19a2a6 {sub my end class new if else elsif for foreach while case when use ne eq print exit chdir rand die lt gt le ge say unless return chomp package push exec grep eval warn scalar next continue close}
+        ctext::addHighlightClassForRegexp $txt vars #4471ca {(\$|\*|\&)[\.a-zA-Z0-9\_\-\[\]]+}
+        ctext::addHighlightClassForSpecialChars $txt brackets green {[]{}()}
+        # ctext::addHighlightClassForSpecialChars $txt dog #0082ff {@}
+        ctext::addHighlightClassForRegexp $txt dog #0082ff {(@)[\.a-zA-Z0-9\_\-\[\]]+}
+        ctext::addHighlightClassForRegexp $txt paths lightblue {\.[a-zA-Z0-9\_\-]+}
+        ctext::addHighlightClassForRegexp $txt comments #666666 {(#|//)[^\n\r]*}    
+        ctext::addHighlightClassForRegexp $txt namespaces #0093ff {->|\+\+|::}
+    }
 }
