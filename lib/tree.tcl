@@ -31,6 +31,8 @@ namespace eval Tree {
                     set findImg [::FindImage gitlab]
                 } elseif {[string match {*bitbucket*} [string tolower $text]]} {
                     set findImg [::FindImage bitbucket]
+                } elseif {[string match {\.git*} [string tolower $text]]} {
+                    set findImg [::FindImage git]
                 }
                 if {$fileExt ne "" || $findImg ne ""} {
                     set image $findImg
@@ -47,6 +49,8 @@ namespace eval Tree {
                     set image [::FindImage redhat]
                 } elseif {[string match {*gitlab*} [string tolower [file tail $item]]]} {
                     set image [::FindImage gitlab]
+                } elseif {[string match {.git} [string tolower [file tail $item]]]} {
+                    set image [::FindImage git]
                 } else {
                     set image pixel
                 }
