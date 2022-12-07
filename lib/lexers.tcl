@@ -64,5 +64,12 @@ dict set lexers PL procFindString {(sub )\s*?PROCNAME}
 dict set lexers PL procRegexpCommand {regexp -nocase -all -- {^\s*?(sub)\s([a-zA-Z0-9\-_:]+?)($|\(.+?\))} $line match keyWord procName params}
 dict set lexers PL varRegexpCommand {regexp -nocase -all -- {^(\s*?)\$([a-zA-Z0-9\-_$]+)\s+=\s+(.+?)(\s*;$)} $line match indent varName varValue lineEnd}
 
+#--------------------------------------------------
+# Perl
+dict set lexers INI commentSymbol {#}
+dict set lexers INI tabSize 4
+dict set lexers INI procFindString {(\[)PROCNAME(\])}
+dict set lexers INI procRegexpCommand {regexp -nocase -all -- {^\s*?(\[)([a-zA-Z0-9\-_:]+?)(\])$} $line match keyWord procName}
+
 # -------------------------------------------------
 dict set lexers ALL varDirectory {variables vars group_vars host_vars defaults}
