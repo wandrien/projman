@@ -137,7 +137,7 @@ namespace eval Highlight {} {
         ctext::addHighlightClassForRegexp $txt stackControl #4471ca {^(\s*?)\[[\.a-zA-Z0-9\_\-\[\]]+\]}
         ctext::addHighlightClassForSpecialChars $txt brackets green {[]{}()}
         ctext::addHighlightClassForRegexp $txt dog #0082ff {(@)[\.a-zA-Z0-9\_\-\[\]]+}
-        ctext::addHighlightClassForRegexp $txt comments lightblue {(#|//)[^\n\r]*}
+        ctext::addHighlightClassForRegexp $txt colors #68ceff {(#|//)[^\n\r]*}
         ctext::addHighlightClassForRegexp $txt keyword #19a2a6 {^(\s*?)[a-zA-Z0-9\_\-]+(\s*?=)}
         ctext::addHighlightClassForSpecialChars $txt equal #0082ff {=}
     }

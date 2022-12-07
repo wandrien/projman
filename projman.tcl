@@ -10,7 +10,7 @@ exec wish "$0" -- "$@"
 ######################################################
 # Version: 2.0.0
 # Release: alpha
-# Build: 07122022142011
+# Build: 07122022142631
 ######################################################
 
 # определим текущую версию, релиз и т.д.
@@ -125,7 +125,8 @@ if [info exists opened] {
             FileOper::ReadFolder $path
             ReadFilesFromDirectory $path $path
         } elseif [file exists $path] {
-            ResetModifiedFlag [FileOper::Edit $path]
+            # ResetModifiedFlag [FileOper::Edit $path] 
+            FileOper::Edit $path
         }
     }
 } else {
