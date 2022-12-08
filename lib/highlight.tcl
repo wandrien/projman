@@ -98,14 +98,13 @@ namespace eval Highlight {} {
     proc RB {txt} {
         ctext::addHighlightClassForRegexp $txt qoute #b84a0c {("|'|`).*?("|'|`)}
         ctext::addHighlightClassForRegexp $txt flags orange {\s-[a-zA-Z]+}
-        ctext::addHighlightClass $txt stackControl #19a2a6 {def end class if else for while case when}
-        # ctext::addHighlightClass $txt widgets #9d468d [list canvas ctext button entry label text labelframe frame toplevel scrollbar checkbutton canvas listbox menu menubar menubutton  radiobutton scale entry message tk_chooseDir tk_getSaveFile  tk_getOpenFile tk_chooseColor tk_optionMenu ttk::button ttk::checkbutton ttk::combobox ttk::entry ttk::frame ttk::intro ttk::label ttk::labelframe ttk::menubutton ttk::treeview ttk::notebook ttk::panedwindow ttk::progressbar ttk::radiobutton ttk::scale ttk::scrollbar ttk::separator ttk::sizegrip ttk::spinbox ]
+        ctext::addHighlightClass $txt stackControl #19a2a6 {def end class if else for while case when require module begin rescue self return include}
         ctext::addHighlightClassForRegexp $txt vars #4471ca {(\$|\*|\&)[\.a-zA-Z0-9\_\-\[\]]+}
-        # ctext::addHighlightClass $txt variable_funcs gold {set global variable unset}
         ctext::addHighlightClassForSpecialChars $txt brackets green {[]{}()}
         ctext::addHighlightClassForRegexp $txt paths lightblue {\.[a-zA-Z0-9\_\-]+}
         ctext::addHighlightClassForRegexp $txt comments #666666 {(#|//)[^\n\r]*}    
         ctext::addHighlightClassForRegexp $txt namespaces #4f64ff {::}
+        ctext::addHighlightClassForRegexp $txt dog #0082ff {(@)[\.a-zA-Z0-9\_\-]+}
     }
     proc MD {txt} {
         ctext::addHighlightClassForRegexp $txt comments #666666 {^\s+?(#|//).*$}
@@ -122,7 +121,7 @@ namespace eval Highlight {} {
     proc PL {txt} {
         ctext::addHighlightClassForRegexp $txt qoute #b84a0c {("|'|`).*?("|'|`)}
         ctext::addHighlightClassForRegexp $txt flags orange {\s-[a-zA-Z]+}
-        ctext::addHighlightClass $txt stackControl #19a2a6 {sub my end class new if else elsif for foreach while case when use ne eq print exit chdir rand die lt gt le ge say unless return chomp package push exec grep eval warn scalar next continue close}
+        ctext::addHighlightClass $txt stackControl #19a2a6 {sub my end class new if else elsif for foreach while case when use ne eq print exit chdir rand die lt gt le ge say unless return chomp package push exec grep eval warn scalar next continue close module require}
         ctext::addHighlightClassForRegexp $txt vars #4471ca {(\$|\*|\&)[\.a-zA-Z0-9\_\-\[\]]+}
         ctext::addHighlightClassForSpecialChars $txt brackets green {[]{}()}
         # ctext::addHighlightClassForSpecialChars $txt dog #0082ff {@}

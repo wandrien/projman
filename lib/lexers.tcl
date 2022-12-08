@@ -35,8 +35,8 @@ dict set lexers PY procRegexpCommand {regexp -nocase -all -- {^\s*?(def)\s*?(.*?
 # Ruby 
 dict set lexers RB commentSymbol {#}
 dict set lexers RB tabSize 2
-dict set lexers RB procFindString {(def )\s*?PROCNAME}
-dict set lexers RB procRegexpCommand {regexp -nocase -all -- {^\s*?(def)\s([a-zA-Z0-9\-_:]+?)($|\(.+?\))} $line match keyWord procName params}
+dict set lexers RB procFindString {(def |class )\s*?PROCNAME}
+dict set lexers RB procRegexpCommand {regexp -nocase -all -- {^\s*?(def|class)\s([a-zA-Z0-9\-_:\?]+?)($|\s|\(.+?\))} $line match keyWord procName params}
 
 #--------------------------------------------------
 # YAML (ansible)
