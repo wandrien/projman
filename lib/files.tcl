@@ -450,7 +450,7 @@ namespace eval FileOper {
                 set selBegin [lindex [$txt tag ranges sel] 0]
                 set selEnd [lindex [$txt tag ranges sel] 1]
                 set str [$txt get $selBegin $selEnd]
-                puts $str
+                # puts $str
                 set res [SearchStringInFolder $str]
             }
         }
