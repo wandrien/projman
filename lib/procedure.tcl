@@ -229,11 +229,25 @@ proc ImageBase64Encode {} {
     }
 }
 proc FindImage {ext} {
+    set imageType {
+        PNG
+        JPG
+        JPEG
+        WEBP
+        GIF
+        TIFF
+        JP2
+        ICO
+        XPM
+    }
     foreach img [image names] {
         if [regexp -nocase -all -- "^($ext)(_16x12)" $img match v1 v2] {
             # puts "\nFindinig images: $img \n"
             return $img
         }
+    }
+    if {[lsearch -exact -nocase $imageType $ext] != -1} {
+        return image_16x12
     }
 }
 
