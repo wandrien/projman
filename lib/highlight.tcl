@@ -154,8 +154,8 @@ namespace eval Highlight {} {
         ctext::addHighlightClassForRegexp $txt colors #68ceff {(#)[\w]+?}
         ctext::addHighlightClassForRegexp $txt keyword #19a2a6 {^(\s*?).+(\s*?=)}
         ctext::addHighlightClassForSpecialChars $txt equal #0082ff {=}
+        ctext::addHighlightClassForRegexp $txt comments #666666 {(^\s*#|^\s*;|\s+;)[^\n\r]*}    
         ctext::addHighlightClassForRegexp $txt colors #68ceff {(#)(\w)+?(\s|$)} 
-        ctext::addHighlightClassForRegexp $txt comments #666666 {(#|^;|\s+;)[^\n\r]*}    
     }
     
     proc DESKTOP {txt} {
