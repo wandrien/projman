@@ -88,12 +88,21 @@ namespace eval Highlight {} {
     }
     proc XML {txt} {
         ctext::addHighlightClassForRegexp $txt qoute #b84a0c {("|'|`).*?("|'|`)}
-        ctext::addHighlightClassForRegexp $txt stackControl #19a2a6 {(<|<\\)*?[\w]+>}
+        ctext::addHighlightClassForRegexp $txt stackControl #19a2a6 {(<|<\\)*?[\w]+(/|)(>)}
         ctext::addHighlightClassForRegexp $txt vars #4471ca {(\$|\*|\&)[\.a-zA-Z0-9\_\-]+}
         ctext::addHighlightClassForSpecialChars $txt brackets green {[]{}()}
         # ctext::addHighlightClassForRegexp $txt paths lightblue {\.[a-zA-Z0-9\_\-]+}
         # ctext::addHighlightClassForRegexp $txt comments #666666 {(#|//)[^\n\r]*}    
-        ctext::addHighlightClassForSpecialChars $txt tags #666666 {<>/}
+        ctext::addHighlightClassForSpecialChars $txt tags lightgreen {<>/}
+    }
+    proc HTML {txt} {
+        ctext::addHighlightClassForRegexp $txt qoute #b84a0c {("|'|`).*?("|'|`)}
+        ctext::addHighlightClassForRegexp $txt stackControl #19a2a6 {(<|</)([\w]+)}
+        ctext::addHighlightClassForRegexp $txt vars #4471ca {(\$|\*|\&)[\.a-zA-Z0-9\_\-]+}
+        ctext::addHighlightClassForSpecialChars $txt brackets green {[]{}()}
+        ctext::addHighlightClassForRegexp $txt paths lightblue {(\s)([\w]+)(=)}
+        ctext::addHighlightClassForSpecialChars $txt tags lightgreen {<>/}
+        ctext::addHighlightClassForRegexp $txt comments #666666 {(<\!--)\s*(.+)\s*(-->)} 
     }
     proc RB {txt} {
         ctext::addHighlightClassForRegexp $txt qoute #b84a0c {("|'|`).*?("|'|`)}
