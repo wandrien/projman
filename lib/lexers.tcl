@@ -69,7 +69,8 @@ dict set lexers PL varRegexpCommand {regexp -nocase -all -- {^(\s*?)\$([a-zA-Z0-
 dict set lexers INI commentSymbol {#}
 dict set lexers INI tabSize 4
 dict set lexers INI procFindString {(\[)PROCNAME(\])}
-dict set lexers INI procRegexpCommand {regexp -nocase -all -- {^\s*?(\[)([a-zA-Z0-9\-_:]+?)(\])$} $line match keyWord procName}
+# dict set lexers INI procRegexpCommand {regexp -nocase -all -- {^\s*?(\[)([a-zA-Z0-9\-_:\s]+?)(\])$} $line match keyWord procName}
+dict set lexers INI procRegexpCommand {regexp -nocase -all -- {^\s*?(\[)(.+?)(\])$} $line match keyWord procName}
 
 # -------------------------------------------------
 # HTML
