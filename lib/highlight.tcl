@@ -13,9 +13,10 @@ namespace eval Highlight {} {
         ctext::addHighlightClass $txt variable_funcs gold {set global variable unset}
         ctext::addHighlightClassForSpecialChars $txt brackets green {[]{}()}
         ctext::addHighlightClassForRegexp $txt paths lightblue {\.[a-zA-Z0-9\_\-]+}
-        ctext::addHighlightClassForRegexp $txt comments #666666 {(#|//)[^\n\r]*}    
         ctext::addHighlightClassForRegexp $txt namespaces #4f64ff {::}
         ctext::addHighlightClassForSpecialChars $txt qoute #b84a0c {"'`}
+        ctext::addHighlightClassForRegexp $txt colors #68ceff {(#)(\w)+?(\s|$)} 
+        ctext::addHighlightClassForRegexp $txt comments #666666 {(^\s*)(#)[^\n\r]*}    
     }
 
     proc Default {txt} {
@@ -142,7 +143,7 @@ namespace eval Highlight {} {
         ctext::addHighlightClassForRegexp $txt stackControl #4471ca {^(\s*?)\[[\.a-zA-Z0-9\_\-\[\]]+\]}
         ctext::addHighlightClassForSpecialChars $txt brackets green {[]{}()}
         ctext::addHighlightClassForRegexp $txt dog #0082ff {(@)[\.a-zA-Z0-9\_\-\[\]]+}
-        ctext::addHighlightClassForRegexp $txt colors #68ceff {(#|//)[^\n\r]*}
+        ctext::addHighlightClassForRegexp $txt colors #68ceff {(#)[^\n\r]*}
         ctext::addHighlightClassForRegexp $txt keyword #19a2a6 {^(\s*?)[a-zA-Z0-9\_\-]+(\s*?=)}
         ctext::addHighlightClassForSpecialChars $txt equal #0082ff {=}
     }
