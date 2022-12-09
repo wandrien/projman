@@ -101,6 +101,7 @@ proc Config::write {dir} {
         # Добавим пути к открытым в редакторе файлам в переменную
         if [info exists editors] {
             foreach i [dict keys $editors] {
+                puts [dict get $editors $i]
                 lappend edited [dict get $editors $i fileFullPath]
             }
             if [info exists edited] {
