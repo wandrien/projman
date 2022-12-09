@@ -71,10 +71,19 @@ dict set lexers INI tabSize 4
 dict set lexers INI procFindString {(\[)PROCNAME(\])}
 dict set lexers INI procRegexpCommand {regexp -nocase -all -- {^\s*?(\[)([a-zA-Z0-9\-_:]+?)(\])$} $line match keyWord procName}
 
+# -------------------------------------------------
+# HTML
 dict set lexers HTML commentSymbol {<\!--}
 dict set lexers HTML tabSize 4
 dict set lexers HTML procFindString {<h[0-9]>(<.+>|)PROCNAME(</.+>|)</h[0-9]>}
 dict set lexers HTML procRegexpCommand {regexp -nocase -all -- {<h[0-9]>(<.+>|)(.+?)(</.+>|)</h[0-9]>} $line match v1 procName v2}
+
+# -------------------------------------------------
+# HTM
+dict set lexers HTM commentSymbol {<\!--}
+dict set lexers HTM tabSize 4
+dict set lexers HTM procFindString {<h[0-9]>(<.+>|)PROCNAME(</.+>|)</h[0-9]>}
+dict set lexers HTM procRegexpCommand {regexp -nocase -all -- {<h[0-9]>(<.+>|)(.+?)(</.+>|)</h[0-9]>} $line match v1 procName v2}
 
 # -------------------------------------------------
 dict set lexers ALL varDirectory {variables vars group_vars host_vars defaults}

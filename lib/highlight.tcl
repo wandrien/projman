@@ -78,13 +78,7 @@ namespace eval Highlight {} {
         ctext::addHighlightClassForRegexp $txt comments #666666 {(#|//)[^\n\r]*}    
     }
     proc YML {txt} {
-        ctext::addHighlightClassForRegexp $txt qoute #b84a0c {("|'|`).*?("|'|`)}
-        ctext::addHighlightClassForRegexp $txt stackControl #19a2a6 {\s*?[\w]+:}
-        ctext::addHighlightClassForRegexp $txt vars #4471ca {(\$|\*|\&)(\{|)[\.a-zA-Z0-9\_\-]+}
-        ctext::addHighlightClassForRegexp $txt varsansible #4471ca {(\{\{)(\s*?|)[\.a-zA-Z0-9\_\-]+((\s*?|))(\}\})}
-        ctext::addHighlightClassForSpecialChars $txt brackets green {[]{}()}
-        ctext::addHighlightClassForRegexp $txt paths lightblue {\.[a-zA-Z0-9\_\-]+}
-        ctext::addHighlightClassForRegexp $txt comments #666666 {(#|//)[^\n\r]*}    
+        Highlight::YAML $txt
     }
     proc XML {txt} {
         ctext::addHighlightClassForRegexp $txt qoute #b84a0c {("|'|`).*?("|'|`)}
@@ -103,6 +97,9 @@ namespace eval Highlight {} {
         ctext::addHighlightClassForRegexp $txt paths lightblue {(\s)([\w]+)(=)}
         ctext::addHighlightClassForSpecialChars $txt tags lightgreen {<>/}
         ctext::addHighlightClassForRegexp $txt comments #666666 {(<\!--)\s*(.+)\s*(-->)} 
+    }
+    proc HTM {txt} {
+        Highlight::HTML $txt
     }
     proc RB {txt} {
         ctext::addHighlightClassForRegexp $txt qoute #b84a0c {("|'|`).*?("|'|`)}
