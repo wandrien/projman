@@ -170,7 +170,7 @@ namespace eval Highlight {} {
         ctext::addHighlightClassForRegexp $txt keyword #68ceff {^(\s*?)[a-zA-Z0-9\_\-]+(\s*?:)}
         ctext::addHighlightClassForSpecialChars $txt equal #0082ff {=}
         ctext::addHighlightClassForRegexp $txt changelog lightgreen {^(\s*?)(\*|\-)(.+?)$}
-        ctext::addHighlightClass $txt shelcommand #19a2a6 {if fi else elseif then while case esac do in exit source echo package mkdir ls rm sed awk grep date jq zip tar gzip mount umount test make curl git iconv less gcc scp rsync cut tr function install}
+        ctext::addHighlightClass $txt shellcommand #19a2a6 {if fi else elseif then while case esac do in exit source echo package mkdir ls rm sed awk grep date jq zip tar gzip mount umount test make curl git iconv less gcc scp rsync cut tr function install}
         ctext::addHighlightClassForRegexp $txt comments #666666 {(#|//)[^\n\r]*}    
     }
 }
