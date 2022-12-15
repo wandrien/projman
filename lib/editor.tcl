@@ -24,14 +24,14 @@ namespace eval Editor {
         set selIndex [$txt tag ranges sel]
         set pos [$txt index insert]
         set lineNum [lindex [split $pos "."] 0]
-        set PosNum [lindex [split $pos "."] 1]
+        # set posNum [lindex [split $pos "."] 1]
 
         if [dict exists $lexers $fileType commentSymbol] {
             set symbol [dict get $lexers $fileType commentSymbol]
         } else {
             set symbol "#"
         }
-        puts "Select : $selIndex"
+        # puts "Select : $selIndex"
         if {$selIndex != ""} {
             set lineBegin [lindex [split [lindex $selIndex 0] "."] 0]
             set lineEnd [lindex [split [lindex $selIndex 1] "."] 0]
@@ -101,7 +101,7 @@ namespace eval Editor {
     }
     proc GetComment {fileType str} {
         global lexers
-        puts [dict get $lexers $fileType commentSymbol]
+        # puts [dict get $lexers $fileType commentSymbol]
         if {[dict exists $lexers $fileType commentSymbol] == 0} {
             return
         }
@@ -114,22 +114,23 @@ namespace eval Editor {
         }
     }
 
-    proc GetComment:TCL {str} {
-        if {[regexp -nocase -indices -- {(^| )(#\s)(.+)} $str match v1 v2 v3]} {
-            return [list [lindex [split $v2] 0] [lindex [split $v3] 0]]
-        } else {
-            return 0
-        }
-    }
-    proc GetComment:GO {str} {
-        # puts ">>>>>>>$str"
-        if {[regexp -nocase -indices -- {(^| |\t)(//\s)(.+)} $str match v1 v2 v3]} {
-            # puts ">>>> $match $v1 $v2 $v3"
-            return [list [lindex [split $v2] 0] [lindex [split $v3] 0]]
-        } else {
-            return 0
-        }
-    }
+    # proc GetComment:TCL {str} {
+        # if {[regexp -nocase -indices -- {(^| )(#\s)(.+)} $str match v1 v2 v3]} {
+            # return [list [lindex [split $v2] 0] [lindex [split $v3] 0]]
+        # } else {
+            # return 0
+        # }
+    # }
+    # proc GetComment:GO {str} {
+        # # puts ">>>>>>>$str"
+        # if {[regexp -nocase -indices -- {(^| |\t)(//\s)(.+)} $str match v1 v2 v3]} {
+            # # puts ">>>> $match $v1 $v2 $v3"
+            # return [list [lindex [split $v2] 0] [lindex [split $v3] 0]]
+        # } else {
+            # return 0
+        # }
+    # }
+    
     proc GetComment:Unknown	{str} {
         if {[regexp -nocase -indices -- {(^| )(#\s)(.+)} $str match v1 v2 v3]} {
             return [list [lindex [split $v2] 0] [lindex [split $v3] 0]]
@@ -338,19 +339,12 @@ namespace eval Editor {
     
     proc SelectionHighlight {txt} {
         variable selectionText
-
         $txt tag remove lightSelected 1.0 end 
-
         set selBegin [lindex [$txt tag ranges sel] 0]
         set selEnd [lindex [$txt tag ranges sel] 1]
         if {$selBegin ne "" && $selEnd ne ""} {
             set selectionText [$txt get $selBegin $selEnd]
-            # set selBeginRow [lindex [split $selBegin "."] 1]
-            # set selEndRow [lindex [split $selEnd "."] 1]
-            # puts "$selBegin, $selBeginRow; $selEnd, $selEndRow"
-            # set symNumbers [expr $selEndRow - $selBeginRow]
             set symNumbers [expr [lindex [split $selEnd "."] 1] - [lindex [split $selBegin "."] 1]]
-            # puts "Selection $selectionText"
             if [string match "-*" $selectionText] {
                 set selectionText "\$selectionText"
             }
@@ -359,7 +353,6 @@ namespace eval Editor {
                 set selFindLine [lindex [split $ind "."] 0]
                 set selFindRow [lindex [split $ind "."] 1]
                 set endInd "$selFindLine.[expr $selFindRow + $symNumbers]"
-                # puts "$ind;  $symNumbers; $selFindLine, $selFindRow; $endInd "
                 $txt tag add lightSelected $ind $endInd 
             }
         }
@@ -369,6 +362,7 @@ namespace eval Editor {
         set win .varhelper
         # if { [winfo exists $win] == 0 	} { return }
         set ind [$win.lBox curselection]
+        puts ">>>>>>>>>>>> VarHelperBind <<<<<<<<<<<<<<<<"
         
         switch -- $K {
             Prior   {
@@ -413,27 +407,22 @@ namespace eval Editor {
         }
     } ;# proc auto_completition_key
     proc VarHelperEscape {w} {
-        puts "VarHelperEscape"
-        bindtags $w.t [list [winfo parent $w.t] $w.t Text sysAfter all]
+        puts ">>>>>>>>>>>> VarHelperEscape <<<<<<<<<<<<<<<<"
+        # bindtags $w [list [winfo parent $w] $w Text sysAfter all]
         bindtags $w [list [winfo toplevel $w] $w Ctext sysAfter all]
         catch { destroy .varhelper }
         puts [bindtags $w]
         puts [bind $w]
-        puts [bindtags $w.t]
-        puts [bind $w.t]
+
     }
-    
     proc VarHelper {x y w word wordType} {
         global editors lexers variables
         variable txt 
         variable win
         # set txt $w.frmText.t
         # блокировка открытия диалога если запущен другой
-        if [winfo exists .findVariables] {
-           return
-        }
         set txt $w
-        set win .varhelper
+        # set win .varhelper
         puts "$x $y $w $word $wordType"
         set fileType [dict get $editors $txt fileType]
 
@@ -502,20 +491,38 @@ namespace eval Editor {
             }
         }
         # unset item
-        # puts $findedVars
-        bindtags $txt [list VarHelperBind [winfo toplevel $txt] $txt Ctext sysAfter all]
+        # bindtags $txt [list VarHelperBind [winfo toplevel $txt] $txt Ctext sysAfter all]
         # bindtags $txt.t [list VarHelperBind [winfo parent $txt.t] $txt.t Text sysAfter all]
-        bind VarHelperBind <Escape> "Editor::VarHelperEscape $txt; break"
-            # bindtags $txt.t {[list [winfo parent $txt.t] $txt.t Text sysAfter all]};
-            # bindtags $txt {[list [winfo toplevel $txt] $txt Ctext sysAfter all]};
-            # catch { destroy .varhelper }"
-        bind VarHelperBind <Key> {Editor::VarHelperKey $Editor::txt %K %A; break}
-        
-        if { [winfo exists $win] } { destroy $win }
+        # bind VarHelperBind <Escape> "Editor::VarHelperEscape $txt.t; break"
+            # # bindtags $txt.t {[list [winfo parent $txt.t] $txt.t Text sysAfter all]};
+            # # bindtags $txt {[list [winfo toplevel $txt] $txt Ctext sysAfter all]};
+            # # catch { destroy .varhelper }"
+        # bind VarHelperBind <Key> {Editor::VarHelperKey %W %K %A; break}
+        # 
         if {$findedVars eq ""} {
             return
         }
-        
+        # puts $findedVars
+        VarHelperDialog $x $y $w $word $findedVars
+
+    }
+
+    proc VarHelperDialog {x y w word findedVars} {
+        global editors lexers variables
+        variable txt 
+        variable win
+        # puts ">>>>>>>>>>>>>$x $y $w $word $findedVars"
+        # set txt $w.frmText.t
+        # блокировка открытия диалога если запущен другой
+        # if [winfo exists .findVariables] {
+           # return
+        # }
+        # if { [winfo exists $win] } { destroy $win }
+        set txt $w
+        set win .varhelper
+        # if {$findedVars eq ""} {
+            # return
+        # }
         toplevel $win
         wm transient $win .
         wm overrideredirect $win 1
@@ -542,15 +549,13 @@ namespace eval Editor {
             focus -force $Editor::txt.t
             break
         }
-        # bind $win.lBox <Return> {
-            # set findString [dict get $lexers [dict get $editors $Editor::txt fileType] procFindString]
-            # set values [.varhelper.lBox get [.varhelper.lBox curselection]]
-            # regsub -all {PROCNAME} $findString $values str
-            # Editor::FindFunction $Editor::txt "$str"
-            # destroy .varhelper.lBox
-            # # focus $Editor::txt.t
-            # break
-        # }
+        bind VarHelperBind <Control-Return> {
+            $Editor::txt delete "insert - 1 chars wordstart" "insert wordend - 1 chars"
+            $Editor::txt insert "insert" [.varhelper.lBox get [.varhelper.lBox curselection]]
+            # eval [bind VarHelperBind <Escape>]
+            Editor::VarHelperEscape $Editor::txt
+            break
+        }
 
         # Определям расстояние до края экрана (основного окна) и если
         # оно меньше размера окна со списком то сдвигаем его вверх
@@ -735,6 +740,7 @@ namespace eval Editor {
         # set txt $w.frmText.t
         bind $txt <KeyRelease> "catch {Editor::ReleaseKey %K $txt $fileType}"
         bind $txt <KeyPress> "Editor::PressKey %K $txt"
+        bind $txt <Control-eacute> Quit
         bind $txt <Control-igrave> "Editor::SelectionPaste $txt"
         bind $txt <Control-v> "Editor::SelectionPaste $txt"
         bind $txt <Control-l> "SearchVariable $txt; break"

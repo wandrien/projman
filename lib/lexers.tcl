@@ -30,6 +30,7 @@ dict set lexers SH procRegexpCommand {regexp -nocase -all -- {^\s*?(function |)\
 dict set lexers PY commentSymbol {#}
 dict set lexers PY procFindString {(def )\s*?PROCNAME}
 dict set lexers PY procRegexpCommand {regexp -nocase -all -- {^\s*?(def)\s*?(.*?)\((.*?)\):} $line match keyWord procName params}
+dict set lexers PY varRegexpCommand {regexp -nocase -all -line -- {^\s*?(\w+)\s*=\s*(.+)($)} $line match varName varValue lineEnd}
 
 #--------------------------------------------------
 # Ruby 

@@ -26,7 +26,6 @@ bind . <Control-Q> Quit
 bind . <Control-eacute> Quit
 bind . <Insert> Add
 bind . <Delete> Del
-bind . <Control-Return> Edit
 bind . <F1> ShowHelpDialog
 bind . <Control-n> Editor::New
 bind . <Control-N> Editor::New
