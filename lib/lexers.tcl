@@ -38,7 +38,7 @@ dict set lexers RB commentSymbol {#}
 dict set lexers RB tabSize 2
 dict set lexers RB procFindString {(def |class )\s*?PROCNAME}
 dict set lexers RB procRegexpCommand {regexp -nocase -all -- {^\s*?(def|class)\s([a-zA-Z0-9\-_:\?]+?)($|\s|\(.+?\))} $line match keyWord procName params}
-
+dict set lexers RB varRegexpCommand {regexp -nocase -all -line -- {^\s*?(\w+)\s*=\s*(.+)($)} $line match varName varValue lineEnd}
 #--------------------------------------------------
 # YAML (ansible)
 dict set lexers YML commentSymbol {#}
