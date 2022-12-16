@@ -102,8 +102,10 @@ proc Config::write {dir} {
         # Добавим пути к открытым в редакторе файлам в переменную
         if [info exists editors] {
             foreach i [dict keys $editors] {
-                puts [dict get $editors $i]
-                lappend edited [dict get $editors $i fileFullPath]
+                # puts [dict get $editors $i]
+                if [dict exists $editors $i fileFullPath] {
+                    lappend edited [dict get $editors $i fileFullPath]
+                }
             }
             if [info exists edited] {
                 ini::set $cfgFile "UserSession" editedFiles $edited
