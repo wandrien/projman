@@ -17,6 +17,7 @@ namespace eval Highlight {} {
         ctext::addHighlightClassForSpecialChars $txt qoute #b84a0c {"'`}
         ctext::addHighlightClassForRegexp $txt colors #68ceff {(#)(\w)+?(\s|$)} 
         ctext::addHighlightClassForRegexp $txt comments #666666 {(^|;)\s*(#)[^\n\r]*}
+        ctext::addHighlightClass $txt bool #3e803b {nil false true}
     }
 
     proc Default {txt} {
@@ -54,6 +55,7 @@ namespace eval Highlight {} {
         ctext::addHighlightClassForSpecialChars $txt brackets green {[]{}()}
         ctext::addHighlightClassForRegexp $txt paths lightblue {\.[a-zA-Z0-9\_\-]+}
         ctext::addHighlightClassForRegexp $txt comments #666666 {(#|//)[^\n\r]*}    
+        ctext::addHighlightClass $txt bool #3e803b {nil false true}
         ctext::addHighlightClassForSpecialChars $txt qoute #b84a0c {"'`}
     }
 
@@ -111,13 +113,15 @@ namespace eval Highlight {} {
     proc RB {txt} {
         ctext::addHighlightClassForRegexp $txt qoute #b84a0c {("|'|`).*?("|'|`)}
         ctext::addHighlightClassForRegexp $txt flags orange {\s-[a-zA-Z]+}
-        ctext::addHighlightClass $txt stackControl #19a2a6 {def end class if else for while case when require module begin rescue self return include}
+        ctext::addHighlightClass $txt stackControl #19a2a6 {def end class if else for while case when require module begin rescue self return include unless raise private new do synchronize}
         ctext::addHighlightClassForRegexp $txt vars #4471ca {(\$|\*|\&)[\.a-zA-Z0-9\_\-\[\]]+}
         ctext::addHighlightClassForSpecialChars $txt brackets green {[]{}()}
         ctext::addHighlightClassForRegexp $txt paths lightblue {\.[a-zA-Z0-9\_\-]+}
         ctext::addHighlightClassForRegexp $txt comments #666666 {(#|//)[^\n\r]*}    
         ctext::addHighlightClassForRegexp $txt namespaces #4f64ff {::}
         ctext::addHighlightClassForRegexp $txt dog #0082ff {(@)[\.a-zA-Z0-9\_\-]+}
+        ctext::addHighlightClass $txt bool #7e5fb3 {nil false true}
+        
     }
     
     proc MD {txt} {
