@@ -15,6 +15,8 @@ dict set lexers TCL commands [info commands]
 #--------------------------------------------------
 # Go lang
 dict set lexers GO commentSymbol {//}
+dict set lexers GO commentMultilineSymbolBegin {/*}
+dict set lexers GO commentMultilineSymbolEnd {*/}
 dict set lexers GO procFindString {func.*?PROCNAME}
 dict set lexers GO procRegexpCommand {regexp -nocase -all -- {\s*?func\s*?(\(\w+\s*?\**?\w+\)|)\s*?(\w+)\((.*?)\)\s+?([a-zA-Z0-9\{\}\[\]\(\)-_.]*?|)\s*?\{} $line match linkName procName params returns}
 dict set lexers GO varRegexpCommand {regexp -nocase -all -line -- {^\s*?var\s+([a-zA-Z0-9\-_$]+)\s+(.+?)(\s*$)} $line match varName varType lineEnd}
@@ -35,6 +37,8 @@ dict set lexers PY varRegexpCommand {regexp -nocase -all -line -- {^\s*?(\w+)\s*
 #--------------------------------------------------
 # Ruby 
 dict set lexers RB commentSymbol {#}
+dict set lexers RB commentMultilineSymbolBegin {=begin}
+dict set lexers RB commentMultilineSymbolEnd {end=}
 dict set lexers RB tabSize 2
 dict set lexers RB procFindString {(def |class )\s*?PROCNAME}
 dict set lexers RB procRegexpCommand {regexp -nocase -all -- {^\s*?(def|class)\s([a-zA-Z0-9\-_:\?]+?)($|\s|\(.+?\))} $line match keyWord procName params}
@@ -75,14 +79,18 @@ dict set lexers INI procRegexpCommand {regexp -nocase -all -- {^\s*?(\[)(.+?)(\]
 
 # -------------------------------------------------
 # HTML
-dict set lexers HTML commentSymbol {<\!--}
+dict set lexers HTML commentSymbol {<!--}
+dict set lexers HTML commentMultilineSymbolBegin {<!--}
+dict set lexers HTML commentMultilineSymbolEnd {-->}
 dict set lexers HTML tabSize 4
 dict set lexers HTML procFindString {<h[0-9]>(<.+>|)PROCNAME(</.+>|)</h[0-9]>}
 dict set lexers HTML procRegexpCommand {regexp -nocase -all -- {<h[0-9]>(<.+>|)(.+?)(</.+>|)</h[0-9]>} $line match v1 procName v2}
 
 # -------------------------------------------------
 # HTM
-dict set lexers HTM commentSymbol {<\!--}
+dict set lexers HTM commentSymbol {<!--}
+dict set lexers HTM commentMultilineSymbolBegin {<!--}
+dict set lexers HTM commentMultilineSymbolEnd {-->}
 dict set lexers HTM tabSize 4
 dict set lexers HTM procFindString {<h[0-9]>(<.+>|)PROCNAME(</.+>|)</h[0-9]>}
 dict set lexers HTM procRegexpCommand {regexp -nocase -all -- {<h[0-9]>(<.+>|)(.+?)(</.+>|)</h[0-9]>} $line match v1 procName v2}

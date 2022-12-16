@@ -60,6 +60,7 @@ lineNumberShow=true
 tabSize=4
 procedureHelper=false
 variableHelper=true
+multilineComments=true
 \[UserSession\]
 opened=
 editedFiles=

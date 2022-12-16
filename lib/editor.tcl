@@ -20,30 +20,55 @@ namespace eval Editor {
     
     # Comment one string or selected string
     proc Comment {txt fileType} {
-        global lexers
+        global lexers cfgVariables
         set selIndex [$txt tag ranges sel]
         set pos [$txt index insert]
         set lineNum [lindex [split $pos "."] 0]
         # set posNum [lindex [split $pos "."] 1]
-
+        set useMultiLine false
+        
         if [dict exists $lexers $fileType commentSymbol] {
             set symbol [dict get $lexers $fileType commentSymbol]
         } else {
             set symbol "#"
         }
+        if {[dict exists $lexers $fileType commentMultilineSymbolBegin] == 1 && $cfgVariables(multilineComments) eq "true"} {
+            set symbolBegin [dict get $lexers $fileType commentMultilineSymbolBegin]
+        } else {
+            set symbolBegin ""
+        }
+        if {[dict exists $lexers $fileType commentMultilineSymbolEnd] == 1 && $cfgVariables(multilineComments) eq "true"} {
+            set symbolEnd [dict get $lexers $fileType commentMultilineSymbolEnd]
+        } else {
+            set symbolEnd ""
+        }
+                
         # puts "Select : $selIndex"
         if {$selIndex != ""} {
             set lineBegin [lindex [split [lindex $selIndex 0] "."] 0]
             set lineEnd [lindex [split [lindex $selIndex 1] "."] 0]
+            # Если выделенно больше одной строки то включаем многострочный комментарий
+            if {$lineBegin < $lineEnd} {
+                set useMultiLine true
+            }
             set posBegin [lindex [split [lindex $selIndex 1] "."] 0]
             set posEnd [lindex [split [lindex $selIndex 1] "."] 1]
             if {$lineEnd == $lineNum && $posEnd == 0} {
                 set lineEnd [expr $lineEnd - 1]
             }
-            for {set i $lineBegin} {$i <=$lineEnd} {incr i} {
-                #$txt insert $i.0 "# "
-                regexp -nocase -indices -- {^(\s*)(.*?)} [$txt get $i.0 $i.end] match v1 v2
-                $txt insert  $i.[lindex [split $v2] 0] "$symbol "
+            if {$symbolEnd ne ""} {
+                $txt insert $lineEnd.end "\n$symbolEnd"
+                set lineEnd [expr $lineEnd + 2]
+            }
+            if {$symbolBegin ne ""} {
+                $txt insert $lineBegin.0 "$symbolBegin\n"
+            }
+            if {$symbolBegin eq "" && $symbolEnd eq ""} {
+                for {set i $lineBegin} {$i <= $lineEnd} {incr i} {
+                    #$txt insert $i.0 "# "
+                    regexp -nocase -indices -- {^(\s*)(.*?)} [$txt get $i.0 $i.end] match v1 v2
+                    $txt insert  $i.[lindex [split $v2] 0] "$symbol "
+                }
             }
             $txt tag add comments $lineBegin.0 $lineEnd.end
             $txt tag raise comments

@@ -124,6 +124,7 @@
 ::msgcat::mcset ru "Matches" "Совпадений"
 ::msgcat::mcset ru "Modules" "Модули"
 ::msgcat::mcset ru "Modifying the Registry..." "Внесение изменений в реестр"
+::msgcat::mcset ru "Multiline comments" "Многострочные комментарии"
 ::msgcat::mcset ru "Must be one file select!" "Вы должны выбрать только один файл"
 ::msgcat::mcset ru "Must be one or two file select!" "Вы должны выбрать один или два файла"
 ::msgcat::mcset ru "Network" "Сеть"

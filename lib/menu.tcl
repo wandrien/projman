@@ -118,6 +118,8 @@ proc GetViewMenu {m} {
         -variable cfgVariables(procedureHelper) -onvalue true -offvalue false 
         # -command "ViewHelper procedureHelper"
 
+    $m add checkbutton -label [::msgcat::mc "Multiline comments"] \
+        -variable cfgVariables(multilineComments) -onvalue true -offvalue false 
 }
 
 proc GetHelpMenu {m} {
