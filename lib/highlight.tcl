@@ -17,7 +17,7 @@ namespace eval Highlight {} {
         ctext::addHighlightClassForSpecialChars $txt qoute #b84a0c {"'`}
         ctext::addHighlightClassForRegexp $txt colors #68ceff {(#)(\w)+?(\s|$)} 
         ctext::addHighlightClassForRegexp $txt comments #666666 {(^|;)\s*(#)[^\n\r]*}
-        ctext::addHighlightClass $txt bool #3e803b {nil false true}
+        ctext::addHighlightClass $txt bool #3e803b {null false true}
     }
 
     proc Default {txt} {
@@ -179,4 +179,16 @@ namespace eval Highlight {} {
         ctext::addHighlightClass $txt shelcommand #19a2a6 {if fi else elseif then while case esac do in exit source echo package mkdir ls rm sed awk grep date jq zip tar gzip mount umount test make curl git iconv less gcc scp rsync cut tr function install}
         ctext::addHighlightClassForRegexp $txt comments #666666 {(#|//)[^\n\r]*}    
     }
+    proc LUA {txt} {
+        ctext::addHighlightClassForRegexp $txt qoute #b84a0c {("|'|`).*?("|'|`)}
+        ctext::addHighlightClassForRegexp $txt flags orange {\s-[a-zA-Z]+}
+        ctext::addHighlightClass $txt stackControl #19a2a6 {and break do else elseif end false for function goto if in local nil not or repeat return then true until while}
+        # ctext::addHighlightClassForRegexp $txt vars #4471ca {(\$|\*|\&)[\.a-zA-Z0-9\_\-\[\]]+}
+        ctext::addHighlightClassForSpecialChars $txt brackets green {[]{}()}
+        ctext::addHighlightClassForRegexp $txt paths lightblue {\.[a-zA-Z0-9\_\-]+}
+        ctext::addHighlightClassForRegexp $txt comments #666666 {(--)[^\n\r]*}    
+        ctext::addHighlightClassForRegexp $txt namespaces #0093ff {->|\+\+|::}
+        ctext::addHighlightClass $txt bool #3e803b {null false true}
+    }
+    
 }

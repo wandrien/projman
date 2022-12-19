@@ -95,5 +95,10 @@ dict set lexers HTM tabSize 4
 dict set lexers HTM procFindString {<h[0-9]>(<.+>|)PROCNAME(</.+>|)</h[0-9]>}
 dict set lexers HTM procRegexpCommand {regexp -nocase -all -- {<h[0-9]>(<.+>|)(.+?)(</.+>|)</h[0-9]>} $line match v1 procName v2}
 
+dict set lexers LUA commentSymbol {--}
+dict set lexers LUA procFindString {function\s*?PROCNAME}
+dict set lexers LUA procRegexpCommand {regexp -nocase -all -- {^(local|)\s*?(function)\s([a-zA-Z0-9\-_:]+?)\s+\((.+?)\)} $line match v1 keyWord procName params}
+dict set lexers LUA varRegexpCommand {regexp -nocase -all -- {^(\s*?)([a-zA-Z0-9\-_\.]+)\s+=\s+(.+?)(\s*$|--)} $line match indent varName varValue lineEnd}
+
 # -------------------------------------------------
 dict set lexers ALL varDirectory {variables vars group_vars host_vars defaults}
