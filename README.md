@@ -16,6 +16,7 @@ Highlightning and source code navigation:
 * Shell (BASH)
 * Markdown
 * YAML (Ansible support)
+* Lua
 
 Highlightning:
 

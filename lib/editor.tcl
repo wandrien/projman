@@ -87,14 +87,14 @@ namespace eval Editor {
         set lineNum [lindex [split $pos "."] 0]
         set posNum [lindex [split $pos "."] 1]
         
-        if  {[info procs GetComment:$fileType] ne ""} {
-            set commentProcedure "GetComment:$fileType"
-        } else {
-            set commentProcedure {GetComment:Unknown}
-        }
-        # set commentProcedure "GetComment"
+        # if  {[info procs GetComment:$fileType] ne ""} {
+            # set commentProcedure "GetComment"
+        # } else {
+            # set commentProcedure {GetComment:Unknown}
+        # }
+        set commentProcedure "GetComment"
         
-        # puts "$fileType, $commentProcedure"
+        puts "$fileType, $commentProcedure"
         if {$selIndex != ""} {
             set lineBegin [lindex [split [lindex $selIndex 0] "."] 0]
             set lineEnd [lindex [split [lindex $selIndex 1] "."] 0]
@@ -105,7 +105,7 @@ namespace eval Editor {
             }            
             for {set i $lineBegin} {$i <=$lineEnd} {incr i} {
                 set str [$txt get $i.0 $i.end]
-                set commentSymbolIndex [$commentProcedure $str]
+                set commentSymbolIndex [$commentProcedure $fileType $str]
                 if {$commentSymbolIndex != 0} {
                     $txt delete $i.[lindex $commentSymbolIndex 0] $i.[lindex $commentSymbolIndex 1]
                 }
@@ -116,7 +116,7 @@ namespace eval Editor {
         } else {
             set posNum [lindex [split $pos "."] 1]
             set str [$txt get $lineNum.0 $lineNum.end]
-            set commentSymbolIndex [$commentProcedure $str]
+            set commentSymbolIndex [$commentProcedure $fileType $str]
             if {$commentSymbolIndex != 0} {
                 $txt delete $lineNum.[lindex $commentSymbolIndex 0] $lineNum.[lindex $commentSymbolIndex 1]
             }
@@ -127,12 +127,23 @@ namespace eval Editor {
     proc GetComment {fileType str} {
         global lexers
         # puts [dict get $lexers $fileType commentSymbol]
-        if {[dict exists $lexers $fileType commentSymbol] == 0} {
-            return
+        if [dict exists $lexers $fileType commentSymbol] {
+            # return
+            set symbol [dict get $lexers $fileType commentSymbol]
+        } else {
+            set symbol "#"
         }
+        regsub -all {\{} $str "\\{" str
+        regsub -all {\}} $str "\\}" str
+        regsub -all {\[} $str {\\[} str
+        regsub -all {\]} $str {\\]} str
         
-        if {[regexp -nocase -indices -- {(^| )([dict get $lexers $fileType commentSymbol]\s)(.+)} $str match v1 v2 v3]} {
-            puts "$match, $v1, $v2, $v3"
+        set cmd "regexp -nocase -indices -- {(^|\s+)\\s*($symbol\\s*)(.*)} {$str} match v1 v2 v3"
+        
+        puts $cmd
+        # puts [eval $cmd]
+        if [eval $cmd] {
+            puts "$match, $v2, $v3"
             return [list [lindex [split $v2] 0] [lindex [split $v3] 0]]
         } else {
             return 0
