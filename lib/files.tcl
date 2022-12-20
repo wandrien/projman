@@ -201,11 +201,10 @@ namespace eval FileOper {
         if {[lsearch -exact [.frmWork.panelNB panes] .frmWork.nbEditor2] != -1} {
             .frmWork.panelNB forget .frmWork.nbEditor2
         }
-        foreach nbItem [array names modified] {
-            if {[info exists modified($nbItem)] == 1 && $modified($nbItem) eq "true"} {
-                catch {$nbEditor select $nbItem}
-                # puts "close tab $nbItem"
-                if {[Close] eq "cancel"} {return "cancel"}
+        foreach nbItem [$nbEditor tabs] {
+            catch {$nbEditor select $nbItem}
+            if {[Close] eq "cancel"} {
+                return "cancel"
             }
         }
     }
