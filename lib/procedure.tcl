@@ -239,6 +239,7 @@ proc FindImage {ext} {
         JP2
         ICO
         XPM
+        SVG
     }
     foreach img [image names] {
         if [regexp -nocase -all -- "^($ext)(_16x12)" $img match v1 v2] {
