@@ -1,4 +1,3 @@
----
 pipeline:
   build_deb:
     image: svk28/tcltk-build-debian
@@ -10,4 +9,3 @@ pipeline:
     commands:
       - cd redhat
       - ./build-rpm.sh
-
