@@ -4,6 +4,7 @@ pipeline:
     commands:
       - cd debian
       - ./build-deb-projman.sh
+      
   build_rpm:
     image: svk28/tcltk-build-centos
     commands:
