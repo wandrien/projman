@@ -1,8 +1,6 @@
 pipeline:
   build:
-    image: svk28/tcltk-build-debian:latest
+    image: svk28/tcltk-build-debian
     commands:
       - cd debian
       - ./build-deb-projman.sh
-    when:
-      branch: master
