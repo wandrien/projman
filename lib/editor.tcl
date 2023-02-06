@@ -924,7 +924,7 @@ namespace eval Editor {
         set nbEditorItem [NB::InsertItem $nbEditor  $fileFullPath "file"]
         # puts "$nbEditorItem, $nbEditor"
         Editor $fileFullPath $nbEditor $nbEditorItem
-        SetModifiedFlag $nbEditorItem
+        SetModifiedFlag $nbEditorItem $nbEditor
     }
     
     proc ReadStructure {txt treeItemName} {
