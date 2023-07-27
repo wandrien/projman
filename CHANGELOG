@@ -134,3 +134,5 @@
     - Fixed saving user session and opening files and folders at the next start
     - Added buttons "Git clone" and "Git init" in the dialog box displayed when the Git button is pressed
     
+27/07/2023
+   - Fixed opening files and directoryes from command line if their name is relative

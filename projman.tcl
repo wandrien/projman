@@ -10,7 +10,7 @@ exec wish "$0" -- "$@"
 ######################################################
 # Version: 2.0.0
 # Release: alpha
-# Build: 06022023092717
+# Build: 27072023125916
 ######################################################
 
 # определим текущую версию, релиз и т.д.
@@ -34,12 +34,6 @@ while {[gets $f line] >=0} {
 }
 close $f
 
-if { $::argc > 0 } {
-    foreach arg $::argv {
-        lappend opened $arg
-    }
-    puts $opened
-}
 
 package require msgcat
 package require inifile
@@ -52,6 +46,15 @@ package require fileutil::magic::filetype
 # Устанавливаем текущий каталог
 set dir(root) [pwd]
 set dir(doc) [file join $dir(root) doc]
+
+# ДОбавляем в список файлы (каталоги) из командной строки
+if { $::argc > 0 } {
+    foreach arg $::argv {
+        lappend opened $arg
+    }
+    puts $opened
+}
+
 
 # Устанавливаем рабочий каталог, если его нет то создаём.
 # Согласно спецификации XDG проверяем наличие переменных и каталогов
@@ -111,11 +114,10 @@ source [file join $dir(lib) gui.tcl]
 
 # Open the PATH if command line argument has been setting
 if [info exists opened] {
-    # puts ">$opened"
     foreach path $opened {
+        # Приводим путь к полному виду
         if {[file pathtype $path] ne "absolute"} {
-            puts "\n\t[::msgcat::mc "Specify the absolute path to the directory or file"]: $path\n"
-            exit
+            set path [file normalize $path]
         }
         if [file isdirectory $path] {
             # set activeProject $path
