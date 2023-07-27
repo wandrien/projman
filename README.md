@@ -29,6 +29,35 @@ For UNIX-like OS
 Tcl/Tk >= 8.6 http://tcl.tk
 tcllib, tklib
 
+## Screenshots
+
+- Navigation the source code structure
+
+![projman-1.png](https://nuk-svk.ru/images/projman/projman-1.png)
+
+- Hints when entering names of variables and procedures
+
+![projman-2.png](https://nuk-svk.ru/images/projman/projman-2.png)
+
+- Searching for a variable definition in ansible files 
+
+![projman-ansible-1.png](https://nuk-svk.ru/images/projman/projman-ansible-1.png)
+
+- Navigation the ansible source code structure
+
+![projman-ansible-2.png](https://nuk-svk.ru/images/projman/projman-ansible-2.png)
+
+- Navigation the markdown source code structure
+
+![projman-md-1.png](https://nuk-svk.ru/images/projman/projman-md-1.png)
+
+- Git dialog (commit history)
+
+![projman-git-1.png](https://nuk-svk.ru/images/projman/projman-git-1.png)
+
+- Git dialog (changes)
+
+![projman-git-2.png](https://nuk-svk.ru/images/projman/projman-git-2.png)
 
 ## Getting source code
 
