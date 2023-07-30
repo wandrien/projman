@@ -3,8 +3,11 @@ run-name: ${{ gitea.actor }} build projman packages
 on: [push]
 
 jobs:
-  Explore-Gitea-Actions:
+  Projman-Build:
     runs-on: tcl-tk-builder:docker://svk28/tcltk-build-debian:latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - run: git checkout HEAD^
       - run: cd debian
       - run: ./build-deb-projman.sh
