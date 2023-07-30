@@ -1,0 +1,13 @@
+name: Projman build the packages
+run-name: ${{ gitea.actor }} build projman packages
+on: [push]
+
+jobs:
+  Explore-Gitea-Actions:
+    runs-on: ubuntu-latest
+    steps:
+    build:
+      image: svk28/tcltk-build-debian:latest
+      commands:
+        - cd debian
+        - ./build-deb-projman.sh
