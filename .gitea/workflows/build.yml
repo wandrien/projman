@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   Explore-Gitea-Actions:
-    runs-on: tcl-tk-builder
+    runs-on: tcl-tk-builder:docker://svk28/tcltk-build-debian:latest
     steps:
       - run: cd debian
       - run: ./build-deb-projman.sh
