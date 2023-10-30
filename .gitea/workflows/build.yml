@@ -7,6 +7,6 @@ jobs:
     runs-on: tcl-tk-builder:docker://svk28/tcltk-build-debian:latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - run: cd debian
       - run: ./build-deb-projman.sh
