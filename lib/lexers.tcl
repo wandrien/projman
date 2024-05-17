@@ -20,6 +20,7 @@ dict set lexers GO commentMultilineSymbolEnd {*/}
 dict set lexers GO procFindString {func.*?PROCNAME}
 dict set lexers GO procRegexpCommand {regexp -nocase -all -- {\s*?func\s*?(\(\w+\s*?\**?\w+\)|)\s*?(\w+)\((.*?)\)\s+?([a-zA-Z0-9\{\}\[\]\(\)-_.]*?|)\s*?\{} $line match linkName procName params returns}
 dict set lexers GO varRegexpCommand {regexp -nocase -all -line -- {^\s*?var\s+([a-zA-Z0-9\-_$]+)\s+(.+?)(\s*$)} $line match varName varType lineEnd}
+
 #--------------------------------------------------
 # SHELL (Bash)
 dict set lexers SH commentSymbol {#}
@@ -43,6 +44,7 @@ dict set lexers RB tabSize 2
 dict set lexers RB procFindString {(def |class )\s*?PROCNAME}
 dict set lexers RB procRegexpCommand {regexp -nocase -all -- {^\s*?(def|class)\s([a-zA-Z0-9\-_:\?]+?)($|\s|\(.+?\))} $line match keyWord procName params}
 dict set lexers RB varRegexpCommand {regexp -nocase -all -line -- {^\s*?(\w+)\s*=\s*(.+)($)} $line match varName varValue lineEnd}
+
 #--------------------------------------------------
 # YAML (ansible)
 dict set lexers YML commentSymbol {#}
@@ -95,6 +97,8 @@ dict set lexers HTM tabSize 4
 dict set lexers HTM procFindString {<h[0-9]>(<.+>|)PROCNAME(</.+>|)</h[0-9]>}
 dict set lexers HTM procRegexpCommand {regexp -nocase -all -- {<h[0-9]>(<.+>|)(.+?)(</.+>|)</h[0-9]>} $line match v1 procName v2}
 
+#--------------------------------------------------
+# LUA
 dict set lexers LUA commentSymbol {--}
 dict set lexers LUA procFindString {function\s*?PROCNAME}
 dict set lexers LUA procRegexpCommand {regexp -nocase -all -- {^(local|)\s*?(function)\s([a-zA-Z0-9\-_:]+?)\s+\((.+?)\)} $line match v1 keyWord procName params}

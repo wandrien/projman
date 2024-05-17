@@ -31,7 +31,8 @@ namespace eval FileOper {
 
         # lappend cmd $activeProject
         lappend cmd $fileFullPath
-        catch $cmd pipe 
+        # puts $cmd
+        catch $cmd pipe
         # puts $pipe
         if [regexp -nocase -- {(\w+)/([\w\-_\.]+); charset=([[:alnum:]-]+)} $pipe m fType fExt fCharset] {
             puts "$fType $fExt $fCharset"
@@ -43,11 +44,14 @@ namespace eval FileOper {
                 }
             }
         }
+        # линуксовый file не всегда корректно определяет тип файла
+        # используем пакет из tcl
+        lassign [::fileutil::fileType $fileFullPath] fType fBinaryType fBinaryInterp
+        puts "File type is $fType, $fBinaryType, $fBinaryInterp"
+
         switch $fType {
-            "application" {
-                if {$fExt ne "json"} {
-                    return false
-                }
+            "binary" {
+                return false
             }
             "text" {
                 return text
@@ -393,7 +397,7 @@ namespace eval FileOper {
         if {[file exists $fileFullPath] == 0} {
             return false
         } else {
-            # puts [::fileutil::magic::filetype $fileFullPath]
+            puts "$fileFullPath File type [::fileutil::magic::filetype $fileFullPath]"
             set fileType [FileOper::GetFileMimeType $fileFullPath]
         }
         switch $fileType {
