@@ -12,8 +12,8 @@ jobs:
       - name: List files in the repository
         run: |
           git clone https://git.nuk-svk.ru/svk/projman.git
-          ls ${{ gitea.workspace }}
           pwd
-          cd debian
-          ./build-deb-projman.sh
+          ls ${{ gitea.workspace }}
+          #cd debian
+          #./build-deb-projman.sh
       - run: echo "🍏 This job's status is ${{ job.status }}."
