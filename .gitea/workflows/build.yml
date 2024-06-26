@@ -12,7 +12,7 @@ jobs:
       - name: List files in the repository
         run: |
           ls ${{ gitea.workspace }}
-          git clone ${{ gitea.repository }}
+          git clone https://git.nuk-svk.ru/svk/projman.git
           pwd
           cd debian
           ./build-deb-projman.sh
