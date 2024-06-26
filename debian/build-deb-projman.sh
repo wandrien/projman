@@ -19,7 +19,7 @@ sed -i "s+\[pwd\]+/usr/share/projman+g" projman
 
 tar czf ../projman_${VERSION}.orig.tar.gz .
 
-dpkg-buildpackage
+dpkg-buildpackage -d
 
 #cp ../projman_${VERSION}-${RELEASE}_amd64.deb /files/
 
