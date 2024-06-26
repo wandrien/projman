@@ -16,4 +16,6 @@ jobs:
       - name: List files in the repository
         run: |
           ls ${{ gitea.workspace }}
+          cd debian
+          ./build-deb-projman.sh
       - run: echo "🍏 This job's status is ${{ job.status }}."
