@@ -11,8 +11,8 @@ jobs:
       - run: echo "🔎 The name of your branch is ${{ gitea.ref }} and your repository is ${{ gitea.repository }}."
       - name: List files in the repository
         run: |
-          ls ${{ gitea.workspace }}
           git clone https://git.nuk-svk.ru/svk/projman.git
+          ls ${{ gitea.workspace }}
           pwd
           cd debian
           ./build-deb-projman.sh
