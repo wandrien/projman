@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   Projman-Build:
-    runs-on: 056c54762ffa:docker://svk28/tcltk-build-debian:latest
+    runs-on: tcl-tk-builder:docker://svk28/tcltk-build-debian:latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
