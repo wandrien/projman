@@ -14,6 +14,6 @@ jobs:
           git clone https://git.nuk-svk.ru/svk/projman.git
           pwd
           ls ${{ gitea.workspace }}
-          cd ${{ gitea.workspace }}/debian
+          cd ${{ gitea.workspace }}/projman/debian
           ./build-deb-projman.sh
       - run: echo "🍏 This job's status is ${{ job.status }}."
