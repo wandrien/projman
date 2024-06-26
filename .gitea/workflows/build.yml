@@ -3,7 +3,7 @@ run-name: ${{ gitea.actor }} build projman packages
 on: [push]
 jobs:
   Projman-Build:
-    runs-on: tcl-tk-builder
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
