@@ -15,5 +15,5 @@ jobs:
           git clone ${{ vars.main_url }}${{ gitea.repository }}
           pwd
           cd projman/debian
-          ./build-deb-projman.sh"
+          ./build-deb-projman.sh
       - run: echo "🍏 This job's status is ${{ job.status }}."
