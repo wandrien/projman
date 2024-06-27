@@ -6,10 +6,6 @@ jobs:
   Explore-Gitea-Actions:
     runs-on: tcl-tk-builder
     steps:
-      - run: echo "🎉 The job was automatically triggered by a ${{ gitea.event_name }} event."
-      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by Gitea!"
-      - run: echo "🔎 The name of your branch is ${{ gitea.ref }} and your repository is ${{ gitea.repository }}."
-      - run: echo "${{ vars.main_url }}${{ gitea.repository }}"
       - name: Build the packages
         run: |
           git clone ${{ vars.main_url }}${{ gitea.repository }}
@@ -18,4 +14,4 @@ jobs:
           ./build-deb-projman.sh
           cd ../../
           curl --user ${{ vars.user}}:${{vars.api_token}} --upload-file "$(ls -1| grep projman | grep -E 'deb$')" ${{vars.main_url}}api/packages/${{vars.user}}/debian/pool/bookworm/main/upload
-      - run: echo "🍏 This job's status is ${{ job.status }}."
+      - run: echo "This job's status is ${{ job.status }}."
