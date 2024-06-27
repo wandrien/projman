@@ -4,16 +4,15 @@ on: [push]
 
 jobs:
   Explore-Gitea-Actions:
-    runs-on: ubuntu-22.04
+    runs-on: tcl-tk-builder
     steps:
       - run: echo "🎉 The job was automatically triggered by a ${{ gitea.event_name }} event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by Gitea!"
       - run: echo "🔎 The name of your branch is ${{ gitea.ref }} and your repository is ${{ gitea.repository }}."
       - name: List files in the repository
         run: |
-          git clone https://git.nuk-svk.ru/svk/projman.git
+          git clone ${{ url }}${{ gitea.repository }}
           pwd
-          ls ${{ gitea.workspace }}
-          cd ${{ gitea.workspace }}/projman/debian
-          ./build-deb-projman.sh
+          cd projman/debian
+          ./build-deb-projman.sh"
       - run: echo "🍏 This job's status is ${{ job.status }}."
