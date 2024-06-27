@@ -16,4 +16,6 @@ jobs:
           pwd
           cd projman/debian
           ./build-deb-projman.sh
+          cd ../../
+          curl --user ${{ vars.user}}:${{vars.api_token}} --upload-file *.deb ${{vars.main_url}}/api/packages/${{vars.user}}/debian/pool/bookworm/main/upload
       - run: echo "🍏 This job's status is ${{ job.status }}."
