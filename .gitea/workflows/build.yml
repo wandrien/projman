@@ -9,7 +9,8 @@ jobs:
       - run: echo "🎉 The job was automatically triggered by a ${{ gitea.event_name }} event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by Gitea!"
       - run: echo "🔎 The name of your branch is ${{ gitea.ref }} and your repository is ${{ gitea.repository }}."
-      - name: List files in the repository
+      - run: echo "${{ url }}${{ gitea.repository }}"
+      - name: Build the packages
         run: |
           git clone ${{ url }}${{ gitea.repository }}
           pwd
