@@ -1,5 +1,11 @@
+projman (2.0.0-alpha2) stable; urgency=medium
+
+  * Fixed incorrect replacement of an expression when searching if there are multiple matches in a string
+
+ -- Sergey Kalinin <svk@nuk-svk.ru>  Wed, 17 Jul 2024 12:20:00 +0300
+
 projman (2.0.0-alpha) stable; urgency=medium
 
- * Initial release
- 
--- Sergey Kalinin <svk@nuk-svk.ru>  Wed, 20 Jul 2022 16:56:31 +0300
+  * Initial release
+
+ -- Sergey Kalinin <svk@nuk-svk.ru>  Wed, 27 Nov 2021 12:20:00 +0300
