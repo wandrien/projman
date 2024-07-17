@@ -1173,20 +1173,32 @@ namespace eval Editor {
             set lstFindIndex [$txt search -all -nocase -count matchIndexPair $findString $line.$x end]
             # set symNumbers [string length "$findString"]
         }
-        # puts $lstFindIndex
+        puts $lstFindIndex
         # puts $matchIndexPair
         # set lstFindIndex [$txt search -all "$selectionText" 0.0]
+        
+        # Найдем разницу в длине строк для установки правильного
+        # индекса для выделения текста после вставки
+        set stringLengthDiff [expr [string length $findString] - [string length $replaceString]]
+
         set i 0
-        foreach ind $lstFindIndex {
+        foreach ind [lsort -dictionary -decreasing $lstFindIndex] {
             set selFindLine [lindex [split $ind "."] 0]
             set selFindRow [lindex [split $ind "."] 1]
             # set endInd "$selFindLine.[expr $selFindRow + $symNumbers]"
             set endInd "$selFindLine.[expr [lindex $matchIndexPair $i] + $selFindRow]"
-            # puts "$ind; $selFindLine, $selFindRow; $endInd "
+            puts "$ind; $selFindLine, $selFindRow; $endInd "
             if {$replaceString ne ""} {
                 $txt replace $ind $endInd $replaceString
+                # Вычисляем индекс вхождения строки после замены для выделения в тексте
+                if {$stringLengthDiff > 0} {
+                    $txt tag add sel $ind "$endInd - [expr [tcl::mathfunc::abs $stringLengthDiff]] chars"
+                } else {
+                    $txt tag add sel $ind "$endInd + [expr [tcl::mathfunc::abs $stringLengthDiff]] chars"
+                }
+            } else {
+                $txt tag add sel $ind $endInd
             }
-            $txt tag add sel $ind $endInd
             incr i
         }
         .finddialog.lblCounter configure -text "[::msgcat::mc "Finded"]: $i"
