@@ -925,6 +925,7 @@ namespace eval Editor {
         # puts "$nbEditorItem, $nbEditor"
         Editor $fileFullPath $nbEditor $nbEditorItem
         SetModifiedFlag $nbEditorItem $nbEditor
+        focus -force $nbEditorItem.frmText.t.t
     }
     
     proc ReadStructure {txt treeItemName} {
