@@ -1,5 +1,6 @@
 projman (2.0.0-alpha3) stable; urgency=medium
 
+  *  Генерация списка изменений для debian приведена к корректному виду
   *  Исправлен фокус при создании нового файла. #3
 
  -- Калинин Сергей Валерьевич <svkalinin@samsonpost.ru>  Wed, 17 Jul 2024 12:28:30 +0300
@@ -15,8 +16,31 @@ projman (2.0.0-alpha3) stable; urgency=medium
 projman (2.0.0-alpha3) stable; urgency=medium
 
   *  Финальный тест сборки
+  *  Обновить .gitea/workflows/build.yml
+  *  Обновить .gitea/workflows/build.yml
+  *  Обновить .gitea/workflows/build.yml
+  *  Обновить .gitea/workflows/build.yml
   *  Попытка загрузки собранного пакета
+  *  Обновить .gitea/workflows/build.yml
+  *  Обновить .gitea/workflows/build.yml
+  *  Обновить .gitea/workflows/build.yml
+  *  Обновить .gitea/workflows/build.yml
+  *  Обновить .gitea/workflows/build.yml
+  *  Обновить .gitea/workflows/build.yml
+  *  Обновить .gitea/workflows/build.yml
   *  Обновить debian/build-deb-projman.sh
+  *  Обновить .gitea/workflows/build.yml
+  *  Обновить .gitea/workflows/build.yml
+  *  Обновить .gitea/workflows/build.yml
+  *  Обновить .gitea/workflows/build.yml
+  *  Обновить .gitea/workflows/build.yml
+  *  Обновить .gitea/workflows/build.yml
+  *  Обновить .gitea/workflows/build.yml
+  *  Обновить .gitea/workflows/build.yml
+  *  Обновить .gitea/workflows/build.yml
+  *  Обновить .gitea/workflows/build.yml
+  *  Обновить .gitea/workflows/build.yml
+  *  Обновить .gitea/workflows/build.yml
   *  Обновить .gitea/workflows/build.yml
 
  -- svk <svkalinin@samsonpost.ru>  Mon, 24 Jun 2024 10:15:38 +0300
@@ -35,7 +59,7 @@ projman (2.0.0-alpha3) stable; urgency=medium
   *  Обновить .gitea/workflows/build.yml
   *  revert 61f2bca699ce31159c93cf0d07d29aeae1fc964e
 
- -- svk <>  Tue, 20 Aug 2024 13:26:28 +0300
+ -- svk <>  Tue, 20 Aug 2024 13:29:15 +0300
 
 projman (2.0.0-alpha3) stable; urgency=medium
 

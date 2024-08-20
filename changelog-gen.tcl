@@ -51,6 +51,7 @@ switch $tcl_platform(platform) {
 proc ReadGitLog {} {
     global gitCommand
     set cmd exec
+    set i 0
     lappend cmd "$gitCommand"
     lappend cmd "log"
     lappend cmd "--abbrev-commit"
@@ -66,7 +67,8 @@ proc ReadGitLog {} {
         if {[regexp -nocase -all -- {^[0-9a-z]+} $line match]} {
             if {$outBuffer ne ""} {
                 # puts $outBuffer
-                lappend res $outBuffer
+                lappend res [list $i $outBuffer]
+                incr i
             }
             set outBuffer $line
         } else {
@@ -80,32 +82,45 @@ proc ReadGitLog {} {
 }
 
 proc GenerateChangelogDEB {} {
-    puts "GenerateChangelogDEB"
+    global projectName projectVersion projectRelease
+    # puts "GenerateChangelogDEB"
     set lastCommitTimeStamp ""
     set commiter ""
     set commitText ""
     # ReadGitLog
-    set lst [lsort -decreasing [ReadGitLog]]
-    # puts [lindex $lst 0]
+    set lst [lsort -integer -index 0 [ReadGitLog]]
+    # puts $lst
     # exit
-    foreach line $lst {
+    foreach l $lst {
+        set index [lindex $l 0]
+        set line [lindex $l 1]
+        # puts "$index - $line"
         set record [split $line ","]
-        # puts [lindex $record 1]
+        set timeStamp [string trim [lindex $record 1]]
+        set email [string trim [lindex $record 3]]
         if {$lastCommitTimeStamp eq ""} {
             set lastCommitTimeStamp [string trim [lindex $record 1]]
         }
-        # set timeStamp set s [clock scan {Mon Jan 22 17:30:28 2018 +0300}] -format {%a %b %e %H:%M:%S %Y %z”}
-        
-        if {$commiter ne [lindex $record 2]} {
-            puts "\n \[ [string trim $commiter] \]"
+        set timeStamp [clock format [clock scan $timeStamp] -format {%a, %e %b %Y %H:%M:%S %z}]
+        # puts "> $commiter"
+        if {$index == 0} {
+            puts "$projectName ($projectVersion-$projectRelease) stable; urgency=medium\n"
             set commiter [lindex $record 2]
+         	  # puts "\n \[ [string trim $commiter] \]"
+        }
+        # puts ">> $commiter"
+        if {$commiter ne [lindex $record 2]} {
+            puts "\n -- [string trim $commiter] <$email>  $timeStamp"
+            puts "\n$projectName ($projectVersion-$projectRelease) stable; urgency=medium\n"
+            set commiter [lindex $record 2]
+            # puts "\n \[ [string trim $commiter] \]"
         }
         
         set commitTex [lindex $record 4]
         puts "  * $commitTex"
 
     }
-    puts $lastCommitTimeStamp
+    puts "\n -- [string trim $commiter] <$email>  $timeStamp"
 }
 
 proc GenerateChangelogRPM {} {
@@ -115,6 +130,7 @@ proc GenerateChangelogRPM {} {
 
 proc GenerateChangelogTXT {} {
     puts "GenerateChangelogTXT"
+    puts [ReadGitLog]
     
 }
 # puts [ReadGitLog]
@@ -124,6 +140,28 @@ proc ShowHelp {} {
     puts "Usage:\n"
     puts "\tchangelog-gen.tcl {DEB RPM TXT}\n"
     puts "Where{DEB RPM TXT} - changelog format for same packages. The list can be either complete or from any number of elements.\nDefault is a TXT"    
+}
+
+if [info exists env(PROJECT_NAME)] {
+    set projectName $env(PROJECT_NAME)
+    # puts $projectName
+} else {
+    puts "You mast set PROJECT_NAME variable \n"
+    exit
+}
+if [info exists env(PROJECT_VERSION)] {
+    set projectVersion $env(PROJECT_VERSION)
+    # puts $projectVersion
+} else {
+    puts "You mast set PROJECT_VERSION variable \n"
+    exit
+}
+if [info exists env(PROJECT_RELEASE)] {
+    set projectRelease $env(PROJECT_RELEASE)
+    # puts $projectRelease
+} else {
+    puts "You mast set PROJECT_RELEASE variable \n"
+    exit
 }
 
 if { $::argc > 1 } {
@@ -136,6 +174,5 @@ if { $::argc > 1 } {
         }
     }
 } else {
-    GenerateChangelogTXT
+    ShowHelp
 }
-
