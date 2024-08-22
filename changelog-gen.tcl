@@ -17,6 +17,20 @@ exec tclsh "$0" -- "$@"
 
 # puts $tcl_platform(platform)
 
+# Устанавливаем рабочий каталог, если его нет то создаём.
+# Согласно спецификации XDG проверяем наличие переменных и каталогов
+if [info exists env(XDG_CONFIG_HOME)] {
+    set dir(cfg) [file join $env(XDG_CONFIG_HOME) changelog-gen]
+} elseif [file exists [file join $env(HOME) .config]] {
+    set dir(cfg) [file join $env(HOME) .config changelog-gen]
+} else {
+    #set dir(cfg) [file join $env(HOME) .changelog-gen]
+}
+
+if {[file exists $dir(cfg)] == 0} {
+    file mkdir $dir(cfg)
+}
+
 # Use whereis command for finding the git executable file.
 # for unix-like operating systems
 proc GetGitCommandUnix {} {
@@ -49,12 +63,17 @@ switch $tcl_platform(platform) {
 }
 
 proc ReadGitLog {} {
-    global gitCommand
+    global gitCommand lastCommitTimeStampSec projectName
     set cmd exec
     set i 0
     lappend cmd "$gitCommand"
     lappend cmd "log"
     lappend cmd "--abbrev-commit"
+    # Проверяем была ли запись для данного проекта если была то к времени последнего коммита прибавляем 1 сек.
+    # и получаем журнал после этой даты
+    if [info exists lastCommitTimeStampSec] {
+        lappend cmd "--after='[clock format [clock add $lastCommitTimeStampSec 1 second] -format {%a, %e %b %Y %H:%M:%S %z}]'"
+    }
     lappend cmd "--all"
     lappend cmd "--pretty='%h, %ad, %an, %ae, %s, %b'"
     # puts $cmd
@@ -62,15 +81,16 @@ proc ReadGitLog {} {
     # puts $pipe
     set outBuffer ""
     foreach line [split $pipe "\n"] {
+        # puts $line
         # set line [string trim $line]
         set line [string trim [string trim $line] {'}] 
         if {[regexp -nocase -all -- {^[0-9a-z]+} $line match]} {
+            set outBuffer $line
             if {$outBuffer ne ""} {
-                # puts $outBuffer
                 lappend res [list $i $outBuffer]
                 incr i
             }
-            set outBuffer $line
+            # puts $outBuffer
         } else {
             if {$line ne ""} {
                 append outBuffer ". " $line
@@ -78,8 +98,24 @@ proc ReadGitLog {} {
         }
     }
     # puts $res
-    return $res
+    if [info exists res] {
+        return $res
+    } else {
+        puts "\nRepository '$projectName' do not have any changes\n"
+        exit
+    }
 }
+
+proc StoreProjectInfo {projectName projectVersion projectRelease timeStamp} {
+    global dir
+    set cfgFile [open [file join $dir(cfg) $projectName.conf]  "w+"]
+    puts $cfgFile "# set projectVersion \"$projectVersion\""
+    puts $cfgFile "# set projectRelease \"$projectRelease\""
+    puts $cfgFile "set lastCommitTimeStamp \"$timeStamp\""
+    puts $cfgFile "set lastCommitTimeStampSec [clock scan $timeStamp]"
+    close $cfgFile   
+}
+
 
 proc GenerateChangelogDEB {} {
     global projectName projectVersion projectRelease
@@ -106,6 +142,7 @@ proc GenerateChangelogDEB {} {
         if {$index == 0} {
             puts "$projectName ($projectVersion-$projectRelease) stable; urgency=medium\n"
             set commiter [lindex $record 2]
+            StoreProjectInfo $projectName $projectVersion $projectRelease $timeStamp
          	  # puts "\n \[ [string trim $commiter] \]"
         }
         # puts ">> $commiter"
@@ -162,6 +199,10 @@ if [info exists env(PROJECT_RELEASE)] {
 } else {
     puts "You mast set PROJECT_RELEASE variable \n"
     exit
+}
+
+if [file exists [file join $dir(cfg) $projectName.conf]] {
+    source [file join $dir(cfg) $projectName.conf]
 }
 
 if { $::argc > 1 } {
