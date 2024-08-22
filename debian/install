@@ -1,4 +1,5 @@
 projman		/usr/bin/
+changelog-gen		/usr/bin/
 lib/*.tcl	/usr/share/projman/lib
 lib/msgs/*	/usr/share/projman/lib/msgs
 theme	/usr/share/projman/
