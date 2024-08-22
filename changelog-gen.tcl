@@ -194,6 +194,36 @@ proc ShowHelp {} {
     puts "\t--last - The timestamp since the last launch of this program for a given project"
 }
 
+proc StoreChangeLog {outText} {
+    global args
+    if [file exists $args(--out-file)] {
+        file copy -force $args(--out-file) "$args(--out-file).tmp"
+        
+        set origOutFile [open "$args(--out-file).tmp"  "r"]
+        set origText [read $origOutFile]
+        close $origOutFile
+        
+        set outFile [open $args(--out-file)  "w"]
+        puts $outFile $outText
+        puts $outFile $origText
+        close $outFile
+        
+        if [info exists args(--last)] {
+            set outFile [open $args(--out-file)  "r+"]
+            puts $outFile $outText
+            close $outFile
+        } else {
+            set outFile [open $args(--out-file)  "w+"]
+            puts $outFile $outText
+            close $outFile
+        }
+    } else {
+        set outFile [open $args(--out-file)  "w+"]
+        puts $outFile $outText
+        close $outFile
+    }
+}
+
 set arglen [llength $argv]
 set index 0
 while {$index < $arglen} {
@@ -258,32 +288,7 @@ foreach arg [array names args] {
 if [info exists args(--deb)] {
     set outText [GenerateChangelogDEB]
     if [info exists args(--out-file)] {
-        if [file exists $args(--out-file)] {
-            file copy -force $args(--out-file) "$args(--out-file).tmp"
-            
-            set origOutFile [open "$args(--out-file).tmp"  "r"]
-            set origText [read $origOutFile]
-            close $origOutFile
-
-            set outFile [open $args(--out-file)  "w"]
-            puts $outFile $outText
-            puts $outFile $origText
-            close $outFile
-            
-            if [info exists args(--last)] {
-                set outFile [open $args(--out-file)  "r+"]
-                puts $outFile $outText
-                close $outFile
-            } else {
-                set outFile [open $args(--out-file)  "w+"]
-                puts $outFile $outText
-                close $outFile
-            }
-        } else {
-            set outFile [open $args(--out-file)  "w+"]
-            puts $outFile $outText
-            close $outFile
-        } 
+        StoreChangeLog $outText
     }
 }
 if [info exists args(--rpm)] {
