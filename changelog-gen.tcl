@@ -63,7 +63,7 @@ switch $tcl_platform(platform) {
 }
 
 proc ReadGitLog {} {
-    global gitCommand lastCommitTimeStampSec projectName
+    global args gitCommand lastCommitTimeStampSec
     set cmd exec
     set i 0
     lappend cmd "$gitCommand"
@@ -71,7 +71,7 @@ proc ReadGitLog {} {
     lappend cmd "--abbrev-commit"
     # Проверяем была ли запись для данного проекта если была то к времени последнего коммита прибавляем 1 сек.
     # и получаем журнал после этой даты
-    if [info exists lastCommitTimeStampSec] {
+    if {[info exists lastCommitTimeStampSec] && [info exists args(--last)]} {
         lappend cmd "--after='[clock format [clock add $lastCommitTimeStampSec 1 second] -format {%a, %e %b %Y %H:%M:%S %z}]'"
     }
     lappend cmd "--all"
@@ -101,16 +101,16 @@ proc ReadGitLog {} {
     if [info exists res] {
         return $res
     } else {
-        puts "\nRepository '$projectName' do not have any changes\n"
+        puts "\nRepository '$args(--project-name)' do not have any changes\n"
         exit
     }
 }
 
-proc StoreProjectInfo {projectName projectVersion projectRelease timeStamp} {
-    global dir
-    set cfgFile [open [file join $dir(cfg) $projectName.conf]  "w+"]
-    puts $cfgFile "# set projectVersion \"$projectVersion\""
-    puts $cfgFile "# set projectRelease \"$projectRelease\""
+proc StoreProjectInfo {timeStamp} {
+    global dir args
+    set cfgFile [open [file join $dir(cfg) $args(--project-name).conf]  "w+"]
+    puts $cfgFile "# set args(--project-version) \"$args(--project-version)\""
+    puts $cfgFile "# set args(--project-release) \"$args(--project-release)\""
     puts $cfgFile "set lastCommitTimeStamp \"$timeStamp\""
     puts $cfgFile "set lastCommitTimeStampSec [clock scan $timeStamp]"
     close $cfgFile   
@@ -118,7 +118,7 @@ proc StoreProjectInfo {projectName projectVersion projectRelease timeStamp} {
 
 
 proc GenerateChangelogDEB {} {
-    global projectName projectVersion projectRelease
+    global args
     # puts "GenerateChangelogDEB"
     set lastCommitTimeStamp ""
     set commiter ""
@@ -127,6 +127,7 @@ proc GenerateChangelogDEB {} {
     set lst [lsort -integer -index 0 [ReadGitLog]]
     # puts $lst
     # exit
+    set outText ""
     foreach l $lst {
         set index [lindex $l 0]
         set line [lindex $l 1]
@@ -140,24 +141,30 @@ proc GenerateChangelogDEB {} {
         set timeStamp [clock format [clock scan $timeStamp] -format {%a, %e %b %Y %H:%M:%S %z}]
         # puts "> $commiter"
         if {$index == 0} {
-            puts "$projectName ($projectVersion-$projectRelease) stable; urgency=medium\n"
+            puts "$args(--project-name) ($args(--project-version)-$args(--project-release)) stable; urgency=medium\n"
+            append outText "$args(--project-name) ($args(--project-version)-$args(--project-release)) stable; urgency=medium\n\n"
             set commiter [lindex $record 2]
-            StoreProjectInfo $projectName $projectVersion $projectRelease $timeStamp
+            StoreProjectInfo $timeStamp
          	  # puts "\n \[ [string trim $commiter] \]"
         }
         # puts ">> $commiter"
         if {$commiter ne [lindex $record 2]} {
             puts "\n -- [string trim $commiter] <$email>  $timeStamp"
-            puts "\n$projectName ($projectVersion-$projectRelease) stable; urgency=medium\n"
+            append outText "\n -- [string trim $commiter] <$email>  $timeStamp\n"
+            puts "\n$args(--project-name) ($args(--project-version)-$args(--project-release)) stable; urgency=medium\n"
+            append outText "\n$args(--project-name) ($args(--project-version)-$args(--project-release)) stable; urgency=medium\n\n"
             set commiter [lindex $record 2]
             # puts "\n \[ [string trim $commiter] \]"
         }
         
         set commitTex [lindex $record 4]
         puts "  * $commitTex"
+        append outText "  * $commitTex\n"
 
     }
     puts "\n -- [string trim $commiter] <$email>  $timeStamp"
+    append outText "\n -- [string trim $commiter] <$email>  $timeStamp\n"
+    return $outText
 }
 
 proc GenerateChangelogRPM {} {
@@ -175,45 +182,104 @@ proc GenerateChangelogTXT {} {
 proc ShowHelp {} {
     puts "\nChangelog generator from the Git commit history. For DEB and RPM packages"
     puts "Usage:\n"
-    puts "\tchangelog-gen.tcl {DEB RPM TXT}\n"
-    puts "Where{DEB RPM TXT} - changelog format for same packages. The list can be either complete or from any number of elements.\nDefault is a TXT"    
+    puts "\tchangelog-gen \[options\]\n"
+    puts "Where options:"
+    puts "\t--project-name - name of project (package) "
+    puts "\t--project-version - package version"
+    puts "\t--project-release - package release name (number)"
+    puts "\t--deb - debian package format of changelog"
+    puts "\t--rpm - rpm package format of changelog"
+    puts "\t--txt - plain text changelog out"
+    puts "\t--out-file - changelog file name"
+    puts "\t--last - The timestamp since the last launch of this program for a given project"
 }
 
-if [info exists env(PROJECT_NAME)] {
-    set projectName $env(PROJECT_NAME)
-    # puts $projectName
-} else {
-    puts "You mast set PROJECT_NAME variable \n"
-    exit
-}
-if [info exists env(PROJECT_VERSION)] {
-    set projectVersion $env(PROJECT_VERSION)
-    # puts $projectVersion
-} else {
-    puts "You mast set PROJECT_VERSION variable \n"
-    exit
-}
-if [info exists env(PROJECT_RELEASE)] {
-    set projectRelease $env(PROJECT_RELEASE)
-    # puts $projectRelease
-} else {
-    puts "You mast set PROJECT_RELEASE variable \n"
-    exit
-}
-
-if [file exists [file join $dir(cfg) $projectName.conf]] {
-    source [file join $dir(cfg) $projectName.conf]
-}
-
-if { $::argc > 1 } {
-    foreach arg $::argv {
-        switch -glob -nocase $arg {
-            DEB {GenerateChangelogDEB}
-            RPM {GenerateChangelogRPM}
-            TXT {GenerateChangelogTXT}
-            *help {ShowHelp}
+set arglen [llength $argv]
+set index 0
+while {$index < $arglen} {
+    set arg [lindex $argv $index]
+    switch -exact $arg {
+        --project-name {
+            set args($arg) [lindex $argv [incr index]]
+        }
+        --project-version {
+            set args($arg) [lindex $argv [incr index]]
+        }
+        --project-release {
+            set args($arg) [lindex $argv [incr index]]
+        }
+        --deb {
+            set args($arg) true
+        }
+        --rpm {
+            set args($arg) true
+        }
+        --txt {
+            set args($arg) true
+        }
+        --out-file {
+            set args($arg) [lindex $argv [incr index]]
+        }
+        --last {
+            set args($arg) true
+        }
+        --help {
+            ShowHelp
+            exit
+        }
+        default  {
+            set filename [lindex $argv $index]
         }
     }
-} else {
-    ShowHelp
+    incr index
 }
+
+if ![info exists args(--project-name)] {
+    puts "You mast set --project-name option\n"
+    exit
+}
+if ![info exists args(--project-version)] {
+    puts "You mast set --project-version option\n"
+    exit
+}
+if ![info exists args(--project-release)] {
+    puts "You mast set --project-release option\n"
+    exit
+}
+
+if [file exists [file join $dir(cfg) $args(--project-name).conf]] {
+    source [file join $dir(cfg) $args(--project-name).conf]
+}
+
+foreach arg [array names args] {
+    puts "$arg $args($arg)"
+}
+
+if [info exists args(--deb)] {
+    set outText [GenerateChangelogDEB]
+    if [info exists args(--out-file)] {
+        if [file exists $args(--out-file)] {
+            if [info exists args(--last)] {
+                set outFile [open $args(--out-file)  "r+"]
+                puts $outFile $outText
+                close $outFile
+            } else {
+                set outFile [open $args(--out-file)  "w+"]
+                puts $outFile $outText
+                close $outFile
+            }
+        } else {
+            set outFile [open $args(--out-file)  "w+"]
+            puts $outFile $outText
+            close $outFile
+        } 
+    }
+}
+if [info exists args(--rpm)] {
+    GenerateChangelogRPM
+}
+if [info exists args(--txt)] {
+    GenerateChangelogTXT
+}
+
+
