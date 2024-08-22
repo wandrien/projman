@@ -173,9 +173,43 @@ proc GenerateChangelogRPM {} {
 }
 
 proc GenerateChangelogTXT {} {
-    puts "GenerateChangelogTXT"
-    puts [ReadGitLog]
-    
+    global args
+    set lastCommitTimeStamp ""
+    set commiter ""
+    set commitText ""
+    set lst [lsort -integer -index 0 [ReadGitLog]]
+    puts "$args(--project-name) ($args(--project-version)-$args(--project-release)"
+    foreach l $lst {
+        set index [lindex $l 0]
+        set line [lindex $l 1]
+        # puts "$index - $line"
+        set record [split $line ","]
+        set timeStamp [string trim [lindex $record 1]]
+        set email [string trim [lindex $record 3]]
+        if {$lastCommitTimeStamp eq ""} {
+            set lastCommitTimeStamp [string trim [lindex $record 1]]
+        }
+        set timeStamp [clock format [clock scan $timeStamp] -format {%a, %e %b %Y %H:%M:%S %z}]
+        # puts "> $commiter"
+        if {$index == 0} {
+            append outText "$args(--project-name) ($args(--project-version)-$args(--project-release))\n"
+            set commiter [lindex $record 2]
+            puts "\n[string trim $commiter] <$email>  $timeStamp"
+            append outText "\n[string trim $commiter] <$email>  $timeStamp\n"
+            StoreProjectInfo $timeStamp
+        }
+        if {$commiter ne [lindex $record 2]} {
+            puts "\n[string trim $commiter] <$email>  $timeStamp"
+            append outText "\n[string trim $commiter] <$email>  $timeStamp\n"
+            set commiter [lindex $record 2]
+        }
+        
+        set commitTex [lindex $record 4]
+        puts "  - $commitTex"
+        append outText "  - $commitTex\n"
+
+    }
+    return $outText
 }
 # puts [ReadGitLog]
 
@@ -295,7 +329,9 @@ if [info exists args(--rpm)] {
     GenerateChangelogRPM
 }
 if [info exists args(--txt)] {
-    GenerateChangelogTXT
+    set outText [GenerateChangelogTXT]
+    if [info exists args(--out-file)] {
+        StoreChangeLog $outText
+    }
 }
-
 
