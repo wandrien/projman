@@ -4,3 +4,5 @@ debian/update-desktop-database
 debian/projman.substvars
 debian/files
 debian/projman.debhelper.log
+debian/*.tmp
+*.tmp

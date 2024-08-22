@@ -1,138 +1,350 @@
-######################################################
-#	Tcl/Tk Project manager 2.0
-#	Distributed under GNU Public License
-# Author: Sergey Kalinin svk@nuk-svl.ru
-# Home page: https://nuk-svk.ru
-######################################################
+projman (2.0.0-alfa16)
 
-20/06/2022
-    - Beginning the project
+Sergey Kalinin <svk@nuk-svk.ru>  Thu, 22 Aug 2024 15:09:19 +0300
+  -  changelog-gen.tcl: Добавлена генерация текстового журнала изменений
+  -  build-deb-projman.sh: добавлена генерация changelog  из  git log
+  -  changelog-gen.tcl: Вывод в файл вынесен в отдельную процедуру
+  -  changelog-gen.tcl: Добавлено создание резервной копии выходного файла. Исправлен вывод в файл.
+  -  changelog-gen.tcl: Добавлены опции командной строки
+  -  Добавлен запуск changelog-gen при сборке пакета
+  -  Добавлено чстение журнала начиная с определенной даты
+  -  Новая сборка
 
-13/07/2022
-    - Added open file dialog
-    - Added open folder dialog
-    - Added save file function
-    - Added a command line argument support (open file(s) or folder(s))
-    - Added TCL and BASH highlite
-    - Added a configuration file (progman.ini) and a procedure for reading/saving them
+Sergey Kalinin <svkalinin@samsonpost.ru>  Tue, 20 Aug 2024 13:30:43 +0300
+  -  Генерация списка изменений для debian приведена к корректному виду
+  -  Генерация списка изменений для debian приведена к корректному виду
+  -  Исправлен фокус при создании нового файла. #3
 
-14/07/2022
-    - Added On/Off viewing toolbar
-    - Added On/Off viewing line numbers bar
-    - Added a Comment/Uncomment text support
-    - Added text auto format
+Калинин Сергей Валерьевич <svkalinin@samsonpost.ru>  Wed, 17 Jul 2024 12:28:30 +0300
+  -  Исправлена неправильная замена выражение при поиске
+  -  Исправлена неправильная замена выражение при поиске
+  -  Реализовал базовые функции генератора журнала изменений
 
-15/07/2022
-    - Added a close file (tab) function with Ctrl+w
-    - Added a insert/remove the tabspace
-    - Fixed comment/uncomment selected text
+svk <svkalinin@samsonpost.ru>  Mon, 24 Jun 2024 10:15:38 +0300
+  -  Добавлена иконка для jinja template
+  -  Исправил остатки слияния веток
+  -  Исправлено некорректное определение типа файла при открытии.
 
-20/07/2022
-    - Fixed indent text
-    - Fixed insert " and '
-    - Added a main window geometry option into config, and autosave current geometry
+ <svk@nuk-svk.ru>  Mon, 30 Oct 2023 09:46:02 +0300
+  -  Gitea actions add
 
-21/07/2022
-    - Added Save file dialog before tab was closed
-    - Added Save file dialog when exiting, if file was modify
-    
-22/07/2022
-    - Added GO highlight
-    
-27/07/2022
-    - Fixed comment/uncomment procedure (last line in selected text)
-    - Fixed error with save new (untitled) file
+svk <svkalinin@samsonpost.ru>  Thu, 27 Jul 2023 13:04:32 +0300
+  -  Merge branch 'master' of https://git.nuk-svk.ru/svk/projman
+  -  Исправил открытие файлов с разными путями (~/ ./ ../)
 
-01/08/2022
-    - Added inserting base64 encoded image
-    - Added read the file structure and inserting into tree
-    - Added GUI font, and GUI foreground color setting
-    - Added tcl and go files images
-    - Added image for file type (extention)
+svkalinin <svk@nuk-svk.ru>  Thu, 23 Feb 2023 13:46:56 +0300
+  -  Добавил изображений программы
 
-03/08/2022
-    - Added some files icon
-    - Fix finded procedure (function) (tree click)
-    - Fix showing position in statusbar 
+svk <svkalinin@samsonpost.ru>  Mon,  6 Feb 2023 09:27:38 +0300
+  -  Исправлена ошибка при создании нового файла.
 
-12/08/2022
-    - Fixed comment/uncomment procedure depending on the file type
-    - Added About dialog
-    - Fixed read structure (procedure names like Proc:Name)
-    
-15/08/2022
-    - Added open/close braces highlight
-    - Fixed GO structure reader
+svk <svkalinin@samsonpost.ru>  Wed, 21 Dec 2022 16:53:44 +0300
+  -  Добавил пиктограммы файлов
+  -  Исправил процедуру Files::CloseAll ('Закрыть всё')
+  -  Добавлена поддержка Lua
+  -  Исправлена процедура (рас)комментирования
+  -  Исправил ошибку при выходе в процедуре (Congig::Write)
+  -  Добавил раскраски в ruby
+  -  Добавлена возможность многострочных комментариев
+  -  В Ruby lexer добавлен поиск переменных коде.
+  -  Новая сборка
+  -  Немного почистил. Добавлен поиск переменных по питоньим исходникам (lexer)
+  -  Еще одно исправление подсветки для INI
+  -  Новая сборка
+  -  Исправлене подсветки комментариев в INI
+  -  Новая сборка
+  -  Изменения в подсветке для INI
+  -  Добавил подсветку для Desktop и Spec  файлов
+  -  Добавил вывод отладочной инфы в процедуру
+  -  Исправил подсветку комментариев в TCL
+  -  Оптимизация процедур
+  -  Добавлена подсветка и навигация по HTML. Исправлена подсветка XML
+  -  Новая сборка
+  -  Добавил иконку для изображений
+  -  Добавил иконки для perl
+  -  Исправлена подсветка и навигация по коду для Ruby
+  -  Обновил список изменений
+  -  Исправлено сохранение сессии в редакторе (открытие папки и файлов при следующем запуске)
+  -  Добавлена новая секция UserSession
+  -  Исправление ошибки при открытии файла
+  -  Добавлена поддержка INI-файлов (подсветка
+  -  Добавлена поддержка perl
+  -  Добавил икогнку для файлов git
+  -  Новая сборка
+  -  Добавлены иконуи для ключей и сертификатов. Изменен поиск иконки (вощзвращает теерь с размером)
+  -  Новая чборка
+  -  Реализован двухпанельный режим работы (вертиикальное разделение)
+  -  ДОбавил сборку в drone
+  -  Исправлена  ошибка при открытии ansible.cfg
+  -  Добавил деактивацию кнопки 'Создать репу' если не выбран активный проект (не открыто ни одного каталога/папки)
+  -  Добавлены команды git init и git config (зачаток). Изменен диалог клонирования репозитория (добавлена кнопка Создать репозиторий)
+  -  Исправил ошибку git при открытии файла или каталога если репозиторий не инициализирован (нет .git  каталога внутри проекта)
+  -  Переименовал файл
+  -  Добавил скриты сборки rpm
+  -  Добавлено обрамление выделенного текста прии нажатии '_' в markdown
+  -  Исправление подсветки
+  -  Добавлена поддержка markdown (подсветка
+  -  Обновил описание
+  -  Новая сборка
+  -  Исправлена ошибка с закрытием файлов в редакторе при закрытии папки
+  -  Новая сборка
+  -  Переделана процедура определения активного проекта. Исправлено определение ветки git. Теперь можно нормально работать в двух и более открытых проектах (каталогах/папках)
+  -  Новая сборка
+  -  Доделан вид диалога поиска по файлам
+  -  Исправлен поиск имени функции
+  -  Новая сборка
+  -  Добавлен диалог клонирования репозитория
+  -  Добавил разделитель
+  -  Исправлено переключение вкладок при закрытии
+  -  Исправлено закрытиие вкладки Git  по нажатию соотв. кнопки в панели инструментов
+  -  Добавлен пункт 'Закрыть всё'
+  -  Новая сборка
+  -  Исправлено соответствие открытого файла в редакторе и выделение этого файла в дереве
+  -  Исправлено переключение отображения панели (лево/право) в без перезапуска программы.
+  -  Украшательства интерфейса - Реакция на нажатие кнопки в панели инструментов теперь зависит от контекста
+  -  Добавлено включение отключение отображения Меню
+  -  Добавлено копирование текущей строки в буфер по Atl+Y
+  -  Исправлена ошибка с отображением файловой панели
+  -  Добавлены и исправлены функции отображения меню
+  -  Фикс
+  -  Добавлен параметр statusBarShow - показ строки статуса
+  -  Добавлены переводы
+  -  Добавлена проверка параметров вызова файл или просто строка
+  -  Новая сборка
+  -  Добавлен вывод сообщений об ошибке в диалоге
+  -  Добавлено обновления списка файлов в дереве
+  -  Добавлена процедура вывода информационного сообщения
+  -  Добавлена команда Git::Reset (git reset _file_) на кнопке в диалоге. Для отмены 'git add'
+  -  Добавлена кнопка Обновление в диалог работы с Git
+  -  Исправление процедуры поиска наименования функции
+  -  Фиксы диалога работы с Git (работа с выделенными файлами в списках)
+  -  Фиксы и тесты работы с git
+  -  Исправление выборанескольких файлов в диалоге Git
+  -  Новая сборка
+  -  Украшательства
+  -  Новая сборка
+  -  Исправление рег. выражения чтения файлов командой git status
+  -  Настройки темы
+  -  Исправлено рег. выпражение определения mime типа файла
+  -  Ntvs
+  -  Новая сборка
+  -  Добавил очистку текстовых полей при добавлении файлов в коммит
+  -  Исправрелдение Git::Commit (индексация всех файлов в проекте)
+  -  Изменения
+  -  Исправления глюков
+  -  Украшательства строки статуса
+  -  Добавлен просмотрщик изображений
+  -  Добавил рамку кону ввода номера
+  -  Добавлен диалог перехода по номеру строки Ctrl-G
+  -  Добавлено определение типа файла
+  -  Новая сборка
+  -  Добавил удаление артефактов сборки пакета
+  -  Новая сборка
+  -  Добавлена подсветка имен файлов в выводе git show
+  -  Новая сборка
+  -  Допилдивание процедуры автоввода имен переменных
+  -  Небольшие правки в подсказках по переменным
+  -  Новая сборка
+  -  Исправлена подсветка SHELL переменных а YAML файлах (ansible
+  -  Новая сборка. Добавлена подсказка по переменным при вводе.
+  -  Добавлено определение символа переменной
+  -  Определение коррректного положения встроенного окна
+  -  Новая сборка
+  -  Добавлен вывод подсказки при вводе переменных
+  -  Добавлены опции для включсения полджсказок по переменным и процедурам
+  -  Новая сборка
+  -  Исправления гуя
+  -  Добавил диалог создания и переключения git-веток
+  -  Создание ветки
+  -  Новые иконки
+  -  Косметические изменения
+  -  Починил push
+  -  Добавлены новые иконки
+  -  Обработка ошибок
+  -  Новая сборка
+  -  Исправлена ошибка при клике на списке с файлами
+  -  New build
+  -  Сделал просмотр изменений из истории
+  -  Добавлено обновление лога изменений
+  -  Новый билд
+  -  Исправление обновления диалога
+  -  Добавлен перевод
+  -  git reflog
+  -  Добавлен интерфейс работы с Git
+  -  Новый релиз
+  -  Исправил ошибку если нет изменений
+  -  Начало работ по поддержке git
+  -  New build
+  -  Bug fix
+  -  Добавлен диалог поиска строки в файлах в текущем каталоге. Используется 'grep -r'.
+  -  Добавлены настройки для системной команды поиска в фвайлах
+  -  Добавлено рекурсивное чтение каталога при открытии. Диалог поиска теперь работает раздельно при разделении окна. Диалог навигации по функци так-же работает раздельно
+  -  Добавлены ключевые слова для подстветки питона
+  -  Добавлена проверка на отсутствие файла и удаление из дерева
 
-16/08/2022
-    - Added selection of all words in the text by clicking on the any word
-    
-17/08/2022
-    - Added "Vew Panel" menu and "Panel side" (left/right)
-    - Changed standard Tk menu on TTK::menu
-    - Added config options filesPanelPlace (left/right)
-    - Fixed ViewFilesTree procedure with rigth variable filesPanelShow (true/false)
+svkalinin <svk@nuk-svk.ru>  Sun, 18 Sep 2022 10:46:59 +0300
+  -  Добавлен поиск переменной в тексте после открытия файла где она указана
+  -  Исправлена ошибка при запуске
 
-22/08/2022
-    - Fixed clicking on proc or func names into tree if file was closed
+Sergey Kalinin <svkalinin@samsonpost.ru>  Fri, 16 Sep 2022 16:37:17 +0300
+  -  Новая сборка
+  -  Исправил сохранение открытого каталога в настройках
+  -  Рефакторинг
+  -  Переделал дилог навигации по переменным
+  -  Добавлен еще один каталог с переменными - default
+  -  Добавлено сохранение состояния редактора (открытые каталоги
+  -  Изменения в диалоге поиска
+  -  Отображение горизонтальной полосы прокрутки в зависимости от переноса строк в редакторе
+  -  Установка фокуса на текст в редакторе при щелчке на заголовок вкладки
+  -  Сделал перемещение курсора в такуюже позицию в тексте при разделении окна редактора
+  -  Добавлено горизонтальное разделение окна редактора. Исправлено удаление строки по Alt+R - реперь строка удаляется полностью вместе с символами переноса. Исправлено сохранение нового файла (untitled) но всеравно как-то криво.
+  -  Изменения по чтению и отображению переменных по файлам. Причесал диалог
 
-23/08/2022
-    - Added procedure and function navigation window by Ctrl+j pressed on editor
-    - Fixed correctly focused on editor text widget
+Sergey Kalinin <svkalinin@samsonpost.ru>  Fri,  2 Sep 2022 17:01:53 +0300
+  -  Добавил поддержку ruby
+  -  Исправлен выход окна со списком функций за пределы экрана. Поиск и замена теперь работает. Добавлены некоторые иконки для файлов
+  -  Начало реализации процедуры поиска и замены (поиск криво но работает)
+  -  Исправлено закерытие вкладки по щелчку мыши. Добавлена настройка переноса строк в редакторе. Добавлены сочетания клавиш ctrl+pgup cntrl+pgdown  для переключения  между вкладками редактора. Добавлен диалог закрытия папки (каталога)
+  -  Укоротил имя корневого каталога в дереве
+  -  Добавлены ключиевые слова GO
+  -  Исправлена подсветка ключевых слов tcl  и добавлены виджеты
+  -  Исправлена некорректная установка иконки на каталог
+  -  Добавлены горячие клавиши для удаления слова
+  -  Добавлены сочетания клавиш для удаления слова
 
-24/08/2022
-    - Fixed ReadStructure procedure (added lexer)
+svkalinin <svk@nuk-svk.ru>  Fri, 26 Aug 2022 12:36:14 +0300
+  -  Изменил(а) на 'README.md'
 
-25/08/2022
-    - Fixed focus on the editor window after clicking Escape in the function selection dialog
-    - Change color scheme for FindFunction dialog
-    - Added sh icon (for shell scripts)
-    - Fixed lexers for find procedures and functions
+svk <svkalinin@samsonpost.ru>  Fri, 26 Aug 2022 12:29:19 +0300
+  -  Добавлена поддержка python. Обновлена библиотека иконок.
+  -  Исправлена установка фокуса на окно диалога GotoFunctionDialog и обратно на текст. Переделан механизм чтения структуры файла и добавлены команды для sh (bash)
+  -  Добавлены настройки темы для диалога навигации по функциям
+  -  Добавлена иконка shell (*.sh)
+  -  Исправлено комментирование строк
+  -  Добавлен диалог навигации по структуре (процедурам) по Ctrl+F. Исправлена ошибка при закрытии файлов (функции из дерева теперь удаляются).
+  -  Добавил цвет фона для панели с номерами строк
 
-26/08/2022
-    - Update image library (added some icons)
-    - Added hot keys:
-        - Alt+p - Show/Hide additional panel
-        - Alt+w - delete word on the cursor below
-        - Alt+r - delete row
-        - Alt+b - delete text beetween line Begin and cursor
-        - Alt+e - delete text between cursor and line End
-    - Fix close braces indent
+svkalinin <svk@nuk-svk.ru>  Wed, 17 Aug 2022 21:37:06 +0300
+  -  Убрал доки по tcl
+  -  Слегка поменял стиль оформления
 
-30/08/2022
-    - Fix the clicked by the close button on a tab
-    - Added "View"->"Editors word wrap" menu and procedure
-    - Added bindings "Ctrl+PgUp" and "Ctrl+PgDown" for next or prior tab selecting
-    - Added "Close file" dialog
+Sergey Kalinin <svkalinin@samsonpost.ru>  Wed, 17 Aug 2022 16:52:22 +0300
+  -  Добавлен выбор расположения боковой панели
+  -  Добавлено выделение всех слов в тексте по двойному щелчку мышой на любом слове
+  -  Исправлено чтение структуры GO файлов: корректное отображение в дереве функций возвращающих значения разных типов
+  -  Добавлена подсветка скобок
+  -  Новая сборка
+  -  Исправлены процедуры comment/uncomment
+  -  Изменены имена переенных
+  -  Изменены имена переменных
+  -  Добавлена запись номера сборки (build) в исходник
+  -  Добавлено меню Помощь -> О программе. Добавлено окно 'О программе'
+  -  Исправлен поиск процедуры в тексте по клику в дереве
+  -  Исправлен поиск процедуры в тексте по клику в дереве. Исправлено отображение позиции курсора в строке статуса
+  -  ДОбавлены иконки для некоторых типов файлов
+  -  Добавлено отображение структуры исходника в дереве (функции (go) и процедуры (tcl))
+  -  Добавлено кодирование изображения в base64 и вставка в редактируемый текст
+  -  Добавлены шрифт и цвет шриыта для общего интерфейса
+  -  Исправлено комментирование выделенного фрагмента (последняя строка) Исправлено закрытие untitled вкладок
+  -  Исправлено комментирование выделенных строк
+  -  Добавлена подсветка для GO
+  -  Исправлено подключение требуемой процедуры подсветки
+  -  Убрал вставку закрывающихся кавычек в пустой строке. Ибо пока глючит.
+  -  Добавлен диалог сохранения файла при закрытии вкладки редактора и при выходе из программы если есть несохраненные файлы
+  -  Исправлен рабочий каталог
+  -  Добавлены переводы для диалога
+  -  Исправлен скрипт сборки пакета для Debian
+  -  Исправил скрипт сборки пакета. Добавил .gitignore
 
-01/09/2022
-   - Added search function name into Function navigation whem press key
-   - Added find and replace dialog
-   - Fixed correct placement the Function dialog 
+svkalinin <svk@nuk-svk.ru>  Thu, 21 Jul 2022 12:18:29 +0300
+  -  Изменил(а) на 'README.md'
 
-14/09/2022
-    - Added procedure for the horizontal split a text window
-    - Fixed untitled file saved
-    - Fixed Alt+R (delete row), now will are deleted row with a "\n\r" symbols
-    
-20/10/200
-    - Added Git support: add and commit changes, show git log, show each commit...
+svk <svkalinin@samsonpost.ru>  Thu, 21 Jul 2022 12:15:19 +0300
+  -  Change readme
+  -  Added Dark theme
+  -  New version of ProjMan
+  -  Some changes into GUI (tabs)
 
-11/11/2022
-    - Added GoTo Line dialog
-    - Fixed Git commit procedure
-    - Added variable and procedure helper
+svkalinin <banzaj28@yandex.ru>  Thu,  5 Jul 2018 08:41:18 +0300
+  -  Fixed error if file was not select
+  -  README.md отредактирован онлайн на Bitbucket
 
-18/11/2022
-    - Add Refresh button into Git Dialog
-    - Fixed FindFunction
+Sergey Kalinin <banzaj28@yandex.ru>  Sat, 24 Mar 2018 12:20:27 +0300
+  -  Rename readme
 
-07/12/2022
-    - Added Perl language support
-    - Added INI-files support
-    - Added MD-files structure navigation
-    - Fixed saving user session and opening files and folders at the next start
-    - Added buttons "Git clone" and "Git init" in the dialog box displayed when the Git button is pressed
-    
-27/07/2023
-   - Fixed opening files and directoryes from command line if their name is relative
+Sergey <banzaj28@yandex.ru>  Sat, 24 Mar 2018 12:17:09 +0300
+  -  README отредактирован онлайн на Bitbucket
+  -  Added sort procedure for projects tree
+  -  Added small toolbar into project tree
+  -  Added insert base64 encoded image into source code
+  -  Some GUI change
+  -  Change messages files
+  -  Added Menu button into tollbar and Hide/Show options into config
+  -  Added procedure arguments into tree Change read config procedure (error fixed) Fixed error when project running
+  -  Some Fix
+  -  GoToNumber entry small change
+  -  GoToLine procedure tuning
+  -  Added GoTo line into toolbar Fixed fileinfo update when tree one click Fixed bug with opened files have extention is a upper case
+  -  Critical fix again
+
+Sergey Kalinin <banzaj28@yandex.ru>  Sat, 24 Feb 2018 18:16:01 +0300
+  -  Critical bug fixed with create project
+  -  Refactoring all procedures is the Tree working
+
+Sergey <svk@s.kalinin-nb>  Sat, 24 Feb 2018 12:22:08 +0300
+  -  Fixed Add new file if name was existing into tree
+
+svk <banzaj28@yandex.ru>  Fri, 23 Feb 2018 11:58:39 +0300
+  -  Rename archive projman-latest
+  -  Fixed AddToProj procedure for file browser tree Disable OpComplite procedure
+  -  Refactoring Settigs procedure source code Some changes into messages files (localisation)
+  -  Added option "constrainedwidth true" for ScrollableFrame
+  -  Fix saving "Show dot files" option Fixed correctly highlightning procedure names
+  -  Refactoring auto update file structure (tree). Now structure updated when file was saving Refactoring "Settings" dialog
+  -  Fix "New file" proc ctrl+n hotkey
+  -  - Fixed edit files into root node from file browser tree - Change "Delete project" dialog and procedure
+  -  Refactoring "Add New Projects" "Project Settings" (e.t.c.) dialogs Added "Add as new project" dialog for file browser Add popup menu for file browser Fixed some highlight bug
+  -  Fixed runing on Win7 without installation
+  -  Added opening last active project when project run
+  -  Fixed parsing procedure with names like ::proc::name or proc_na::me(aa) and parameters {{} {} {}}
+  -  Put logo and icon images into source code
+  -  Fixed AutoComplite precedure for TCL/TK-projects Added colored icon for main window Fixed "Close all" procedure if opened files from projects and file browser
+  -  Added saving main window geometry into projman.conf file when close programm
+  -  Merge branch 'master' of https://bitbucket.org/svk28/projman
+  -  Delete temp file
+  -  bitbucket-pipelines.yml отредактирован онлайн на Bitbucket
+  -  change docker image
+  -  add apt
+  -  bitbucket-pipelines.yml отредактирован онлайн на Bitbucket
+  -  Initial Bitbucket Pipelines configuration
+  -  Add web site into Readme
+  -  Added gray theme Fixed work with file from directory but not project.
+  -  Some FileDialog fixes
+  -  File Browser added
+  -  Auto indent added for () [] braces
+  -  Some changes
+  -  Change hotkeys "Control+
+  -  Add comment/uncomment selected text
+  -  Tcl
+  -  - Russian help files was conerting into utf-8 encode
+  -  Change Logo and About dialog (added new homepage and git repo addresses)
+  -  Added binding mouse button: click on notebook tab highlight opened file name in tree Change "Paste from Clipboard" function Change popup editor menu (undo
+  -  Modules load procedure changes
+  -  Remove some files
+  -  GiTK running fixed
+  -  Fixed paste text highlight Fixed setting edited flag when paste the text from buffer Change authors email and home page
+
+Sergey Kalinin <svk@kalinin.carfix>  Mon, 22 Jan 2018 17:54:18 +0300
+  -  - Remove ctags support - Added gitk (gui for git) support
+  -  Change version into Install.tcl script
+
+svk <svk@l0001h.office>  Fri, 12 Jan 2018 13:44:26 +0300
+  -  README отредактирован онлайн на Bitbucket
+  -  test.tcl deleted online with Bitbucket
+
+Sergey Kalinin <banzaj28@gmail.com>  Mon, 19 Oct 2015 14:22:09 +0300
+  -  some bugs in install.tcl fixed
+
+svk28 <ksv@L-AO-TEH1.DALS.local>  Mon, 19 Oct 2015 13:37:21 +0300
+  -  Initial commit with contributors
+  -  Initial release

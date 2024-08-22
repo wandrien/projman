@@ -1,117 +1,66 @@
-projman (2.0.0-alpha3) stable; urgency=medium
+projman (2.0.0-alpha16) stable; urgency=medium
+
+  *  build-deb-projman.sh: добавлена генерация changelog  из  git log
+  *  changelog-gen.tcl: Вывод в файл вынесен в отдельную процедуру
+  *  changelog-gen.tcl: Добавлено создание резервной копии выходного файла. Исправлен вывод в файл.
+  *  changelog-gen.tcl: Добавлены опции командной строки
+  *  changelog-gen.tcl: Добавлена генерация текстового журнала изменений
+  *  Добавлен запуск changelog-gen при сборке пакета
+  *  Добавлено чстение журнала начиная с определенной даты
+  *  Новая сборка
+
+ -- Sergey Kalinin <svk@nuk-svk.ru>  Thu, 22 Aug 2024 13:38:52 +0300
+
+projman (2.0.0-alfa15) stable; urgency=medium
 
   *  Генерация списка изменений для debian приведена к корректному виду
   *  Исправлен фокус при создании нового файла. #3
 
  -- Калинин Сергей Валерьевич <svkalinin@samsonpost.ru>  Wed, 17 Jul 2024 12:28:30 +0300
 
-projman (2.0.0-alpha3) stable; urgency=medium
+projman (2.0.0-alfa14) stable; urgency=medium
 
-  *  Исправлена неправильная замена выражение при поиске
   *  Исправлена неправильная замена выражение при поиске
   *  Реализовал базовые функции генератора журнала изменений
 
  -- svkalinin <svk@nuk-svk.ru>  Thu, 27 Jun 2024 14:44:47 +0300
 
-projman (2.0.0-alpha3) stable; urgency=medium
-
-  *  Финальный тест сборки
-  *  Обновить .gitea/workflows/build.yml
-  *  Обновить .gitea/workflows/build.yml
-  *  Обновить .gitea/workflows/build.yml
-  *  Обновить .gitea/workflows/build.yml
-  *  Попытка загрузки собранного пакета
-  *  Обновить .gitea/workflows/build.yml
-  *  Обновить .gitea/workflows/build.yml
-  *  Обновить .gitea/workflows/build.yml
-  *  Обновить .gitea/workflows/build.yml
-  *  Обновить .gitea/workflows/build.yml
-  *  Обновить .gitea/workflows/build.yml
-  *  Обновить .gitea/workflows/build.yml
-  *  Обновить debian/build-deb-projman.sh
-  *  Обновить .gitea/workflows/build.yml
-  *  Обновить .gitea/workflows/build.yml
-  *  Обновить .gitea/workflows/build.yml
-  *  Обновить .gitea/workflows/build.yml
-  *  Обновить .gitea/workflows/build.yml
-  *  Обновить .gitea/workflows/build.yml
-  *  Обновить .gitea/workflows/build.yml
-  *  Обновить .gitea/workflows/build.yml
-  *  Обновить .gitea/workflows/build.yml
-  *  Обновить .gitea/workflows/build.yml
-  *  Обновить .gitea/workflows/build.yml
-  *  Обновить .gitea/workflows/build.yml
-  *  Обновить .gitea/workflows/build.yml
-
- -- svk <svkalinin@samsonpost.ru>  Mon, 24 Jun 2024 10:15:38 +0300
-
-projman (2.0.0-alpha3) stable; urgency=medium
+projman (2.0.0-alfa13) stable; urgency=medium
 
   *  Добавлена иконка для jinja template
   *  Исправил остатки слияния веток
-  *  Исправлено некорректное определение типа файла при открытии
   *  Исправлено некорректное определение типа файла при открытии.
 
  -- svkalinin <svk@nuk-svk.ru>  Mon, 30 Oct 2023 10:44:37 +0300
 
-projman (2.0.0-alpha3) stable; urgency=medium
+projman (2.0.0-alfa12) stable; urgency=medium
 
   *  Обновить .gitea/workflows/build.yml
-  *  revert 61f2bca699ce31159c93cf0d07d29aeae1fc964e
-
- -- svk <>  Tue, 20 Aug 2024 13:29:15 +0300
-
-projman (2.0.0-alpha3) stable; urgency=medium
-
-  * 
-
- --  <svk@nuk-svk.ru>  Mon, 30 Oct 2023 09:46:02 +0300
-
-projman (2.0.0-alpha3) stable; urgency=medium
-
-  *  Обновить .gitea/workflows/build.yml
-  *  Fix
-  *  Fix
-  *  TEst
-  *  Test gitea actions
   *  Gitea actions add
 
  -- svk <svkalinin@samsonpost.ru>  Thu, 27 Jul 2023 13:04:32 +0300
 
-projman (2.0.0-alpha3) stable; urgency=medium
+projman (2.0.0-alfa11) stable; urgency=medium
 
   *  Merge branch 'master' of https://git.nuk-svk.ru/svk/projman
   *  Исправил открытие файлов с разными путями (~/ ./ ../)
 
  -- svkalinin <svk@nuk-svk.ru>  Thu, 23 Feb 2023 13:46:56 +0300
 
-projman (2.0.0-alpha3) stable; urgency=medium
+projman (2.0.0-alfa10) stable; urgency=medium
 
   *  Добавил изображений программы
 
  -- svk <svkalinin@samsonpost.ru>  Mon,  6 Feb 2023 09:27:38 +0300
 
-projman (2.0.0-alpha3) stable; urgency=medium
+projman (2.0.0-alfa9) stable; urgency=medium
 
   *  Исправлена ошибка при создании нового файла.
 
  -- svkalinin <svk@svk.home>  Thu, 22 Dec 2022 19:59:05 +0300
 
-projman (2.0.0-alpha3) stable; urgency=medium
+projman (2.0.0-alfa8) stable; urgency=medium
 
-  *  Test
-  *  Изменил(а) на '.woodpecker/.build.yml'
-  *  Изменил(а) на '.woodpecker/.build.yml'
-
- -- svk <svkalinin@samsonpost.ru>  Wed, 21 Dec 2022 16:53:44 +0300
-
-projman (2.0.0-alpha3) stable; urgency=medium
-
-  *  Test
-  *  Тесты
-  *  Fix
-  *  Fix
-  *  Woodpecker test
   *  Добавил пиктограммы файлов
   *  Исправил процедуру Files::CloseAll ('Закрыть всё')
   *  Добавлена поддержка Lua
@@ -276,19 +225,18 @@ projman (2.0.0-alpha3) stable; urgency=medium
 
  -- svkalinin <svk@nuk-svk.ru>  Sun, 18 Sep 2022 10:46:59 +0300
 
-projman (2.0.0-alpha3) stable; urgency=medium
+projman (2.0.0-alfa7) stable; urgency=medium
 
   *  Добавлен поиск переменной в тексте после открытия файла где она указана
   *  Исправлена ошибка при запуске
 
  -- Sergey Kalinin <svkalinin@samsonpost.ru>  Fri, 16 Sep 2022 16:37:17 +0300
 
-projman (2.0.0-alpha3) stable; urgency=medium
+projman (2.0.0-alfa6) stable; urgency=medium
 
   *  Новая сборка
   *  Исправил сохранение открытого каталога в настройках
   *  Рефакторинг
-  *  Куафсещкштп
   *  Переделал дилог навигации по переменным
   *  Исправил ошибку
   *  Добавлен еще один каталог с переменными - default
@@ -303,13 +251,7 @@ projman (2.0.0-alpha3) stable; urgency=medium
 
  -- svkalinin <svk@nuk-svk.ru>  Fri,  2 Sep 2022 21:42:40 +0300
 
-projman (2.0.0-alpha3) stable; urgency=medium
-
-  *  Почти работающий поиск переменных по каталогу для ansible.
-
- -- Sergey Kalinin <svkalinin@samsonpost.ru>  Fri,  2 Sep 2022 17:01:53 +0300
-
-projman (2.0.0-alpha3) stable; urgency=medium
+projman (2.0.0-alfa5) stable; urgency=medium
 
   *  Добавил поддержку ruby
   *  Исправлен выход окна со списком функций за пределы экрана. Поиск и замена теперь работает. Добавлены некоторые иконки для файлов
@@ -325,13 +267,7 @@ projman (2.0.0-alpha3) stable; urgency=medium
 
  -- svkalinin <svk@nuk-svk.ru>  Fri, 26 Aug 2022 12:36:14 +0300
 
-projman (2.0.0-alpha3) stable; urgency=medium
-
-  *  Изменил(а) на 'README.md'
-
- -- svk <svkalinin@samsonpost.ru>  Fri, 26 Aug 2022 12:29:19 +0300
-
-projman (2.0.0-alpha3) stable; urgency=medium
+projman (2.0.0-alfa4) stable; urgency=medium
 
   *  Добавлена поддержка python. Обновлена библиотека иконок.
   *  Исправлена установка фокуса на окно диалога GotoFunctionDialog и обратно на текст. Переделан механизм чтения структуры файла и добавлены команды для sh (bash)
@@ -343,15 +279,14 @@ projman (2.0.0-alpha3) stable; urgency=medium
 
  -- svkalinin <svk@nuk-svk.ru>  Wed, 17 Aug 2022 21:37:06 +0300
 
-projman (2.0.0-alpha3) stable; urgency=medium
+projman (2.0.0-alfa3) stable; urgency=medium
 
   *  Убрал доки по tcl
-  *  Слегка поменял стиль оформления
   *  Слегка поменял стиль оформления
 
  -- Sergey Kalinin <svkalinin@samsonpost.ru>  Wed, 17 Aug 2022 16:52:22 +0300
 
-projman (2.0.0-alpha3) stable; urgency=medium
+projman (2.0.0-alfa2) stable; urgency=medium
 
   *  Добавлен выбор расположения боковой панели
   *  Добавлено выделение всех слов в тексте по двойному щелчку мышой на любом слове
@@ -385,13 +320,13 @@ projman (2.0.0-alpha3) stable; urgency=medium
 
  -- svkalinin <svk@nuk-svk.ru>  Thu, 21 Jul 2022 12:18:29 +0300
 
-projman (2.0.0-alpha3) stable; urgency=medium
+projman (2.0.0-alfa1) stable; urgency=medium
 
   *  Изменил(а) на 'README.md'
 
  -- svk <svkalinin@samsonpost.ru>  Thu, 21 Jul 2022 12:15:19 +0300
 
-projman (2.0.0-alpha3) stable; urgency=medium
+projman (2.0.0-alfa0) stable; urgency=medium
 
   *  Change readme
   *  Added Dark theme
@@ -401,137 +336,3 @@ projman (2.0.0-alpha3) stable; urgency=medium
 
  -- svkalinin <banzaj28@yandex.ru>  Thu,  5 Jul 2018 08:41:18 +0300
 
-projman (2.0.0-alpha3) stable; urgency=medium
-
-  *  Fixed error if file was not select
-  *  README.md отредактирован онлайн на Bitbucket
-
- -- Sergey Kalinin <banzaj28@yandex.ru>  Sat, 24 Mar 2018 12:20:27 +0300
-
-projman (2.0.0-alpha3) stable; urgency=medium
-
-  *  Rename readme
-
- -- Sergey <banzaj28@yandex.ru>  Sat, 24 Mar 2018 12:17:09 +0300
-
-projman (2.0.0-alpha3) stable; urgency=medium
-
-  *  README отредактирован онлайн на Bitbucket
-  *  Added sort procedure for projects tree
-  *  Added small toolbar into project tree
-  *  Added insert base64 encoded image into source code
-  *  Some GUI change
-  *  Change messages files
-  *  Added Menu button into tollbar and Hide/Show options into config
-  *  Added procedure arguments into tree Change read config procedure (error fixed) Fixed error when project running
-  *  Some Fix
-  *  GoToNumber entry small change
-  *  GoToLine procedure tuning
-  *  Added GoTo line into toolbar Fixed fileinfo update when tree one click Fixed bug with opened files have extention is a upper case
-  *  Critical fix again
-
- -- Sergey Kalinin <banzaj28@yandex.ru>  Sat, 24 Feb 2018 18:16:01 +0300
-
-projman (2.0.0-alpha3) stable; urgency=medium
-
-  *  Critical bug fixed with create project
-  *  Refactoring all procedures is the Tree working
-
- -- Sergey <svk@s.kalinin-nb>  Sat, 24 Feb 2018 12:22:08 +0300
-
-projman (2.0.0-alpha3) stable; urgency=medium
-
-  *  Fixed Add new file if name was existing into tree
-
- -- svk <banzaj28@yandex.ru>  Fri, 23 Feb 2018 11:58:39 +0300
-
-projman (2.0.0-alpha3) stable; urgency=medium
-
-  *  Rename archive projman-latest
-  *  Fixed AddToProj procedure for file browser tree Disable OpComplite procedure
-  *  Refactoring Settigs procedure source code Some changes into messages files (localisation)
-  *  Added option "constrainedwidth true" for ScrollableFrame
-  *  Fix saving "Show dot files" option Fixed correctly highlightning procedure names
-  *  Refactoring auto update file structure (tree). Now structure updated when file was saving Refactoring "Settings" dialog
-  *  Fix "New file" proc ctrl+n hotkey
-  *  - Fixed edit files into root node from file browser tree - Change "Delete project" dialog and procedure
-  *  Refactoring "Add New Projects" "Project Settings" (e.t.c.) dialogs Added "Add as new project" dialog for file browser Add popup menu for file browser Fixed some highlight bug
-  *  bitbucket-pipelines.yml отредактирован онлайн на Bitbucket
-  *  bitbucket-pipelines.yml отредактирован онлайн на Bitbucket
-  *  bitbucket-pipelines.yml отредактирован онлайн на Bitbucket
-  *  bitbucket-pipelines.yml отредактирован онлайн на Bitbucket
-  *  bitbucket-pipelines.yml отредактирован онлайн на Bitbucket
-  *  bitbucket-pipelines.yml отредактирован онлайн на Bitbucket
-  *  bitbucket-pipelines.yml отредактирован онлайн на Bitbucket
-  *  bitbucket-pipelines.yml отредактирован онлайн на Bitbucket
-  *  bitbucket-pipelines.yml отредактирован онлайн на Bitbucket
-  *  bitbucket-pipelines.yml отредактирован онлайн на Bitbucket
-  *  bitbucket-pipelines.yml отредактирован онлайн на Bitbucket
-  *  bitbucket-pipelines.yml отредактирован онлайн на Bitbucket
-  *  bitbucket-pipelines.yml отредактирован онлайн на Bitbucket
-  *  bitbucket-pipelines.yml отредактирован онлайн на Bitbucket
-  *  bitbucket-pipelines.yml отредактирован онлайн на Bitbucket
-  *  Fixed runing on Win7 without installation
-  *  Added opening last active project when project run
-  *  Fixed parsing procedure with names like ::proc::name or proc_na::me(aa) and parameters {{} {} {}}
-  *  Put logo and icon images into source code
-  *  Fixed AutoComplite precedure for TCL/TK-projects Added colored icon for main window Fixed "Close all" procedure if opened files from projects and file browser
-  *  Added saving main window geometry into projman.conf file when close programm
-  *  Merge branch 'master' of https://bitbucket.org/svk28/projman
-  *  Delete temp file
-  *  bitbucket-pipelines.yml отредактирован онлайн на Bitbucket
-  *  change docker image
-  *  add apt
-  *  bitbucket-pipelines.yml отредактирован онлайн на Bitbucket
-  *  bitbucket-pipelines.yml отредактирован онлайн на Bitbucket
-  *  bitbucket-pipelines.yml отредактирован онлайн на Bitbucket
-  *  Initial Bitbucket Pipelines configuration
-  *  Add web site into Readme
-  *  Added gray theme Fixed work with file from directory but not project.
-  *  Some FileDialog fixes
-  *  File Browser added
-  *  Auto indent added for () [] braces
-  *  Some changes
-  *  Change hotkeys "Control+
-  *  Add comment/uncomment selected text
-  *  Tcl
-  *  - Russian help files was conerting into utf-8 encode
-  *  Change Logo and About dialog (added new homepage and git repo addresses)
-  *  Added binding mouse button: click on notebook tab highlight opened file name in tree Change "Paste from Clipboard" function Change popup editor menu (undo
-  *  Modules load procedure changes
-  *  Remove some files
-  *  GiTK running fixed
-  *  Fixed paste text highlight Fixed setting edited flag when paste the text from buffer Change authors email and home page
-
- -- Sergey Kalinin <svk@kalinin.carfix>  Mon, 22 Jan 2018 17:54:18 +0300
-
-projman (2.0.0-alpha3) stable; urgency=medium
-
-  *  - Remove ctags support - Added gitk (gui for git) support
-  *  Change version into Install.tcl script
-
- -- svk <svk@l0001h.office>  Fri, 12 Jan 2018 13:44:26 +0300
-
-projman (2.0.0-alpha3) stable; urgency=medium
-
-  * msc.carfix.ru
-  * msc.carfix.ru
-  * msc.carfix.ru
-  * msc.carfix.ru
-  *  README отредактирован онлайн на Bitbucket
-  *  test.tcl deleted online with Bitbucket
-
- -- Sergey Kalinin <banzaj28@gmail.com>  Mon, 19 Oct 2015 14:22:09 +0300
-
-projman (2.0.0-alpha3) stable; urgency=medium
-
-  *  test
-  *  some bugs in install.tcl fixed
-
- -- svk28 <ksv@L-AO-TEH1.DALS.local>  Mon, 19 Oct 2015 13:37:21 +0300
-
-projman (2.0.0-alpha3) stable; urgency=medium
-
-  *  Initial commit with contributors
-
- -- unknown <ksv@L-AO-TEH1.DALS.local>  Mon, 19 Oct 2015 13:37:21 +0300
