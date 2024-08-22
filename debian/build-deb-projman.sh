@@ -12,7 +12,7 @@ sed -i "/# Build:.*/c$TXT" projman.tcl
 cp projman.tcl projman
 cp changelog-gen.tcl changelog-gen
 
-PROJECT_NAME=projman PROJECT_VERSION=${VERSION} PROJECT_RELEASE=${RELEASE} ./changelog-gen.tcl DEB
+./changelog-gen.tcl  --project-name projman --project-version ${VERSION} --project-release ${RELEASE} --out-file debian/changelog --deb --last
 
 sed -i "s+^set\ dir(lib)+set\ dir(lib)\ /usr/share/projman/lib ;#+g" projman
    
