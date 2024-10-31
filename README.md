@@ -33,7 +33,7 @@ tcllib, tklib
 
 - Navigation the source code structure
 
-![projman-1.png](https://nuk-svk.ru/images/projman/projman-1.png)
+![projman-1.png](https://nuk-svk.ru/images/projman.png)
 
 - Hints when entering names of variables and procedures
 
