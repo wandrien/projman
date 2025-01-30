@@ -36,7 +36,7 @@ tcllib, tklib
 ![projman_go_codenav.png](https://nuk-svk.ru/images/projman_go_codenav.png)
 ![projman_tcl_vars.png](https://nuk-svk.ru/images/projman_tcl_vars.png)
 ![projman_tcl_codenav.png](https://nuk-svk.ru/images/projman_tcl_codenav.png)
-![projman_syntax_hightlight.png](https://nuk-svk.ru/images/projman_syntax_hightlight.png)
+![projman_syntax_highlight.png](https://nuk-svk.ru/images/projman_syntax_highlight.png)
 ![projman_html.png](https://nuk-svk.ru/images/projman_html.png)
 
 - Hints when entering names of variables and procedures
@@ -46,7 +46,7 @@ tcllib, tklib
 - Searching for a variable definition in ansible files
 - Navigation the ansible source code structure
 
-![projman_yaml_variables.png](https://nuk-svk.ru/images/projman/projman_yaml_variables.png)
+![projman_yaml_variables.png](https://nuk-svk.ru/images/projman_yaml_variables.png)
 
 - Navigation the markdown source code structure
 
@@ -59,15 +59,15 @@ tcllib, tklib
 
 - Flexible interface configuration
 
-![projman_gui_flexibility.png](https://nuk-svk.ru/images/projman/projman_gui_flexibility.png)
+![projman_gui_flexibility.png](https://nuk-svk.ru/images/projman_gui_flexibility.png)
 
 - Find/Replace dialog
 
-![projman_find_replace.png](https://nuk-svk.ru/images/projman/projman_find_replace.png)
+![projman_find_replace.png](https://nuk-svk.ru/images/projman_find_replace.png)
 
 - Global searching dialog
 
-![projman_global_search.png](https://nuk-svk.ru/images/projman/projman_global_search.png)
+![projman_global_search.png](https://nuk-svk.ru/images/projman_global_search.png)
 
 ## Getting source code
 
