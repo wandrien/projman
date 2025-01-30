@@ -41,7 +41,7 @@ tcllib, tklib
 
 - Hints when entering names of variables and procedures
 
-![projman_proc_vars.png](https://nuk-svk.ru/images/projman/projman_proc_vars.png)
+![projman_proc_vars.png](https://nuk-svk.ru/images/projman_proc_vars.png)
 
 - Searching for a variable definition in ansible files
 - Navigation the ansible source code structure
@@ -55,7 +55,7 @@ tcllib, tklib
 - Git dialog (commit history)
 - Git dialog (changes)
 
-![projman_git.png](https://nuk-svk.ru/images/projman/projman_git.png)
+![projman_git.png](https://nuk-svk.ru/images/projman_git.png)
 
 - Flexible interface configuration
 
