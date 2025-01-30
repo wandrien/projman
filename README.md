@@ -31,37 +31,47 @@ tcllib, tklib
 
 ## Screenshots
 
-- Navigation the source code structure
+- Navigation the source code structure, and syntax highlighting
 
-![projman-1.png](https://nuk-svk.ru/images/projman.png)
+![projman_go_codenav.png](https://nuk-svk.ru/images/projman_go_codenav.png)
+![projman_tcl_vars.png](https://nuk-svk.ru/images/projman_tcl_vars.png)
+![projman_tcl_codenav.png](https://nuk-svk.ru/images/projman_tcl_codenav.png)
+![projman_syntax_hightlight.png](https://nuk-svk.ru/images/projman_syntax_hightlight.png)
+![projman_html.png](https://nuk-svk.ru/images/projman_html.png)
 
 - Hints when entering names of variables and procedures
 
-![projman-2.png](https://nuk-svk.ru/images/projman/projman-2.png)
+![projman_proc_vars.png](https://nuk-svk.ru/images/projman/projman_proc_vars.png)
 
-- Searching for a variable definition in ansible files 
-
-![projman-ansible-1.png](https://nuk-svk.ru/images/projman/projman-ansible-1.png)
-
+- Searching for a variable definition in ansible files
 - Navigation the ansible source code structure
 
-![projman-ansible-2.png](https://nuk-svk.ru/images/projman/projman-ansible-2.png)
+![projman_yaml_variables.png](https://nuk-svk.ru/images/projman/projman_yaml_variables.png)
 
 - Navigation the markdown source code structure
 
-![projman-md-1.png](https://nuk-svk.ru/images/projman/projman-md-1.png)
+![projman_md_codenav.png](https://nuk-svk.ru/images/projman_md_codenav.png)
 
 - Git dialog (commit history)
-
-![projman-git-1.png](https://nuk-svk.ru/images/projman/projman-git-1.png)
-
 - Git dialog (changes)
 
-![projman-git-2.png](https://nuk-svk.ru/images/projman/projman-git-2.png)
+![projman_git.png](https://nuk-svk.ru/images/projman/projman_git.png)
+
+- Flexible interface configuration
+
+![projman_gui_flexibility.png](https://nuk-svk.ru/images/projman/projman_gui_flexibility.png)
+
+- Find/Replace dialog
+
+![projman_find_replace.png](https://nuk-svk.ru/images/projman/projman_find_replace.png)
+
+- Global searching dialog
+
+![projman_global_search.png](https://nuk-svk.ru/images/projman/projman_global_search.png)
 
 ## Getting source code
 
-Download the source code archive https://git.nuk-svk.ru/svk/projman/archive/master.tar.gz
+Download the source code https://git.nuk-svk.ru/svk/projman/
 
 Or use git:
 
