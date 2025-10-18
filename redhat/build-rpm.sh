@@ -15,8 +15,7 @@ sed -i "/# Build:.*/c$TXT" projman.tcl
 
 cp projman.tcl projman
 
-sed -i "s+^set\ dir(lib)+set\ dir(lib)\ /usr/share/projman/lib ;#+g" projman
-sed -i "s+\[pwd\]+/usr/share/projman+g" projman
+sed -i "s:# _INSTALLATION_SETUP_:set setup(PREFIX) /usr:g" projman
 
 CUR_DIR=$(pwd)
 

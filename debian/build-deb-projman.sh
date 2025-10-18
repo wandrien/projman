@@ -14,10 +14,7 @@ cp changelog-gen.tcl changelog-gen
 
 ./changelog-gen.tcl  --project-name projman --project-version ${VERSION} --project-release ${RELEASE} --out-file debian/changelog --deb --last
 
-sed -i "s+^set\ dir(lib)+set\ dir(lib)\ /usr/share/projman/lib ;#+g" projman
-   
-sed -i "s+\[pwd\]+/usr/share/projman+g" projman
-
+sed -i "s:# _INSTALLATION_SETUP_:set setup(PREFIX) /usr:g" projman
 
 tar czf ../projman_${VERSION}.orig.tar.gz .
 
