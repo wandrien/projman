@@ -33,7 +33,7 @@ namespace eval NB {
                 $nb select $fm                
             }
         }
-        # puts "NB item - $fm"
+        # debug_puts "NB item - $fm"
         return $fm
     }
 
@@ -42,7 +42,7 @@ namespace eval NB {
         if {[$w identify tab $x $y] ne ""} {
             $w select [$w identify tab $x $y]
             set nbItem [string trimleft [$w select] "$w."]
-            # puts  $nbItem
+            # debug_puts  $nbItem
             append treeItemName "file" "::" $nbItem
             Tree::SelectItem $treeItemName
         } else {
@@ -73,7 +73,7 @@ namespace eval NB {
             $w select [expr $nbItemIndex + $step]
         }
         set nbItem [string trimleft [$w select] "$w."]
-        # puts  $nbItem
+        # debug_puts  $nbItem
         append treeItemName "file" "::" $nbItem
         Tree::SelectItem $treeItemName
         

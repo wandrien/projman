@@ -65,12 +65,12 @@ namespace eval Git {
             new {
                 lappend cmd "-b"
                 lappend cmd "[$ent get]"
-                # puts "Branch [$ent get]"
+                # debug_puts "Branch [$ent get]"
             }
         }
         catch $cmd pipe
-        puts $cmd
-        puts $pipe
+        debug_puts $cmd
+        debug_puts $pipe
         if [regexp -nocase -- {^error:} $pipe match] {
             ShowMessage "Command: '$cmd' error" $pipe
             return 
@@ -100,7 +100,7 @@ namespace eval Git {
         } else {
             return ""
         }
-        puts $activeProject
+        debug_puts $activeProject
         lappend cmd $cfgVariables(gitCommand)
         lappend cmd "branch"
         # lappend cmd "-s"
@@ -145,7 +145,7 @@ namespace eval Git {
         lappend cmd "--"
         lappend cmd $activeProject
         catch $cmd pipe
-        puts $cmd
+        debug_puts $cmd
         if [regexp -nocase -- {^fatal:} $pipe match] {
             ShowMessage "Command: '$cmd' error" $pipe
             return 
@@ -167,7 +167,7 @@ namespace eval Git {
         lappend cmd "--"
         lappend cmd [file join $activeProject [string trimleft $f "../"]]
         catch $cmd pipe
-        puts $cmd
+        debug_puts $cmd
         if [regexp -nocase -- {^fatal:} $pipe match] {
             ShowMessage "Command: '$cmd' error" $pipe
             return 
@@ -183,7 +183,7 @@ namespace eval Git {
         set txt $w.body.tCommit
         set listBox $w.body.lCommit 
         set description [string trim [$txt get 0.0 end]]
-        puts $description
+        debug_puts $description
         set cmd exec
         append cmd " $cfgVariables(gitCommand)"
         append cmd " commit"
@@ -202,10 +202,10 @@ namespace eval Git {
                 ok {return "cancel"}
             }
         } else {
-            puts $cmd
-            puts $description
+            debug_puts $cmd
+            debug_puts $description
             catch $cmd pipe
-            puts $pipe
+            debug_puts $pipe
             if [regexp -nocase -- {^fatal:} $pipe match] {
                 ShowMessage "Command: '$cmd' error" $pipe
                 return 
@@ -228,7 +228,7 @@ namespace eval Git {
         # set cmd exec
         cd $activeProject
         set url [Git::GetConfig remote.origin.url]
-        puts $url
+        debug_puts $url
         if [regexp -nocase -all -- {^(http|https)://(.+)} $url match proto address] {
             Git::AuthorizationDialog "[::msgcat::mc "Authorization required"] [::msgcat::mc "for"] Git" $url
         } else {
@@ -246,15 +246,15 @@ namespace eval Git {
         lappend cmd "push"
         lappend cmd "$url"
         # lappend cmd "$activeProject"
-        # puts "$cmd"
+        # debug_puts "$cmd"
         catch $cmd pipe
-        puts $pipe
+        debug_puts $pipe
         if [regexp -nocase -- {^fatal:} $pipe match] {
             ShowMessage "Command: '$cmd' error" $pipe
             return 
         }
         foreach line [split $pipe "\n"] {
-            # puts "$line"
+            # debug_puts "$line"
             lappend res $line
         }
         return $res
@@ -274,11 +274,11 @@ namespace eval Git {
         # if [regexp -nocase -- {^fatal:} $pipe match] {
             # return 
         # }
-        puts $cmd
+        debug_puts $cmd
         catch $cmd pipe
-        # puts $pipe
+        # debug_puts $pipe
         foreach line [split $pipe "\n"] {
-            # puts "$line"
+            # debug_puts "$line"
             lappend res $line
         }
         return $res
@@ -286,7 +286,7 @@ namespace eval Git {
     
     proc Reset {w} {
         global activeProject cfgVariables
-        # puts $values
+        # debug_puts $values
         set selectedItems [$w.body.lCommit curselection]
         if {$selectedItems eq ""} {return}
         set cmd exec
@@ -301,7 +301,7 @@ namespace eval Git {
             $w.body.lCommit delete $itemNumber
         }
         catch $cmd pipe
-        puts $cmd
+        debug_puts $cmd
         $w.body.t delete 1.0 end
     }
 
@@ -320,9 +320,9 @@ namespace eval Git {
         lappend cmd "--"
         lappend cmd "$activeProject"
 
-        puts $cmd
+        debug_puts $cmd
         catch $cmd pipe
-        # puts $pipe
+        # debug_puts $pipe
         set i 0
         foreach line [split $pipe "\n"] {
             if {$i == 0} {
@@ -333,7 +333,7 @@ namespace eval Git {
                 $w.body.tCommit inser end "Date: [lindex $str 3]\n"
                 $w.body.tCommit inser end "Description: [string trimright [lindex $str 4] "\""]\n"
             } else {
-                # puts "$line"
+                # debug_puts "$line"
                 $w.body.t inser end "$line\n"
             }
             incr i
@@ -357,7 +357,7 @@ namespace eval Git {
         $w.body.t delete 1.0 end
         set i 0
         foreach line [Git::Diff $fileName] {
-            puts $line
+            debug_puts $line
             if {$i > 3} {
                 $w.body.t inser end "$line\n"
             }
@@ -367,7 +367,7 @@ namespace eval Git {
     }
     proc CommitAdd {w} {
         global activeProject cfgVariables
-        # puts $values
+        # debug_puts $values
         set selectedItems [$w.body.lBox curselection]
         set cmd exec
         lappend cmd $cfgVariables(gitCommand)
@@ -381,41 +381,41 @@ namespace eval Git {
             $w.body.lBox delete $itemNumber
         }
         catch $cmd pipe
-        puts $cmd
+        debug_puts $cmd
         $w.body.t delete 1.0 end
     }
     
     proc Clone {repo dir} {
         global activeProject cfgVariables
-        # puts $values
+        # debug_puts $values
         set cmd exec
         lappend cmd $cfgVariables(gitCommand)
         lappend cmd "clone"
         lappend cmd $repo
         lappend cmd $dir
-        puts $cmd
+        debug_puts $cmd
 
         catch $cmd pipe
-        puts $pipe
+        debug_puts $pipe
         return
     }
     proc Config {repo user email} {
         global activeProject cfgVariables
-        # puts $values
+        # debug_puts $values
         set cmd exec
         lappend cmd $cfgVariables(gitCommand)
         lappend cmd "config"
         lappend cmd $repo
         lappend cmd $dir
-        puts $cmd
+        debug_puts $cmd
 
         # catch $cmd pipe
-        # puts $pipe
+        # debug_puts $pipe
         return
     }
     proc Init {} {
         global activeProject cfgVariables
-        # puts $values
+        # debug_puts $values
         if [file isdirectory $activeProject] {
             cd $activeProject
         } else {
@@ -425,7 +425,7 @@ namespace eval Git {
         lappend cmd $cfgVariables(gitCommand)
         lappend cmd "init"
         lappend cmd $activeProject
-        puts $cmd
+        debug_puts $cmd
 
         catch $cmd pipe
         if [regexp -nocase -- {^fatal:} $pipe match] {
@@ -435,7 +435,7 @@ namespace eval Git {
     }
     
     proc Key {k fr} {
-        # puts [Editor::Key $k]
+        # debug_puts [Editor::Key $k]
         switch $k {
             Up {
                Git::ListBoxPress $fr
@@ -457,9 +457,9 @@ namespace eval Git {
         $w.body.lBox delete 0 end
         $w.body.lLog delete 0 end
         foreach { word } [Git::Status] {
-            puts ">>$word"
+            debug_puts ">>$word"
             if [regexp -nocase -- {([\w\s]+)([\s\w?]+)\s(../|)(.+?)} $word match v1 v2 v3 fileName] {
-                puts "$v1 $v2 $fileName"
+                debug_puts "$v1 $v2 $fileName"
                 # $fr.body.t delete 1.0 end
                 if {$v1 ne " "} {
                     $w.body.lCommit insert end $fileName
@@ -472,7 +472,7 @@ namespace eval Git {
         
         # Git commit history
         foreach { line } [Git::Reflog] {
-            # puts $line
+            # debug_puts $line
             $w.body.lLog insert end $line
         }
         focus -force $w.body.lBox
@@ -508,14 +508,14 @@ namespace eval Git {
     }
     proc GetAuthData {url} {
         global gitUser gitPassword
-        # puts [.auth_win.frm.ent_name get]
-        # puts [.auth_win.frm.ent_pwd get]	
+        # debug_puts [.auth_win.frm.ent_name get]
+        # debug_puts [.auth_win.frm.ent_pwd get]
         set gitUser [.auth_win.frm.ent_name get]
         set gitPassword [.auth_win.frm.ent_pwd get]
         if [regexp -nocase -all -- {^(http|https)://(.+)} $url match proto address] {
     
-            # puts $gitUser
-            # puts $gitPassword
+            # debug_puts $gitUser
+            # debug_puts $gitPassword
             if {$gitUser ne ""} {
                 append repoUrl "$proto"
                 append repoUrl "://"
@@ -525,7 +525,7 @@ namespace eval Git {
                 append repoUrl ":$gitPassword"
                 append repoUrl "@$address"
             }
-            # puts $repoUrl
+            # debug_puts $repoUrl
             Git::Push $repoUrl    
         }
         destroy .auth_win
@@ -612,7 +612,7 @@ namespace eval Git {
         # оно меньше размера окна со списком то сдвигаем его вверх
         set winGeom [winfo reqheight $win]
         set topHeight [winfo height .]
-        # puts "$x, $y, $winGeom, $topHeight"
+        # debug_puts "$x, $y, $winGeom, $topHeight"
         if [expr [expr $topHeight - $y] < $winGeom] {
             set y [expr $topHeight - $winGeom]
         }
@@ -680,7 +680,7 @@ namespace eval Git {
         # оно меньше размера окна со списком то сдвигаем его вверх
         set winGeom [winfo reqheight $win]
         set topHeight [winfo height .]
-        # puts "$x, $y, $winGeom, $topHeight"
+        # debug_puts "$x, $y, $winGeom, $topHeight"
         if [expr [expr $topHeight - $y] < $winGeom] {
             set y [expr $topHeight - $winGeom]
         }
@@ -799,9 +799,9 @@ namespace eval Git {
 
         # Git repo status
         foreach { word } [Git::Status] {
-            puts $word
+            debug_puts $word
             if [regexp -nocase -- {([\w\s\?])([\s\w\\*\?]+)\s(.+?)} $word match v1 v2 fileName] {
-                puts "$v1 $v2 $fileName"
+                debug_puts "$v1 $v2 $fileName"
                 # $fr.unindexed.t delete 1.0 end
                 if {$v1 ne " "} {
                     $fr.body.lCommit insert end $fileName
@@ -837,7 +837,7 @@ namespace eval Git {
         
         # Git commit history
         foreach { line } [Git::Reflog] {
-            # puts $line
+            # debug_puts $line
             $fr.body.lLog insert end $line
         }         
         # End Git commit history

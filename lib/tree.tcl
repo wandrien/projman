@@ -15,16 +15,16 @@ namespace eval Tree {
     proc InsertItem {tree parent item type text} {
         # set img [GetImage $fileName]
         set dot "_"
-        # puts "$tree $parent $item $type $text"
+        # debug_puts "$tree $parent $item $type $text"
         switch $type  {
             file {
                 regsub -all {\.|/|\\|\s} $item "_" subNode
-                # puts "Inserted tree node: $subNode"
+                # debug_puts "Inserted tree node: $subNode"
                 set fileExt [string trimleft [file extension $text] "."]
                 #set fileName [string trimleft [file extension $text] "."]
                 set findImg [::FindImage $fileExt]
-                # puts "Extention $fileExt, find image: $findImg"
-                # puts ">>>>>>>>>>> [string tolower $text]; [string match {*docker*} [string tolower $text]]"
+                # debug_puts "Extention $fileExt, find image: $findImg"
+                # debug_puts ">>>>>>>>>>> [string tolower $text]; [string match {*docker*} [string tolower $text]]"
                 if {[string match {*docker*} [string tolower $text]]} {
                     set findImg [::FindImage docker]
                 } elseif {[string match {*gitlab*} [string tolower $text]]} {
@@ -42,7 +42,7 @@ namespace eval Tree {
             }
             directory {
                 regsub -all {\.|/|\\|\s} $item "_" subNode
-                # puts $subNode
+                # debug_puts $subNode
                 if {[string match {*debian*} [string tolower [file tail $item]]]} {
                     set image [::FindImage debian]
                 } elseif {[string match {*redhat*} [string tolower [file tail $item]]]} {
@@ -57,17 +57,17 @@ namespace eval Tree {
             }
             func {
                 regsub -all {:} $item "_" subNode
-                # puts $subNode
+                # debug_puts $subNode
                 set image proc_10x10                
             }
             procedure {
                 regsub -all {\.|/|\\|\s|"|\{|\}|\(|\)} $item "_" subNode
-                # puts $subNode
+                # debug_puts $subNode
                 set image proc_10x10                
             }
         }
         append id $type "::" $subNode
-        # puts "Tree ID: $id, tree item: $item"
+        # debug_puts "Tree ID: $id, tree item: $item"
         if ![$tree exists $id] {
             $tree insert $parent end -id "$id" -text " $text" -values "$item" -image $image
         }
@@ -82,7 +82,7 @@ namespace eval Tree {
         set key [lindex [split $id "::"] 0]
         if {$values eq "" || $key eq ""} {return}
         
-        # puts "$key $tree $values"
+        # debug_puts "$key $tree $values"
         switch $key {
             directory {
                 FileOper::ReadFolder  $values             
@@ -104,7 +104,7 @@ namespace eval Tree {
         set key [lindex [split $id "::"] 0]
         if {$values eq "" || $key eq ""} {return}
         
-        # puts "$key $tree $values"
+        # debug_puts "$key $tree $values"
         switch -regexp $key {
             directory {
                 FileOper::ReadFolder  $values
@@ -123,7 +123,7 @@ namespace eval Tree {
             }
             default {
                 set parentItem [$tree parent $id]
-                # puts $values
+                # debug_puts $values
                 set nbItem "$nbEditor.[string range $parentItem [expr [string last "::" $parentItem] + 2] end]"
                 $nbEditor select $nbItem
                 set txt $nbItem.frmText.t

@@ -43,7 +43,7 @@ namespace eval Editor {
             set symbolEnd ""
         }
                 
-        # puts "Select : $selIndex"
+        # debug_puts "Select : $selIndex"
         if {$selIndex != ""} {
             set lineBegin [lindex [split [lindex $selIndex 0] "."] 0]
             set lineEnd [lindex [split [lindex $selIndex 1] "."] 0]
@@ -94,7 +94,7 @@ namespace eval Editor {
         # }
         set commentProcedure "GetComment"
         
-        puts "$fileType, $commentProcedure"
+        debug_puts "$fileType, $commentProcedure"
         if {$selIndex != ""} {
             set lineBegin [lindex [split [lindex $selIndex 0] "."] 0]
             set lineEnd [lindex [split [lindex $selIndex 1] "."] 0]
@@ -126,7 +126,7 @@ namespace eval Editor {
     }
     proc GetComment {fileType str} {
         global lexers
-        # puts [dict get $lexers $fileType commentSymbol]
+        # debug_puts [dict get $lexers $fileType commentSymbol]
         if [dict exists $lexers $fileType commentSymbol] {
             # return
             set symbol [dict get $lexers $fileType commentSymbol]
@@ -140,10 +140,10 @@ namespace eval Editor {
         
         set cmd "regexp -nocase -indices -- {(^|\s+)\\s*($symbol\\s*)(.*)} {$str} match v1 v2 v3"
         
-        puts $cmd
-        # puts [eval $cmd]
+        debug_puts $cmd
+        # debug_puts [eval $cmd]
         if [eval $cmd] {
-            puts "$match, $v2, $v3"
+            debug_puts "$match, $v2, $v3"
             return [list [lindex [split $v2] 0] [lindex [split $v3] 0]]
         } else {
             return 0
@@ -158,9 +158,9 @@ namespace eval Editor {
         # }
     # }
     # proc GetComment:GO {str} {
-        # # puts ">>>>>>>$str"
+        # # debug_puts ">>>>>>>$str"
         # if {[regexp -nocase -indices -- {(^| |\t)(//\s)(.+)} $str match v1 v2 v3]} {
-            # # puts ">>>> $match $v1 $v2 $v3"
+            # # debug_puts ">>>> $match $v1 $v2 $v3"
             # return [list [lindex [split $v2] 0] [lindex [split $v3] 0]]
         # } else {
             # return 0
@@ -186,11 +186,11 @@ namespace eval Editor {
         } else {
             set tabSize $cfgVariables(tabSize)
         }
-        # puts "Select : $selIndex"
+        # debug_puts "Select : $selIndex"
         for {set i 0} {$i < $tabSize} { incr i} {
             append tabInsert " "
         }
-        # puts ">$tabInsert<"
+        # debug_puts ">$tabInsert<"
         if {$selIndex != ""} {
             set lineBegin [lindex [split [lindex $selIndex 0] "."] 0]
             set lineEnd [lindex [split [lindex $selIndex 1] "."] 0]
@@ -202,7 +202,7 @@ namespace eval Editor {
             if {$lineEnd == $lineNum || $posEnd == 0} {
                 set lineEnd [expr $lineEnd - 1]
             }
-            # puts "Pos: $pos, Begin: $lineBegin, End: $lineEnd"
+            # debug_puts "Pos: $pos, Begin: $lineBegin, End: $lineEnd"
             for {set i $lineBegin} {$i <=$lineEnd} {incr i} {
                 #$txt insert $i.0 "# "
                 regexp -nocase -indices -- {^(\s*)(.*?)} [$txt get $i.0 $i.end] match v1 v2
@@ -215,7 +215,7 @@ namespace eval Editor {
             # set pos [$txt index insert]
             # set lineNum [lindex [split $pos "."] 0]
             regexp -nocase -indices -- {^(\s*)(.*?)} [$txt get $lineNum.0 $lineNum.end] match v1 v2
-            # puts "$v1<>$v2"
+            # debug_puts "$v1<>$v2"
             $txt insert  $lineNum.[lindex [split $v2] 0] $tabInsert
         }
     }
@@ -253,7 +253,7 @@ namespace eval Editor {
             $txt highlight $lineBegin.0 $lineEnd.end
         } else {
             set str [$txt get $lineNum.0 $lineNum.end]
-            puts ">>>>> $str"
+            debug_puts ">>>>> $str"
             if {[regexp -nocase -indices -- {(^\s*)(.*?)} $str match v1]} {
                     set posBegin [lindex [split $v1] 0]
                     set posEnd [lindex [split $v1] 1]
@@ -277,7 +277,7 @@ namespace eval Editor {
         set pos [$txt index insert]
         set lineNum [lindex [split $pos "."] 0]
         set posNum [lindex [split $pos "."] 1]
-        puts "$pos"
+        debug_puts "$pos"
         if {$lineNum > 1} {
             # get current text
             set curText [$txt get $lineNum.0 "$lineNum.0 lineend"]
@@ -398,7 +398,7 @@ namespace eval Editor {
         set win .varhelper
         # if { [winfo exists $win] == 0 	} { return }
         set ind [$win.lBox curselection]
-        puts ">>>>>>>>>>>> VarHelperBind <<<<<<<<<<<<<<<<"
+        debug_puts ">>>>>>>>>>>> VarHelperBind <<<<<<<<<<<<<<<<"
         
         switch -- $K {
             Prior   {
@@ -443,12 +443,12 @@ namespace eval Editor {
         }
     } ;# proc auto_completition_key
     proc VarHelperEscape {w} {
-        puts ">>>>>>>>>>>> VarHelperEscape <<<<<<<<<<<<<<<<"
+        debug_puts ">>>>>>>>>>>> VarHelperEscape <<<<<<<<<<<<<<<<"
         # bindtags $w [list [winfo parent $w] $w Text sysAfter all]
         bindtags $w [list [winfo toplevel $w] $w Ctext sysAfter all]
         catch { destroy .varhelper }
-        puts [bindtags $w]
-        puts [bind $w]
+        debug_puts [bindtags $w]
+        debug_puts [bind $w]
 
     }
     proc VarHelper {x y w word wordType} {
@@ -459,21 +459,21 @@ namespace eval Editor {
         # блокировка открытия диалога если запущен другой
         set txt $w
         # set win .varhelper
-        puts "$x $y $w $word $wordType"
+        debug_puts "$x $y $w $word $wordType"
         set fileType [dict get $editors $txt fileType]
 
         if {[dict exists $editors $txt variableList] != 0} {
             set varList [dict get $editors $txt variableList]
-            # puts $varList
+            # debug_puts $varList
         }
         if {[dict exists $editors $txt procedureList] != 0} {
             set procList [dict get $editors $txt procedureList]
         }
-        # puts $procList
-        # puts ">>>>>>>[dict get $lexers $fileType commands]"
+        # debug_puts $procList
+        # debug_puts ">>>>>>>[dict get $lexers $fileType commands]"
         if {[dict exists $lexers $fileType commands] !=0} {
             foreach i [dict get $lexers $fileType commands] {
-                # puts $i
+                # debug_puts $i
                 lappend procList $i
             }
         }
@@ -485,43 +485,43 @@ namespace eval Editor {
         switch -- $wordType {
             vars {
                 foreach i [lsearch -nocase -all $varList $word*] {
-                    # puts [lindex $varList $i]
+                    # debug_puts [lindex $varList $i]
                     set item [lindex [lindex $varList $i] 0]
-                    # puts $item
+                    # debug_puts $item
                     if {[lsearch $findedVars $item] eq "-1"} {
                         lappend findedVars $item
-                        # puts $item
+                        # debug_puts $item
                     }
                 }
             }
             procedure {
                 foreach i [lsearch -nocase -all $procList $word*] {
-                    # puts [lindex $varList $i]
+                    # debug_puts [lindex $varList $i]
                     set item [lindex [lindex $procList $i] 0]
-                    # puts $item
+                    # debug_puts $item
                     if {[lsearch $findedVars $item] eq "-1"} {
                         lappend findedVars $item
-                        # puts $item
+                        # debug_puts $item
                     }
                 }
             }
             default {
                 foreach i [lsearch -nocase -all $varList $word*] {
-                    # puts [lindex $varList $i]
+                    # debug_puts [lindex $varList $i]
                     set item [lindex [lindex $varList $i] 0]
-                    # puts $item
+                    # debug_puts $item
                     if {[lsearch $findedVars $item] eq "-1"} {
                         lappend findedVars $item
-                        # puts $item
+                        # debug_puts $item
                     }
                 }
                 foreach i [lsearch -nocase -all $procList $word*] {
-                    # puts [lindex $varList $i]
+                    # debug_puts [lindex $varList $i]
                     set item [lindex [lindex $procList $i] 0]
-                    # puts $item
+                    # debug_puts $item
                     if {[lsearch $findedVars $item] eq "-1"} {
                         lappend findedVars $item
-                        # puts $item
+                        # debug_puts $item
                     }
                 }
             }
@@ -538,7 +538,7 @@ namespace eval Editor {
         if {$findedVars eq ""} {
             return
         }
-        # puts $findedVars
+        # debug_puts $findedVars
         VarHelperDialog $x $y $w $word $findedVars
 
     }
@@ -547,7 +547,7 @@ namespace eval Editor {
         global editors lexers variables
         variable txt 
         variable win
-        # puts ">>>>>>>>>>>>>$x $y $w $word $findedVars"
+        # debug_puts ">>>>>>>>>>>>>$x $y $w $word $findedVars"
         # set txt $w.frmText.t
         # блокировка открытия диалога если запущен другой
         # if [winfo exists .findVariables] {
@@ -631,11 +631,11 @@ namespace eval Editor {
         $txt tag remove lightSelected 1.0 end
         
         if { [winfo exists .varhelper] } { destroy .varhelper }
-        # puts $k
+        # debug_puts $k
         switch $k {
             Return {
                 regexp {^(\s*)} [$txt get [expr $lineNum - 1].0 [expr $lineNum - 1].end] -> spaceStart
-		        # puts "$pos, $lineNum, $posNum, >$spaceStart<"
+		        # debug_puts "$pos, $lineNum, $posNum, >$spaceStart<"
                 $txt insert insert $spaceStart
                 Editor::Indent $txt
             }
@@ -671,7 +671,7 @@ namespace eval Editor {
             }
         }
         # set lineStart [$txt index "$pos linestart"]
-        # puts "$pos $lineStart"
+        # debug_puts "$pos $lineStart"
         if {$cfgVariables(variableHelper) eq "true"} {
             if {[dict exists $lexers $fileType variableSymbol] != 0} {
                 set varSymbol [dict get $lexers $fileType variableSymbol]
@@ -713,7 +713,7 @@ namespace eval Editor {
     }
 
     proc PressKey {k txt} {
-        # puts [Editor::Key $k ""]
+        # debug_puts [Editor::Key $k ""]
         switch $k {
             apostrophe {
                QuotSelection $txt {'}
@@ -755,7 +755,7 @@ namespace eval Editor {
     }
     ## GET KEYS CODE ##
     proc Key {key str} {
-        puts "Pressed key code: $key, $str"
+        debug_puts "Pressed key code: $key, $str"
         if {$key >= 10 && $key <= 22} {return "true"}
         if {$key >= 24 && $key <= 36} {return "true"}
         if {$key >= 38 && $key <= 50} {return "true"}
@@ -826,8 +826,8 @@ namespace eval Editor {
         # bind $txt.t <KeyRelease> "Editor::ReleaseKey %K $txt.t $fileType"
         # bind $txt.t <KeyPress> "Editor::PressKey %K $txt.t"
         # bind $txt <KeyRelease> "Editor::Key %k %K" 
-        #$txt tag bind Sel  <Control-/> {puts ">>>>>>>>>>>>>>>>>>>"}
-        #bind $txt <Control-slash> {puts "/////////////////"}
+        #$txt tag bind Sel  <Control-/> {debug_puts ">>>>>>>>>>>>>>>>>>>"}
+        #bind $txt <Control-slash> {debug_puts "/////////////////"}
         #     #bind $txt <Control-g> GoToLine
         #     bind $txt <F3> {FindNext $w.text 1}
         #     bind $txt <Control-ecircumflex> ReplaceDialog
@@ -870,7 +870,7 @@ namespace eval Editor {
             } ;# switch
             catch { $txt tag remove lightBracket 1.0 end }
             if { $i != -1 } {
-                # puts $i
+                # debug_puts $i
                 $txt tag add lightBracket "$i - 1 chars" $i
             };#if
         };#catch
@@ -883,7 +883,7 @@ namespace eval Editor {
         set lineNum [lindex [split $pos "."] 0]
         set posNum [lindex [split $pos "."] 1]
         set symbol [string trim [string trimleft $symbol "\\"]]
-        # puts "Selindex : $selIndex, cursor position: $pos"
+        # debug_puts "Selindex : $selIndex, cursor position: $pos"
         if {$selIndex != ""} {
             set lineBegin [lindex [split [lindex $selIndex 0] "."] 0]
             set posBegin [lindex [split [lindex $selIndex 0] "."] 1]
@@ -891,7 +891,7 @@ namespace eval Editor {
             set posEnd [lindex [split [lindex $selIndex 1] "."] 1]
             # set selText [$txt get $lineBegin.$posBegin $lineEnd.$posEnd]
             set selText $selectionText
-            # puts "Selected text: $selText, pos: $pos, lineBegin: $lineBegin, posBegin: $posBegin, pos end: $posEnd"
+            # debug_puts "Selected text: $selText, pos: $pos, lineBegin: $lineBegin, posBegin: $posBegin, pos end: $posEnd"
             if {$posNum == $posEnd} {
                 $txt insert $lineBegin.$posBegin "$symbol"
             }
@@ -920,9 +920,9 @@ namespace eval Editor {
         # set filePath untitled-$untitledNumber
         # set fileName untitled-$untitledNumber
         set fileFullPath untitled-$untitledNumber
-        #puts [Tree::InsertItem $tree {} $fileFullPath "file" $fileName]
+        #debug_puts [Tree::InsertItem $tree {} $fileFullPath "file" $fileName]
         set nbEditorItem [NB::InsertItem $nbEditor  $fileFullPath "file"]
-        # puts "$nbEditorItem, $nbEditor"
+        # debug_puts "$nbEditorItem, $nbEditor"
         Editor $fileFullPath $nbEditor $nbEditorItem
         SetModifiedFlag $nbEditorItem $nbEditor
         focus -force $nbEditorItem.frmText.t.t
@@ -942,7 +942,7 @@ namespace eval Editor {
                 if {[eval [dict get $lexers $fileType procRegexpCommand]]} {
                     set procName_ [string trim $procName]
                     if {$treeItemName ne ""} {
-                        puts [Tree::InsertItem $tree $treeItemName $procName_  "procedure" "$procName_ ($params)"]
+                        debug_puts [Tree::InsertItem $tree $treeItemName $procName_  "procedure" "$procName_ ($params)"]
                     }
                     lappend procList [list $procName_ $params]
                     unset procName_
@@ -966,7 +966,7 @@ namespace eval Editor {
                     } else {
                         set varType ""
                     }
-                    puts "variable: $varName, value: $varValue, type: $varType"
+                    debug_puts "variable: $varName, value: $varValue, type: $varType"
                     lappend varList [list $varName $varValue]
                 }
             }
@@ -976,7 +976,7 @@ namespace eval Editor {
     }
     
     proc FindFunction {txt findString} {
-        puts "txt: $txt, $findString"
+        debug_puts "txt: $txt, $findString"
         set pos "0.0"
         $txt see $pos
         set line [lindex [split $pos "."] 0]
@@ -996,7 +996,7 @@ namespace eval Editor {
     # "Alexander Dederer (aka Korwin)
     ## Search close bracket in editor widget
     proc _searchCloseBracket { widget o_bracket c_bracket start_pos end_pos } {
-        # puts "_searchCloseBracket: $widget $o_bracket $c_bracket $start_pos $end_pos"
+        # debug_puts "_searchCloseBracket: $widget $o_bracket $c_bracket $start_pos $end_pos"
         set o_count 1
         set c_count 0
         set found 0
@@ -1019,13 +1019,13 @@ namespace eval Editor {
     # "Alexander Dederer (aka Korwin)
     ## Search open bracket in editor widget
     proc _searchOpenBracket { widget o_bracket c_bracket start_pos end_pos } {
-        # puts "_searchOpenBracket: $widget $o_bracket $c_bracket $start_pos $end_pos"
+        # debug_puts "_searchOpenBracket: $widget $o_bracket $c_bracket $start_pos $end_pos"
         set o_count 0
         set c_count 1
         set found 0
         set pattern "\[\\$o_bracket\\$c_bracket\]"
         set pos [$widget search -backward -regexp -- $pattern "$start_pos - 1 chars" $end_pos]
-        # puts "$pos"
+        # debug_puts "$pos"
         while { ! [string equal $pos {}] } {
             set char [$widget get $pos]
             # tk_messageBox -title $pattern -message "char: $char; $pos; o_count=$o_count; c_count=$c_count"
@@ -1043,17 +1043,17 @@ namespace eval Editor {
     # Вызов диалога со списком процедур или функций присутствующих в тексте
     proc GoToFunction { w } {
         global tree editors
-        puts $w
+        debug_puts $w
         # set txt $w.frmText.t
         set txt $w
         set box        [$txt bbox insert]
         set box_x      [expr [lindex $box 0] + [winfo rootx $txt] ]
         set box_y      [expr [lindex $box 1] + [winfo rooty $txt] + [lindex $box 3] ]
         set l ""
-        # puts "--$txt"
-        # puts $editors($txt)
+        # debug_puts "--$txt"
+        # debug_puts $editors($txt)
         foreach item [dict get $editors $txt procedureList] {
-            puts $item
+            debug_puts $item
             lappend l [lindex $item 0]
         }
         if {$l ne ""} {
@@ -1136,7 +1136,7 @@ namespace eval Editor {
         # оно меньше размера окна со списком то сдвигаем его вверх
         set winGeom [winfo reqheight $win]
         set topHeight [winfo height .]
-        # puts "$x, $y, $winGeom, $topHeight"
+        # debug_puts "$x, $y, $winGeom, $topHeight"
         if [expr [expr $topHeight - $y] < $winGeom] {
             set y [expr $topHeight - $winGeom]
         }
@@ -1145,7 +1145,7 @@ namespace eval Editor {
     
     proc FindReplaceText {txt findString replaceString regexp} {
         global nbEditor
-        puts [focus]
+        debug_puts [focus]
         # set txt [$nbEditor select].frmText.t
         $txt tag remove sel 1.0 end
         # $txt see $pos
@@ -1154,7 +1154,7 @@ namespace eval Editor {
         # $txt see 1.0
         set pos [$txt index insert]
         set allLines [$txt count -lines 1.0 end]
-        # puts "$pos $allLines"
+        # debug_puts "$pos $allLines"
         set line [lindex [split $pos "."] 0]
 
         if [expr $line == $allLines] {
@@ -1164,18 +1164,18 @@ namespace eval Editor {
         set x [lindex [split $pos "."] 1]
         # incr x $incr 
 
-        # puts "$findString -> $replaceString, $regexp, $pos, $line.$x"
+        # debug_puts "$findString -> $replaceString, $regexp, $pos, $line.$x"
         set matchIndexPair ""
         if {$regexp eq "-regexp"} {
-            # puts "$txt search -all -nocase -regexp {$findString} $line.$x end"
+            # debug_puts "$txt search -all -nocase -regexp {$findString} $line.$x end"
             set lstFindIndex [$txt search -all -nocase -regexp -count matchIndexPair "$findString" $line.$x end]
         } else {
-            # puts "$txt search -all -nocase {$findString} $line.$x end"
+            # debug_puts "$txt search -all -nocase {$findString} $line.$x end"
             set lstFindIndex [$txt search -all -nocase -count matchIndexPair $findString $line.$x end]
             # set symNumbers [string length "$findString"]
         }
-        puts $lstFindIndex
-        # puts $matchIndexPair
+        debug_puts $lstFindIndex
+        # debug_puts $matchIndexPair
         # set lstFindIndex [$txt search -all "$selectionText" 0.0]
         
         # Найдем разницу в длине строк для установки правильного
@@ -1188,7 +1188,7 @@ namespace eval Editor {
             set selFindRow [lindex [split $ind "."] 1]
             # set endInd "$selFindLine.[expr $selFindRow + $symNumbers]"
             set endInd "$selFindLine.[expr [lindex $matchIndexPair $i] + $selFindRow]"
-            puts "$ind; $selFindLine, $selFindRow; $endInd "
+            debug_puts "$ind; $selFindLine, $selFindRow; $endInd "
             if {$replaceString ne ""} {
                 $txt replace $ind $endInd $replaceString
                 # Вычисляем индекс вхождения строки после замены для выделения в тексте
@@ -1213,7 +1213,7 @@ namespace eval Editor {
             $txt mark set insert [lindex $lstFindIndex 0]
             $txt see insert
         }
-        # puts $pos
+        # debug_puts $pos
         # # highlight the found word
         # set line [lindex [split $pos "."] 0]
         # set x [lindex [split $pos "."] 1]
@@ -1241,7 +1241,7 @@ namespace eval Editor {
         } else {
             if {[$nbEditor select] ne ""} {
                 set txt [$nbEditor select].frmText.t
-                puts $txt
+                debug_puts $txt
             } else {
                 return
             }
@@ -1265,16 +1265,18 @@ namespace eval Editor {
         ttk::button $win.bForward -image forward_20x20 -command  {
             Editor::FindReplaceText $Editor::txt "$findString" "" $regexpSet
         }
-        ttk::button $win.bBackward -state disable -image backward_20x20 -command "puts $replaceString"
+        ttk::button $win.bBackward -state disable -image backward_20x20 -command {
+            debug_puts $replaceString
+        }
         ttk::button $win.bDone -image done_20x20 -state disable -command {
-            puts "$findString -> $replaceString, $regexpSet"
+            debug_puts "$findString -> $replaceString, $regexpSet"
         }
         ttk::button $win.bDoneAll -image doneall_20x20 -command {
             Editor::FindReplaceText $Editor::txt "$findString" "$replaceString" $regexpSet
         }
         ttk::button $win.bReplace -image replace_20x20 \
             -command {
-                # puts $Editor::show($Editor::win.entryReplace)
+                # debug_puts $Editor::show($Editor::win.entryReplace)
                 if {$Editor::show($Editor::win.entryReplace) eq "false"} {
                     grid $Editor::win.entryReplace -row 1 -column 0 -columnspan 3 -sticky nsew
                     grid $Editor::win.bDone -row 1 -column 3 -sticky e
@@ -1329,7 +1331,7 @@ namespace eval Editor {
     # Horizontal split the Editor text widget
     proc SplitEditorH {w fileType nb} {
         global cfgVariables
-        puts [$w.panelTxt panes]
+        debug_puts [$w.panelTxt panes]
         if [winfo exists $w.frmText2] {
             $w.panelTxt forget $w.frmText2
             destroy $w.frmText2
@@ -1351,7 +1353,7 @@ namespace eval Editor {
         global cfgVariables
         regsub -all {\.|/|\\|\s} $fileFullPath "_" itemName
         set itemName ".frmWork.nbEditor2.$itemName"
-        # puts $itemName
+        # debug_puts $itemName
         if {[winfo exists $itemName] == 1} {
             .frmWork.nbEditor2 forget $itemName
             destroy $itemName
@@ -1371,13 +1373,13 @@ namespace eval Editor {
         # grid columnconfigure .frmWork .frmWork.nbEditor2 -weight 1
         # grid rowconfigure .frmWork .frmWork.nbEditor2 -weight 1
         .frmWork.panelNB add .frmWork.nbEditor2 -weight 0
-        puts [FileOper::Edit $fileFullPath .frmWork.nbEditor2]
+        debug_puts [FileOper::Edit $fileFullPath .frmWork.nbEditor2]
         
 
     }
     
     proc GoToLineNumber {text lineNumber} {
-        # puts "\n\n\t>>>>$text $lineNumber\n\n"
+        # debug_puts "\n\n\t>>>>$text $lineNumber\n\n"
         $text mark set insert $lineNumber.0
         $text see insert
     }
@@ -1414,7 +1416,7 @@ namespace eval Editor {
         bind $win.ent <Return> {
             set lineNumber [.gotoline.ent get]
             # $txt see insert $lineNumber
-            puts $Editor::txt
+            debug_puts $Editor::txt
             $Editor::txt mark set insert $lineNumber.0
             $Editor::txt see insert
             focus $Editor::txt.t
@@ -1425,7 +1427,7 @@ namespace eval Editor {
         # оно меньше размера окна со списком то сдвигаем его вверх
         set winGeom [winfo reqheight $win]
         set topHeight [winfo height .]
-        # puts "$x, $y, $winGeom, $topHeight"
+        # debug_puts "$x, $y, $winGeom, $topHeight"
         if [expr [expr $topHeight - $y] < $winGeom] {
             set y [expr $topHeight - $winGeom]
         }
@@ -1459,21 +1461,21 @@ namespace eval Editor {
         if {$cfgVariables(editorWrap) eq "none"} {
             pack $frmText.h -side bottom -fill x
         }
-        # puts ">>>>>>> [bindtags $txt]"
+        # debug_puts ">>>>>>> [bindtags $txt]"
         if {$cfgVariables(lineNumberShow) eq "false"} {
             $txt configure -linemap 0
         }
         $txt tag configure lightBracket -background $cfgVariables(selectLightBg) -foreground #00ffff
         $txt tag configure lightSelected -background $cfgVariables(selectLightBg) -foreground #00ffff
         
-        # puts ">$fileType<"
-        # puts [info procs Highlight::GO]
+        # debug_puts ">$fileType<"
+        # debug_puts [info procs Highlight::GO]
         dict set editors $txt fileType $fileType
         dict set editors $txt procedureList [list]
         
-        puts ">>[dict get $editors $txt fileType]"
-        puts ">>[dict get $editors $txt procedureList]"
-		# puts ">>>>> $editors"
+        debug_puts ">>[dict get $editors $txt fileType]"
+        debug_puts ">>[dict get $editors $txt procedureList]"
+		# debug_puts ">>>>> $editors"
         
         if {[info procs ::Highlight::$fileType] ne ""} {
             Highlight::$fileType $txt

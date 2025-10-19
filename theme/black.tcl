@@ -117,7 +117,7 @@ namespace eval ttk::theme::black {
 
     $styleCmd configure Treeview -fieldbackground gray25
   }
-  puts [ttk::style element names]
+  debug_puts [ttk::style element names]
 }
 
 # A few tricks for Tablelist.

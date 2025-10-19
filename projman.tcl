@@ -65,10 +65,10 @@ proc set_default {array_name key value_script} {
     }
 }
 
-proc print_array {array_name print_func} {
+proc print_array {array_name print_func prefix} {
     upvar $array_name arr
     foreach key [lsort [array names arr]] {
-        $print_func "$key = $arr($key)"
+        $print_func "$prefix$key = $arr($key)"
     }
 }
 
@@ -190,6 +190,47 @@ proc print_help {print_func} {
     $print_func [::cmdline::usage $cmdline_options]
 }
 
+# debug_puts ?-nonewline? string
+proc debug_puts {args} {
+    global debugChannelId
+    if {$debugChannelId eq ""} return
+
+    set nonewline 0
+    set string ""
+    set argc [llength $args]
+
+    switch -- $argc {
+        0 {
+            error {wrong nr args: should be "debug_puts ?-nonewline? string"}
+        }
+
+        1 {
+            set string [lindex $args 0]
+        }
+
+        2 {
+            set arg1 [lindex $args 0]
+            set arg2 [lindex $args 1]
+            if {$arg1 eq "-nonewline"} {
+                set nonewline 1
+                set string $arg2
+            } else {
+                error "bad option \"$arg1\": must be -nonewline"
+            }
+        }
+
+        default {
+            error {wrong nr args: should be "debug_puts ?-nonewline? string"}
+        }
+    }
+
+    if {$nonewline} {
+        puts -nonewline $debugChannelId $string
+    } else {
+        puts $debugChannelId $string
+    }
+}
+
 ################################################################################
 
 # Parse the command line
@@ -202,6 +243,7 @@ proc print_help {print_func} {
 # Maybe this one fits: https://github.com/tcler/getopt.tcl
 
 set cmdline_options {
+    {log-file.arg "" "Log what we're doing to the specified file. Use 'stdout' or 'stderr' for standard streams, empty to disable."}
     {portable "Run in portable mode. All program files are located in the main script directory, not in accordance with the FHS."}
     {print-setup "Debug: print the contents of the setup array and exit"}
 }
@@ -212,6 +254,24 @@ if {[catch {
     print_help puts
     exit 1
 }
+
+switch -- $params(log-file) {
+    "" {
+        set debugChannelId ""
+    }
+    stdout -
+    stderr {
+        set debugChannelId $params(log-file)
+    }
+    default {
+        if {[catch {open $params(log-file) "w"} debugChannelId errorInfo]} {
+            puts stderr $debugChannelId
+            exit 1
+        }
+        fconfigure $debugChannelId -buffering line
+    }
+}
+
 
 ################################################################################
 
@@ -241,7 +301,7 @@ setup_autoconf_paths setup
 setup_xdg_base_dirs setup env
 
 if {$params(print-setup)} {
-    print_array setup puts
+    print_array setup puts ""
     exit 0
 }
 
@@ -263,16 +323,22 @@ set dir(cfg) [file join $setup(XDG_CONFIG_HOME) projman]
 if {[file exists $dir(cfg)] == 0} {
     file mkdir $dir(cfg)
 }
-# puts "Config dir is $dir(cfg)"
+
+debug_puts "Contents of the setup array:"
+print_array setup debug_puts "  "
+
+debug_puts "Contents of the dirs array:"
+print_array dir debug_puts "  "
 
 # Добавляем в список файлы (каталоги) из командной строки
 # Note: After parsing options, ::argc may contain wrong value,
 # since the options are removed from ::argv.
 if {[llength $::argv] > 0} {
+    debug_puts "Paths from command line:"
     foreach arg $::argv {
         lappend opened $arg
+        debug_puts "  $arg"
     }
-    puts $opened
 }
 
 source [file join $dir(lib) config.tcl]
@@ -280,7 +346,7 @@ source [file join $dir(lib) config.tcl]
 foreach modFile [lsort [glob -nocomplain [file join $dir(lib) *.tcl]]] {
     if {[file tail $modFile] ne "gui.tcl" && [file tail $modFile] ne "config.tcl"} {
         source $modFile
-        puts "Loading module $modFile"
+        debug_puts "Loading module $modFile"
     }
 }
 
@@ -288,10 +354,10 @@ foreach modFile [lsort [glob -nocomplain [file join $dir(lib) *.tcl]]] {
 foreach modFile [lsort [glob -nocomplain [file join $dir(theme) *]]] {
     if [file isdirectory $modFile] {
         source $modFile/[file tail $modFile].tcl
-        puts "Loading theme $modFile.tcl"
+        debug_puts "Loading theme $modFile.tcl"
     } elseif {[file extension $modFile] eq ".tcl"} {
         source $modFile
-        puts "Loading theme $modFile"
+        debug_puts "Loading theme $modFile"
     }
 }
 
@@ -305,9 +371,9 @@ Config::read $dir(cfg)
 ::msgcat::mclocale $cfgVariables(locale)
 
 if [::msgcat::mcload [file join $dir(lib) msgs]] {
-    puts "Load locale messages... OK"
+    debug_puts "Load locale messages... OK"
 }
-puts "Setting the locale... [::msgcat::mclocale]"
+debug_puts "Setting the locale... [::msgcat::mclocale]"
 
 source [file join $dir(lib) gui.tcl]
 
@@ -332,7 +398,7 @@ if [info exists opened] {
     }
 } else {
     if {$cfgVariables(opened) ne ""} {
-        # puts "<$cfgVariables(opened)"
+        # debug_puts "<$cfgVariables(opened)"
         SetActiveProject $cfgVariables(opened)
         .frmStatus.lblGitLogo configure -image git_logo_20x20
         .frmStatus.lblGit configure -text "[::msgcat::mc "Branch"]: [Git::Branches current]"
@@ -340,7 +406,7 @@ if [info exists opened] {
         ReadFilesFromDirectory $cfgVariables(opened) $cfgVariables(opened)
         if {$cfgVariables(editedFiles) ne ""} {
             foreach f [split $cfgVariables(editedFiles) " "] {
-                # puts $f
+                # debug_puts $f
                 FileOper::Edit $f
             }
         }

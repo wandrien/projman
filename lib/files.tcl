@@ -31,11 +31,11 @@ namespace eval FileOper {
 
         # lappend cmd $activeProject
         lappend cmd $fileFullPath
-        # puts $cmd
+        # debug_puts $cmd
         catch $cmd pipe
-        # puts $pipe
+        # debug_puts $pipe
         if [regexp -nocase -- {(\w+)/([\w\-_\.]+); charset=([[:alnum:]-]+)} $pipe m fType fExt fCharset] {
-            puts "$fType $fExt $fCharset"
+            debug_puts "$fType $fExt $fCharset"
         }
         switch $opt {
             "charset" {
@@ -47,7 +47,7 @@ namespace eval FileOper {
         # линуксовый file не всегда корректно определяет тип файла
         # используем пакет из tcl
         lassign [::fileutil::fileType $fileFullPath] fType fBinaryType fBinaryInterp
-        puts "File type is $fType, $fBinaryType, $fBinaryInterp"
+        debug_puts "File type is $fType, $fBinaryType, $fBinaryInterp"
 
         switch $fType {
             "binary" {
@@ -122,7 +122,7 @@ namespace eval FileOper {
         set name [file rootname $file]
         set ext [string range [file extension $file] 1 end]
         if {$fullPath != ""} {
-            # puts $fullPath
+            # debug_puts $fullPath
             return $fullPath
         } else {
             return
@@ -143,7 +143,7 @@ namespace eval FileOper {
         # regsub -all "." $file "_" node
         # set dir [file dirname $fullPath]
         # #     EditFile .frmBody.frmCat.noteBook.ffiles.frmTreeFiles.treeFiles $node $fullPath
-        # # puts $fullPath
+        # # debug_puts $fullPath
         # if ![info exists activeProject] {
             # set activeProject $fullPath
         # }
@@ -163,11 +163,11 @@ namespace eval FileOper {
         }
         set upper [Tree::GetUpperItem $tree $treeItem]
         if {$parent eq "" && [string match "directory::*" $treeItem] == 1} {
-            # puts "tree root item: $treeItem"
+            # debug_puts "tree root item: $treeItem"
             set proj [string trimleft $upper "directory::"]
             foreach nbItem [$nbEditor tabs] {
                 set item [string trimleft [file extension $nbItem] "."]
-                # puts "$upper $item"
+                # debug_puts "$upper $item"
                 if [string match "$proj*" $item] {
                     if [$tree exists "file::$item"] {
                         $nbEditor select $nbItem
@@ -176,15 +176,15 @@ namespace eval FileOper {
                 }
             }
             set nextProj [$tree next $treeItem]
-            # puts $nextProj
+            # debug_puts $nextProj
             set prevProj [$tree prev $treeItem]
-            # puts $prevProj
+            # debug_puts $prevProj
             if {$nextProj ne ""} {
                 SetActiveProject [$tree item $nextProj -values]
-                # puts $activeProject
+                # debug_puts $activeProject
             } elseif {$prevProj ne ""} {
                 SetActiveProject [$tree item $prevProj -values]
-                # puts $activeProject                
+                # debug_puts $activeProject
             } else {
                 unset activeProject
                 .frmStatus.lblGitLogo configure -image pixel
@@ -216,7 +216,7 @@ namespace eval FileOper {
     proc Close {} {
         global nbEditor modified tree editors
         set nbItem [$nbEditor select]
-	    # puts "close tab $nbItem"
+	    # debug_puts "close tab $nbItem"
     	   
         if {$nbItem == ""} {return}
         if [info exists modified($nbItem)] {
@@ -249,7 +249,7 @@ namespace eval FileOper {
         if [info exists modified($nbItem)] {
             unset modified($nbItem)
         }
-        # puts $nbItem
+        # debug_puts $nbItem
         set editors [dict remove $editors $nbItem.frmText.t]
         .frmStatus.lblPosition configure -text ""
         .frmStatus.lblEncoding configure -text ""
@@ -267,7 +267,7 @@ namespace eval FileOper {
         }
         
         set nbEditorItem [$nbEditor select]
-        puts "Saved editor text: $nbEditorItem"
+        debug_puts "Saved editor text: $nbEditorItem"
         if [string match "*untitled*" $nbEditorItem] {
             set filePath [tk_getSaveFile -initialdir $dir -filetypes $::types -parent .]
             if {$filePath eq ""} {
@@ -285,8 +285,8 @@ namespace eval FileOper {
         }
         set editedText [$nbEditorItem.frmText.t get 0.0 end]
         set f [open $filePath "w+"]
-        puts -nonewline $f $editedText
-        puts "$f was saved"
+        debug_puts -nonewline $f $editedText
+        debug_puts "$f was saved"
         close $f
         ResetModifiedFlag $nbEditorItem $nbEditor
     }
@@ -315,7 +315,7 @@ namespace eval FileOper {
     
     proc ReadFolder {directory {parent ""}} {
         global tree dir lexers  project
-        puts "Read the folder $directory"
+        debug_puts "Read the folder $directory"
         set rList ""
         if {[catch {cd $directory}] != 0} {
             return ""
@@ -334,7 +334,7 @@ namespace eval FileOper {
         # и если есть читаем в список (ножно для ansible)
         if {[dict exists $lexers ALL varDirectory] == 1} {
             foreach i [split [dict get $lexers ALL varDirectory] " "] {
-                # puts "-------- $i"
+                # debug_puts "-------- $i"
                 lappend dirListForCheck [string trim $i]
             }
         }
@@ -361,7 +361,7 @@ namespace eval FileOper {
         if {[info exists lstDir] && [llength $lstDir] > 0} {
             foreach f [lsort $lstDir] {
                 set i [Tree::InsertItem $tree $parent [file join $directory $f] "directory" $f]
-                # puts "Tree insert item: $i $f]"
+                # debug_puts "Tree insert item: $i $f]"
                 ReadFolder [file join $directory $f] $i
                 unset i
             }
@@ -369,7 +369,7 @@ namespace eval FileOper {
         if {[info exists lstFiles] && [llength $lstFiles] > 0} {
             foreach f [lsort $lstFiles] {
                 Tree::InsertItem $tree $parent [file join $directory $f] "file" $f
-                # puts "Tree insert item: "
+                # debug_puts "Tree insert item: "
             }
         }
         # Чтение структуры файлов в каталоге
@@ -387,7 +387,7 @@ namespace eval FileOper {
         # Delete emty last line
         if {[$txt get {end-1 line} end] eq "\n" || [$txt get {end-1 line} end] eq "\r\n"} {
             $txt delete {end-1 line} end
-            puts ">[$txt get {end-1 line} end]<"
+            debug_puts ">[$txt get {end-1 line} end]<"
         }
         $txt see 1.0
     }
@@ -397,7 +397,7 @@ namespace eval FileOper {
         if {[file exists $fileFullPath] == 0} {
             return false
         } else {
-            puts "$fileFullPath File type [::fileutil::magic::filetype $fileFullPath]"
+            debug_puts "$fileFullPath File type [::fileutil::magic::filetype $fileFullPath]"
             set fileType [FileOper::GetFileMimeType $fileFullPath]
         }
         switch $fileType {
@@ -453,7 +453,7 @@ namespace eval FileOper {
                 set selBegin [lindex [$txt tag ranges sel] 0]
                 set selEnd [lindex [$txt tag ranges sel] 1]
                 set str [$txt get $selBegin $selEnd]
-                # puts $str
+                # debug_puts $str
                 set res [SearchStringInFolder $str]
             }
         }
@@ -469,7 +469,7 @@ namespace eval FileOper {
         # set selIndex [$txt tag ranges sel]
         # set selBegin [lindex [$txt tag ranges sel] 0]
         # set selEnd [lindex [$txt tag ranges sel] 1]
-        # puts [$txt get [$txt tag ranges sel]]
+        # debug_puts [$txt get [$txt tag ranges sel]]
     # }
     
 }

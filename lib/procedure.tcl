@@ -159,7 +159,7 @@ proc WelcomeDialog {} {
     # оно меньше размера окна со списком то сдвигаем его вверх
     set winGeom [winfo reqheight $win]
     set topHeight [winfo height .]
-    # puts "$x, $y, $winGeom, $topHeight"
+    # debug_puts "$x, $y, $winGeom, $topHeight"
     if [expr [expr $topHeight - $y] < $winGeom] {
         set y [expr $topHeight - $winGeom]
     }
@@ -192,7 +192,7 @@ proc ResetModifiedFlag {w nbEditor} {
     $w.frmText.t edit modified false
     set modified($w) "false"
     set lbl [string trimleft [$nbEditor tab $w -text] "* "]
-    # puts "ResetModifiedFlag: $lbl"
+    # debug_puts "ResetModifiedFlag: $lbl"
     $nbEditor tab $w -text $lbl
 }
 proc SetModifiedFlag {w nbEditor} {
@@ -200,7 +200,7 @@ proc SetModifiedFlag {w nbEditor} {
     #$w.frmText.t edit modified false
     set modified($w) "true"
     set lbl [$nbEditor tab $w -text]
-    # puts "SetModifiedFlag: $w; $modified($w); >$lbl<"
+    # debug_puts "SetModifiedFlag: $w; $modified($w); >$lbl<"
     if {[regexp -nocase -all -- {^\*} $lbl match] == 0} {
         set lbl "* $lbl"
     }
@@ -243,7 +243,7 @@ proc FindImage {ext} {
     }
     foreach img [image names] {
         if [regexp -nocase -all -- "^($ext)(_16x12)" $img match v1 v2] {
-            # puts "\nFindinig images: $img \n"
+            # debug_puts "\nFindinig images: $img \n"
             return $img
         }
     }
@@ -277,17 +277,17 @@ namespace eval Help {
 proc SearchVariable {txt} {
     global fileStructure project variables
     set varName [$txt get {insert wordstart} {insert wordend}]
-    puts ">>>$varName<<<"
+    debug_puts ">>>$varName<<<"
     if {[info exists project] == 0} {return}
     foreach f [array names project] {
-        puts "--$f"
-        puts "----"
+        debug_puts "--$f"
+        debug_puts "----"
         foreach a $project($f) {
-            puts "-----$variables($a)"
+            debug_puts "-----$variables($a)"
             foreach b $variables($a) {
-                puts "------$b -- [lindex $b 0]"
+                debug_puts "------$b -- [lindex $b 0]"
                 if {$varName eq [lindex $b 0]} {
-                    puts "УРААААААА $varName = $b в файле $a \n\t [lindex $b 0]"
+                    debug_puts "УРААААААА $varName = $b в файле $a \n\t [lindex $b 0]"
                     # FindVariablesDialog $txt "$varName: \[...\][file tail $a]"
                     lappend l [list $varName [lindex $b 1] $a]
                 }
@@ -355,7 +355,7 @@ proc FindVariablesDialog {txt args} {
     foreach { word } $args {
         foreach lst $word {
             # set l [split $lst " "]
-            puts "[lindex $lst 0] -[lindex $lst 1] -[lindex $lst 2]"
+            debug_puts "[lindex $lst 0] -[lindex $lst 1] -[lindex $lst 2]"
             # lappend l2 [lindex $l 0] [lindex $l 1] [file tail [lindex $l 2]]
             # $win.lBox insert {} end -values $lst -text {1 2 3}
             $win.lBox insert end "[lindex $lst 0] > [lindex $lst 1] > [lindex $lst 2]\n"
@@ -385,7 +385,7 @@ proc FindVariablesDialog {txt args} {
         # set values [$win.lBox item $id -values]
         # set key [lindex [split $id "::"] 0]
         # 
-        # puts "- $id - $values - $key"
+        # debug_puts "- $id - $values - $key"
         # regsub -all {PROCNAME} $findString $values str
         # Editor::FindFunction "$str"
         set _v [GetVariableFilePath $win.lBox]
@@ -420,7 +420,7 @@ proc FindVariablesDialog {txt args} {
     # оно меньше размера окна со списком то сдвигаем его вверх
     set winGeom [winfo reqheight $win]
     set topHeight [winfo height .]
-    # puts "$x, $y, $winGeom, $topHeight"
+    # debug_puts "$x, $y, $winGeom, $topHeight"
     if [expr [expr $topHeight - $y] < $winGeom] {
         set y [expr $topHeight - $winGeom]
     }
@@ -441,7 +441,7 @@ proc SearchStringInFolder {str} {
     if {$tcl_platform(platform) == "windows"} {
     } elseif {$tcl_platform(platform) == "mac"} {
     } elseif {$tcl_platform(platform) == "unix"} {
-        puts "$cfgVariables(searchCommand) $cfgVariables(searchCommandOptions) $str $activeProject"
+        debug_puts "$cfgVariables(searchCommand) $cfgVariables(searchCommandOptions) $str $activeProject"
         # Составляем строку (точнее список) для запуска команды
         set cmd exec
         regsub -all {\[} $str {\\[} str
@@ -453,18 +453,18 @@ proc SearchStringInFolder {str} {
         lappend cmd $str
         lappend cmd $activeProject
         # запускаем
-        # puts $cmd
+        # debug_puts $cmd
         catch $cmd pipe
-        # puts $pipe
+        # debug_puts $pipe
         # fileevent $pipe readable
         # fconfigure $pipe -buffering none -blocking no
     }
     # while {[chan gets $pipe line] >= 0} {
-        # puts "--> $line"
+        # debug_puts "--> $line"
     # }
     foreach line [split $pipe "\n"] {
         if [regexp -nocase -all -line -- {^((\/[\w\-_\.\s]+)+):([0-9]+):\s*(.+?)} $line match fullPath fileName lineNumber fullString] {
-            # puts "$fullPath $fileName $lineNumber $fullString"
+            # debug_puts "$fullPath $fileName $lineNumber $fullString"
             lappend res [list $lineNumber $fullPath $fullString]
         }
     }
@@ -479,11 +479,11 @@ proc InsertListIntoText {win lst} {
     set height 0
     set fCount 0
     set fName ""
-    # puts $lst
+    # debug_puts $lst
     foreach { word } $lst {
         foreach lst $word {
             # set l [split $lst " "]
-            # puts "[lindex $lst 0] -[lindex $lst 1] -[lindex $lst 2]"
+            # debug_puts "[lindex $lst 0] -[lindex $lst 1] -[lindex $lst 2]"
             # lappend l2 [lindex $l 0] [lindex $l 1] [file tail [lindex $l 2]]
             # $win.lBox insert {} end -values $lst -text {1 2 3}
             $win.lBox insert end "[lindex $lst 0] > [lindex $lst 1] > [lindex $lst 2]\n"
@@ -512,7 +512,7 @@ proc FindInFilesDialog {txt {args ""}} {
         [::msgcat::mc "In"] %s\
         [::msgcat::mc "Files"]"
 
-    # puts $txt
+    # debug_puts $txt
     # set txt $w.frmText.t
     if {$txt ne ""} {
         focus $txt
@@ -610,7 +610,7 @@ proc FindInFilesDialog {txt {args ""}} {
         set lineNum [lindex $_v 0]
         set path [lindex $_v 2]
         unset _v
-        # puts "$lineNum $path"
+        # debug_puts "$lineNum $path"
         if {$path ne ""} {
             destroy .find
             set fr [FileOper::Edit $path]
@@ -624,7 +624,7 @@ proc FindInFilesDialog {txt {args ""}} {
         set lineNum [lindex $_v 0]
         set path [lindex $_v 2]
         unset _v
-        # puts "$lineNum $path"
+        # debug_puts "$lineNum $path"
         if {$path ne ""} {
             destroy .find
             set fr [FileOper::Edit $path]
@@ -638,7 +638,7 @@ proc FindInFilesDialog {txt {args ""}} {
     # оно меньше размера окна со списком то сдвигаем его вверх
     set winGeom [winfo reqheight $win]
     set topHeight [winfo height .]
-    # puts "$x, $y, $winGeom, $topHeight"
+    # debug_puts "$x, $y, $winGeom, $topHeight"
     if [expr [expr $topHeight - $y] < $winGeom] {
         set y [expr $topHeight - $winGeom]
     }
@@ -676,7 +676,7 @@ proc SetActiveProject {path} {
     # regsub -all "." $file "_" node
     # set dir [file dirname $fullPath]
     #     EditFile .frmBody.frmCat.noteBook.ffiles.frmTreeFiles.treeFiles $node $fullPath
-    # puts $fullPath
+    # debug_puts $fullPath
     # if ![info exists activeProject] {
         # set activeProject $fullPath
     # }

@@ -67,7 +67,7 @@ editedFiles=
 "
 proc Config::create {dir} {
     set cfgFile [open [file join $dir projman.ini]  "w+"]
-    puts $cfgFile $::configDefault        
+    debug_puts $cfgFile $::configDefault
     close $cfgFile
 }
 
@@ -102,7 +102,7 @@ proc Config::write {dir} {
         # Добавим пути к открытым в редакторе файлам в переменную
         if [info exists editors] {
             foreach i [dict keys $editors] {
-                # puts [dict get $editors $i]
+                # debug_puts [dict get $editors $i]
                 if [dict exists $editors $i fileFullPath] {
                     lappend edited [dict get $editors $i fileFullPath]
                 }
@@ -115,7 +115,7 @@ proc Config::write {dir} {
         ini::set $cfgFile "UserSession" opened ""
         ini::set $cfgFile "UserSession" editedFiles ""
     }
-    # puts $editors
+    # debug_puts $editors
     
     ini::commit $cfgFile
     ini::close $cfgFile
