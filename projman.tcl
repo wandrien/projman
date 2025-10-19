@@ -13,6 +13,376 @@ exec wish "$0" -- "$@"
 # Build: 22082024151054
 ######################################################
 
+################################################################################
+
+# This file contains an embedded copy of getOpt.tcl from:
+# https://github.com/tcler/getopt.tcl/blob/a604ae7a01d275c9592d659faece31a067812635/getOpt-3.0/getOpt.tcl
+# Command-line options must be parsed during initial startup,
+# before module search paths are configured,
+# therefore we include the code locally.
+# This is not a verbatim copy. Additional improvements have been made
+# to the getUsage method.
+# License follows below.
+
+# Copyright (c) 2015, tcler.yin <yin-jianhong@163.com>
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# * Redistributions of source code must retain the above copyright notice, this
+#   list of conditions and the following disclaimer.
+#
+# * Redistributions in binary form must reproduce the above copyright notice,
+#   this list of conditions and the following disclaimer in the documentation
+#   and/or other materials provided with the distribution.
+#
+# * Neither the name of getOpt.tcl nor the names of its
+#   contributors may be used to endorse or promote products derived from
+#   this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+########################################################################
+#
+#  getOpt -- similar as getopt_long_only(3)
+#
+# (C) 2017 Jianhong Yin <yin-jianhong@163.com>
+#
+# $Revision: 1.0 $, $Date: 2017/02/24 10:57:22 $
+########################################################################
+
+namespace eval ::getOpt {
+    namespace export getOptions getUsage
+}
+
+set ::getOpt::flag(NOTOPT)  1
+set ::getOpt::flag(KNOWN)   2
+set ::getOpt::flag(NEEDARG) 3
+set ::getOpt::flag(UNKNOWN) 4
+set ::getOpt::flag(END)     5
+set ::getOpt::flag(AGAIN)   6
+
+proc ::getOpt::getOptObj {optList optName} {
+    foreach {optNameList optAttr} $optList {
+        if {$optName in $optNameList} {
+            return [list [lindex $optNameList 0] $optAttr]
+        }
+    }
+    return ""
+}
+
+proc ::getOpt::argparse {optionList argvVar optVar optArgVar} {
+    upvar $argvVar  argv
+    upvar $optVar optName
+    upvar $optArgVar optArg
+
+    set result $::getOpt::flag(UNKNOWN)
+    set optName ""
+    set optArg ""
+
+    if {[llength $argv] == 0} {
+        return $::getOpt::flag(END)
+    }
+
+    set rarg [lindex $argv 0]
+    if {$rarg in {-}} {
+        set optArg $rarg
+        set argv [lrange $argv 1 end]
+        return $::getOpt::flag(NOTOPT)
+    }
+    if {$rarg in {--}} {
+        set argv [lrange $argv 1 end]
+        return $::getOpt::flag(END)
+    }
+
+    set argv [lrange $argv 1 end]
+    switch -glob -- $rarg {
+        "-*" -
+        "--*" {
+            set opttype long
+            set optName [string range $rarg 1 end]
+            if [string equal [string range $optName 0 0] "-"] {
+                set optName [string range $rarg 2 end]
+            } else {
+                set opttype short
+            }
+
+            set idx [string first "=" $optName 1]
+            if {$idx != -1} {
+                set toptName [string range $optName 0 [expr $idx-1]]
+                lassign [getOptObj $optionList $toptName] toptFind toptAttr
+                if {$toptFind != ""} {
+                    set _val [string range $optName [expr $idx+1] end]
+                    set optName [string range $optName 0 [expr $idx-1]]
+                }
+            }
+
+            lassign [getOptObj $optionList $optName] optFind optAttr
+            if {$optFind != ""} {
+                set optName $optFind
+                set result $::getOpt::flag(KNOWN)
+                set argtype n
+                if [dict exists $optAttr arg] {
+                    set argtype [dict get $optAttr arg]
+                }
+                switch -exact -- $argtype {
+                    "o" {
+                        if [info exists _val] {
+                            set optArg $_val
+                        }
+                    }
+                    "y" -
+                    "m" {
+                        if [info exists _val] {
+                            set optArg $_val
+                        } elseif {[llength $argv] != 0 &&
+                            [lindex $argv 0] != "--"} {
+                            set optArg [lindex $argv 0]
+                            set argv [lrange $argv 1 end]
+                        } else {
+                            set result $::getOpt::flag(NEEDARG)
+                        }
+                    }
+                }
+            } elseif {![info exists _val] && $opttype in {short} && [string length $optName] > 1} {
+                # expand short args
+                set insertArgv [list]
+                while {[string length $optName]!=0} {
+                    set x [string range $optName 0 0]
+                    set optName [string range $optName 1 end]
+
+                    if {$x in {= - { } \\ \' \"}} break
+
+                    lassign [getOptObj $optionList $x] _x optAttr
+                    if {$_x == ""} {
+                        lappend insertArgv  -$x
+                        continue
+                    }
+
+                    # get option type
+                    set xtype n
+                    if [dict exists $optAttr arg] {
+                        set xtype [dict get $optAttr arg]
+                    }
+                    if {[dict exists $optionList $x link]} {
+                        set x_link [dict get $optionList $x link]
+                        lassign [getOptObj $optionList $x_link] _x_link optAttr
+                        if {$_x_link != ""} {
+                            if [dict exists $optAttr arg] {
+                                set xtype [dict get $optAttr arg]
+                            }
+                        } else {
+                            lappend insertArgv  -$x
+                            continue
+                        }
+                    }
+
+                    switch -exact -- $xtype {
+                        "n" { lappend insertArgv  -$x }
+                        "o" {
+                            lappend insertArgv  -$x=$optName
+                            break
+                        }
+                        "y" -
+                        "m" {
+                            lappend insertArgv  -$x
+                            continue
+                        }
+                    }
+                }
+                set argv [concat $insertArgv $argv]
+                return $::getOpt::flag(AGAIN)
+            } else {
+                set result $::getOpt::flag(UNKNOWN)
+            }
+        }
+        default {
+            set optArg $rarg
+            set result $::getOpt::flag(NOTOPT)
+        }
+    }
+
+    return $result
+}
+
+proc ::getOpt::getOptions {optLists argv validOptionVar invalidOptionVar notOptionVar {forwardOptionVar ""}} {
+    upvar $validOptionVar validOption
+    upvar $invalidOptionVar invalidOption
+    upvar $notOptionVar notOption
+    upvar $forwardOptionVar forwardOption
+
+    #clear out var
+    array unset validOption *
+    array unset invalidOption *
+    set notOption [list]
+
+    set optList "[concat {*}[dict values $optLists]]"
+    set opt ""
+    set optarg ""
+    set nargv $argv
+    #set argc [llength $nargv]
+
+    while {1} {
+        set prefix {-}
+        set curarg [lindex $nargv 0]
+        if [string equal [string range $curarg 0 1] "--"] {
+            set prefix {--}
+        }
+
+        set ret [argparse $optList nargv opt optarg]
+
+        if {$ret == $::getOpt::flag(AGAIN)} {
+            continue
+        } elseif {$ret == $::getOpt::flag(NOTOPT)} {
+            if {[lindex $optarg 0] == {--}} {
+                set notOption [concat $notOption $optarg]
+            } else {
+                lappend notOption $optarg
+            }
+        } elseif {$ret == $::getOpt::flag(KNOWN)} {
+            #known options
+            set argtype n
+            lassign [getOptObj $optList $opt] _optFind optAttr
+            if [dict exists $optAttr arg] {
+                set argtype [dict get $optAttr arg]
+            }
+
+            set forward {}
+            if [dict exists $optAttr forward] {
+                set forward y
+            }
+
+            if {$forward == "y"} {
+                switch -exact -- $argtype {
+                    "n" {lappend forwardOption "$prefix$opt"}
+                    default {lappend forwardOption "$prefix$opt=$optarg"}
+                }
+                continue
+            }
+
+            switch -exact -- $argtype {
+                "m" {lappend validOption($opt) $optarg}
+                "n" {incr validOption($opt) 1}
+                default {set validOption($opt) $optarg}
+            }
+        } elseif {$ret == $::getOpt::flag(NEEDARG)} {
+            set invalidOption($opt) "option -$opt need argument"
+        } elseif {$ret == $::getOpt::flag(UNKNOWN)} {
+            #unknown options
+            set invalidOption($opt) "unknown options"
+        } elseif {$ret == $::getOpt::flag(END)} {
+            #end of nargv or get --
+            set notOption [concat $notOption $nargv]
+            break
+        }
+    }
+
+    return 0
+}
+
+proc ::getOpt::genOptdesc {optNameList} {
+    # print options as GNU style:
+    # -o, --long-option    <abstract>
+    set shortOpt {}
+    set longOpt {}
+
+    foreach k $optNameList {
+        if {[string length $k] == 1} {
+            lappend shortOpt -$k
+        } else {
+            lappend longOpt --$k
+        }
+    }
+    set optdesc [join "$shortOpt $longOpt" ", "]
+}
+
+proc ::getOpt::getUsage {optLists {out "stdout"}} {
+
+    foreach {group optDict} $optLists {
+
+        #ignore hide options
+        foreach key [dict keys $optDict] {
+            if [dict exists $optDict $key hide] {
+                dict unset optDict $key
+            }
+        }
+
+        puts $out "$group"
+
+        #generate usage list
+        foreach opt [dict keys $optDict] {
+            set pad 26
+            set argdesc ""
+            set optdesc [genOptdesc $opt]
+
+            set argtype n
+            if [dict exists $optDict $opt arg] {
+                set argtype [dict get $optDict $opt arg]
+            }
+            switch -exact $argtype {
+                "o" {set argdesc {[arg]}; set flag(o) yes}
+                "y" {set argdesc {<arg>}; set flag(y) yes}
+                "m" {set argdesc {{arg}}; set flag(m) yes}
+            }
+
+            set opthelp {nil #no help found for this options}
+            if [dict exists $optDict $opt help] {
+                set opthelp [dict get $optDict $opt help]
+            }
+
+            set opt_length [string length "$optdesc $argdesc"]
+            set help_length [string length "$opthelp"]
+
+            if {$opt_length > $pad-4 && $help_length > 8} {
+                puts $out [format "    %-${pad}s\n %${pad}s    %s" "$optdesc $argdesc" {} $opthelp]
+            } else {
+                puts $out [format "    %-${pad}s %s" "$optdesc $argdesc" $opthelp]
+            }
+        }
+    }
+
+    unset optDict
+
+    puts $out "\nNotes:"
+    if [info exist flag] {
+        puts $out {  * Notation used in the usage synopsis:}
+        if [info exist flag(o)] {
+            puts $out {      [arg] Optional. To provide a value, use --opt=arg}
+            puts $out {            (the '--opt arg' form is not accepted for optional values).}
+        }
+        if [info exist flag(y)] {
+            puts $out {      <arg> Required, single value. If the same option is given}
+            puts $out {            multiple times (e.g., -f a -f b), only the last value (b) is kept.}
+        }
+        if [info exist flag(m)] {
+            puts $out {      {arg} Required, repeatable. Repeated uses collect all values into}
+            puts $out {            a list (e.g., -f a -f b yields ['a', 'b']).}
+        }
+        puts $out {}
+        puts $out {  * For required arguments, '--opt arg' and '--opt=arg' are equivalent.}
+        puts $out {}
+    }
+    puts $out {  * A short option like '-opt' is interpreted as:}
+    puts $out {      * '--opt' if a long option named 'opt' exists.}
+    puts $out {      * Otherwise, it is split into individual short options: '-o -p -t'.}
+    puts $out {      * If one of those short options (e.g., '-p') requires an argument,}
+    puts $out {        the remainder is treated as its value: '-opt' becomes '-o -p=t'.}
+}
+
+# END OF getOpt.tcl
+
+################################################################################
+
 # определим текущую версию, релиз и т.д.
 set f [open [info script] "RDONLY"]
 while {[gets $f line] >=0} {
@@ -58,6 +428,14 @@ package require fileutil::magic::filetype
 
 # Domain-independend utility functions
 
+proc getvar {var {default_value ""}} {
+    upvar $var v
+    if {[info exist v]} {
+        return $v
+    }
+    return $default_value
+}
+
 proc set_default {array_name key value_script} {
     upvar 1 $array_name arr
     if {![info exists arr($key)]} {
@@ -68,7 +446,7 @@ proc set_default {array_name key value_script} {
 proc print_array {array_name print_func prefix} {
     upvar $array_name arr
     foreach key [lsort [array names arr]] {
-        $print_func "$prefix$key = $arr($key)"
+        {*}$print_func "$prefix$key = $arr($key)"
     }
 }
 
@@ -181,14 +559,11 @@ proc setup_xdg_base_dirs {setup_var env_var} {
     }
 }
 
-################################################################################
-
-proc print_help {print_func} {
-    upvar 1 cmdline_options cmdline_options
-    upvar 1 projman projman
-    $print_func $projman(Help)
-    $print_func [::cmdline::usage $cmdline_options]
+proc get_program_name {} {
+    return [file tail [info script]]
 }
+
+set debugChannelId ""
 
 # debug_puts ?-nonewline? string
 proc debug_puts {args} {
@@ -235,43 +610,54 @@ proc debug_puts {args} {
 
 # Parse the command line
 
-# TODO: Replace cmdline with a custom implementation.
-# cmdline has the following limitations:
-# * No support for GNU-style --long-options with double hyphen.
-# * No support for options intended for multiple occurrences (--var v1=1 --var v2=2)
-# * No way to disable the built-in handling of -help and -? options.
-# Maybe this one fits: https://github.com/tcler/getopt.tcl
-
-set cmdline_options {
-    {log-file.arg "" "Log what we're doing to the specified file. Use 'stdout' or 'stderr' for standard streams, empty to disable."}
-    {portable "Run in portable mode. All program files are located in the main script directory, not in accordance with the FHS."}
-    {print-setup "Debug: print the contents of the setup array and exit"}
+set option_list {
+    "\nOptions:" {
+        log-file {arg m help "Log what we're doing to the specified file. Use 'stdout' or 'stderr' for standard streams, empty to disable."}
+        portable {help "Run in portable mode. All program files are located in the main script directory, not in accordance with the FHS."}
+        print-setup {help "Debug: print the contents of the setup array and exit"}
+        {help h ?} {help "Print this message"}
+    }
 }
 
-if {[catch {
-    array set params [::cmdline::getoptions argv $cmdline_options]
-} error]} {
-    print_help puts
+array set options {}
+array set invalid_options {}
+set paths_to_process {}
+::getOpt::getOptions $option_list $::argv options invalid_options paths_to_process
+
+if {[array size invalid_options] > 0} {
+    set wrong_options [join [lsort [array names invalid_options]] ", "]
+    set program_name [get_program_name]
+    if {[array size invalid_options] ==1} {
+        puts stderr "$program_name: unrecognized option: $wrong_options"
+    } else {
+        puts stderr "$program_name: unrecognized options: $wrong_options"
+    }
+    puts stderr "Try '$program_name --help' for more information."
     exit 1
 }
 
-switch -- $params(log-file) {
+if {[getvar options(help) 0]} {
+    puts $projman(Help)
+    ::getOpt::getUsage $option_list
+    exit 0
+}
+
+switch -- [getvar options(log-file)] {
     "" {
         set debugChannelId ""
     }
     stdout -
     stderr {
-        set debugChannelId $params(log-file)
+        set debugChannelId $options(log-file)
     }
     default {
-        if {[catch {open $params(log-file) "w"} debugChannelId errorInfo]} {
+        if {[catch {open $options(log-file) "w"} debugChannelId errorInfo]} {
             puts stderr $debugChannelId
             exit 1
         }
         fconfigure $debugChannelId -buffering line
     }
 }
-
 
 ################################################################################
 
@@ -293,14 +679,14 @@ if {$tcl_platform(platform) eq "windows"} {
     set setup(portable) 1
 }
 # The portable mode can also be enabled by the command line.
-if {$params(portable)} {
+if {[getvar options(portable) 0]} {
     set setup(portable) 1
 }
 
 setup_autoconf_paths setup
 setup_xdg_base_dirs setup env
 
-if {$params(print-setup)} {
+if {[getvar options(print-setup) 0]} {
     print_array setup puts ""
     exit 0
 }
@@ -330,13 +716,9 @@ print_array setup debug_puts "  "
 debug_puts "Contents of the dirs array:"
 print_array dir debug_puts "  "
 
-# Добавляем в список файлы (каталоги) из командной строки
-# Note: After parsing options, ::argc may contain wrong value,
-# since the options are removed from ::argv.
-if {[llength $::argv] > 0} {
+if {[llength $paths_to_process] > 0} {
     debug_puts "Paths from command line:"
-    foreach arg $::argv {
-        lappend opened $arg
+    foreach arg $paths_to_process {
         debug_puts "  $arg"
     }
 }
@@ -377,9 +759,9 @@ debug_puts "Setting the locale... [::msgcat::mclocale]"
 
 source [file join $dir(lib) gui.tcl]
 
-# Open the PATH if command line argument has been setting
-if [info exists opened] {
-    foreach path $opened {
+# Open the paths from command line, if any
+if {[llength $paths_to_process] > 0} {
+    foreach path $paths_to_process {
         # Приводим путь к полному виду
         if {[file pathtype $path] ne "absolute"} {
             set path [file normalize $path]
@@ -396,6 +778,7 @@ if [info exists opened] {
             FileOper::Edit $path
         }
     }
+# Restore files and directories from the previos session otherwise
 } else {
     if {$cfgVariables(opened) ne ""} {
         # debug_puts "<$cfgVariables(opened)"
