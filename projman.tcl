@@ -139,6 +139,48 @@ proc setup_autoconf_paths {setup_var} {
     set_default setup PSDIR          {lindex $setup(DOCDIR)}
 }
 
+proc setup_xdg_base_dirs {setup_var env_var} {
+    upvar 1 $setup_var setup
+    upvar 1 $env_var env
+    global tcl_platform
+
+    if {![info exists env(HOME)]} {
+        error "env(HOME) is not set"
+    }
+
+    if {$env(HOME) eq ""} {
+        error "env(HOME) is empty"
+    }
+
+    set HOME $env(HOME)
+
+    set defaults {
+        {XDG_CONFIG_HOME {[file join $HOME .config]}}
+        {XDG_CACHE_HOME  {[file join $HOME .cache]}}
+        {XDG_DATA_HOME   {[file join $HOME .local share]}}
+        {XDG_STATE_HOME  {[file join $HOME .local state]}}
+    }
+
+    if {$tcl_platform(platform) eq "windows"} {
+        lappend defaults \
+            {XDG_DATA_DIRS   {}} \
+            {XDG_CONFIG_DIRS {}}
+    } else {
+        lappend defaults \
+            {XDG_DATA_DIRS   "/usr/local/share/:/usr/share/"} \
+            {XDG_CONFIG_DIRS "/etc/xdg"}
+    }
+
+    foreach entry $defaults {
+        set key [lindex $entry 0]
+        if {[info exists env($key)] && ($env($key) ne "")} {
+            set setup($key) $env($key)
+        } else {
+            set setup($key) [subst [lindex $entry 1]]
+        }
+    }
+}
+
 ################################################################################
 
 proc print_help {print_func} {
@@ -196,6 +238,7 @@ if {$params(portable)} {
 }
 
 setup_autoconf_paths setup
+setup_xdg_base_dirs setup env
 
 if {$params(print-setup)} {
     print_array setup puts
@@ -216,6 +259,12 @@ set dir(doc) [file join $dir(root) doc]
 set dir(lib) [file join $dir(root) lib]
 set dir(theme) [file join $dir(root) theme]
 
+set dir(cfg) [file join $setup(XDG_CONFIG_HOME) projman]
+if {[file exists $dir(cfg)] == 0} {
+    file mkdir $dir(cfg)
+}
+# puts "Config dir is $dir(cfg)"
+
 # Добавляем в список файлы (каталоги) из командной строки
 # Note: After parsing options, ::argc may contain wrong value,
 # since the options are removed from ::argv.
@@ -225,22 +274,6 @@ if {[llength $::argv] > 0} {
     }
     puts $opened
 }
-
-# Устанавливаем рабочий каталог, если его нет то создаём.
-# Согласно спецификации XDG проверяем наличие переменных и каталогов
-if [info exists env(XDG_CONFIG_HOME)] {
-    set dir(cfg) [file join $env(XDG_CONFIG_HOME) projman]
-} elseif [file exists [file join $env(HOME) .config]] {
-    set dir(cfg) [file join $env(HOME) .config projman]
-} else {
-    set dir(cfg) [file join $env(HOME) .projman]
-}
-
-if {[file exists $dir(cfg)] == 0} {
-    file mkdir $dir(cfg)
-}
-
-# puts "Config dir is $dir(cfg)"
 
 source [file join $dir(lib) config.tcl]
 
