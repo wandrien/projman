@@ -6,15 +6,14 @@ mkdir -p ${RPM_BUILD_DIR}/{SOURCES,RPMS,SRPMS,SPECS,RPMS/noarch}
 
 cd ../
 
-VERSION=$(grep "Version" projman.tcl | grep -oE '\b[0-9]{1,2}\.[0-9]{1,2}\.[0-9]{1,2}\b')
-RELEASE=$(grep "# Release" projman.tcl | grep -oE '[0-9A-Za-z]+$')
+VERSION=$(grep "# :Version:" projman.tcl | grep -oE '\b[0-9]{1,2}\.[0-9]{1,2}\.[0-9]{1,2}\b')
+RELEASE=$(grep "# :Release:" projman.tcl | grep -oE '[0-9A-Za-z]+$')
 BUILD_DATE=$(date +%d%m%Y%H%M%S)
-TXT="# Build: ${BUILD_DATE}"
-
-sed -i "/# Build:.*/c$TXT" projman.tcl
+BUILD_FIELD="# :Build: ${BUILD_DATE}"
+sed -i "/# :Build:.*/c$BUILD_FIELD" projman.tcl
+echo "$VERSION, $RELEASE, $BUILD_DATE"
 
 cp projman.tcl projman
-
 sed -i "s:# _INSTALLATION_SETUP_:set setup(PREFIX) /usr:g" projman
 
 CUR_DIR=$(pwd)

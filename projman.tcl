@@ -5,12 +5,12 @@ exec wish "$0" -- "$@"
 ######################################################
 #        Tcl/Tk Project manager 2.0
 #        Distributed under GNU Public License
-# Author: Sergey Kalinin svk@nuk-svk.ru
-# Home page: https://nuk-svk.ru
+# :Author: Sergey Kalinin svk@nuk-svk.ru
+# :Home page: https://nuk-svk.ru
 ######################################################
-# Version: 2.0.0
-# Release: alpha16
-# Build: 22082024151054
+# :Version: 2.0.0
+# :Release: alpha16
+# :Build: 22082024151054
 ######################################################
 
 ################################################################################
@@ -522,6 +522,11 @@ proc get_program_name {} {
 
 set debugChannelId ""
 
+proc debug_log_enabled {} {
+    global debugChannelId
+    return [expr {$debugChannelId ne ""}]
+}
+
 # debug_puts ?-nonewline? string
 proc debug_puts {args} {
     global debugChannelId
@@ -563,26 +568,56 @@ proc debug_puts {args} {
     }
 }
 
+proc regexp_quote {str} {
+    regsub -all {[][{}()*+?.\\^$|]} $str {\\&} result
+    return $result
+}
+
+proc extract_fields_from_comments {targetArrayName channelId fieldDesc} {
+    upvar $targetArrayName targetArray
+    array set extractedFields {}
+    array set fields $fieldDesc
+
+    set quoted_keys [lmap x [array names fields] {regexp_quote $x}]
+    set r "^# :([join $quoted_keys {|}]):\\s+(.*)"
+
+    while {[gets $channelId line] >=0} {
+        if [regexp -- $r $line match v1 v2] {
+            set key $fields($v1)
+            set extractedFields($key) $v2
+            set targetArray($key) $v2
+        }
+        if {[array size extractedFields] == [array size fields]}  {
+            break
+        }
+    }
+
+    if {[array size extractedFields] == [array size fields]}  {
+        return
+    }
+
+    set missing [list]
+    foreach key [array names fields] {
+        if {![info exists extractedFields($fields($key))]} {
+            lappend missing $key
+        }
+    }
+    throw {PARSE MISSING_FIELDS} \
+        "Not all required fields found. Missing: [join $missing {, }]"
+}
+
 ################################################################################
 
-# определим текущую версию, релиз и т.д.
+# Extract version etc from the source code
+# Note: Ignoring possible errors in open and extract_fields_from_comments is OK,
+#       rely on default behavior for terminating the program.
 set f [open [info script] "RDONLY"]
-while {[gets $f line] >=0} {
-    if [regexp -nocase -all -- {version:\s+([0-9]+?.[0-9]+?.[0-9]+?)} $line match v1] {
-        set projman(Version) $v1
-    }
-    if [regexp -nocase -all -- {release:\s+([a-z0-9]+?)} $line match v1] {
-        set projman(Release) $v1
-    }
-    if [regexp -nocase -all -- {build:\s+([a-z0-9]+?)} $line match v1] {
-        set projman(Build) $v1
-    }
-    if [regexp -nocase -all -- {author:\s+(.+?)} $line match v1] {
-        set projman(Author) $v1
-    }
-    if [regexp -nocase -all -- {home page:\s+(.+?)} $line match v1] {
-        set projman(Homepage) $v1
-    }
+extract_fields_from_comments projman $f {
+    Version Version
+    Release Release
+    Build Build
+    Author Author
+    "Home page" Homepage
 }
 close $f
 
@@ -710,11 +745,16 @@ if {[file exists $dir(cfg)] == 0} {
     file mkdir $dir(cfg)
 }
 
-debug_puts "Contents of the setup array:"
-print_array setup debug_puts "  "
+if {[debug_log_enabled]} {
+    debug_puts "Contents of the projman array:"
+    print_array projman debug_puts "  "
 
-debug_puts "Contents of the dirs array:"
-print_array dir debug_puts "  "
+    debug_puts "Contents of the setup array:"
+    print_array setup debug_puts "  "
+
+    debug_puts "Contents of the dirs array:"
+    print_array dir debug_puts "  "
+}
 
 if {[llength $paths_to_process] > 0} {
     debug_puts "Paths from command line:"
