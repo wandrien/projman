@@ -383,49 +383,6 @@ proc ::getOpt::getUsage {optLists {out "stdout"}} {
 
 ################################################################################
 
-# определим текущую версию, релиз и т.д.
-set f [open [info script] "RDONLY"]
-while {[gets $f line] >=0} {
-    if [regexp -nocase -all -- {version:\s+([0-9]+?.[0-9]+?.[0-9]+?)} $line match v1] {
-        set projman(Version) $v1
-    }
-    if [regexp -nocase -all -- {release:\s+([a-z0-9]+?)} $line match v1] {
-        set projman(Release) $v1
-    }
-    if [regexp -nocase -all -- {build:\s+([a-z0-9]+?)} $line match v1] {
-        set projman(Build) $v1
-    }
-    if [regexp -nocase -all -- {author:\s+(.+?)} $line match v1] {
-        set projman(Author) $v1
-    }
-    if [regexp -nocase -all -- {home page:\s+(.+?)} $line match v1] {
-        set projman(Homepage) $v1
-    }
-}
-close $f
-
-set projman(Help) "projman
-Version: $projman(Version)
-Release: $projman(Release)
-Build: $projman(Build)
-Home page: $projman(Homepage)
-
-ProjMan (aka \"Tcl/Tk Project Manager\") is a text editor for programming
-in TCL/Tk and other languages.
-It includes a file manager, a source editor with syntax highlighting and code
-navigation, a context-sensitive help system, Git support, and much more."
-
-package require cmdline
-package require msgcat
-package require inifile
-package require ctext
-package require base64
-package require fileutil
-package require Thread
-package require fileutil::magic::filetype
-
-################################################################################
-
 # Domain-independend utility functions
 
 proc getvar {var {default_value ""}} {
@@ -605,6 +562,49 @@ proc debug_puts {args} {
         puts $debugChannelId $string
     }
 }
+
+################################################################################
+
+# определим текущую версию, релиз и т.д.
+set f [open [info script] "RDONLY"]
+while {[gets $f line] >=0} {
+    if [regexp -nocase -all -- {version:\s+([0-9]+?.[0-9]+?.[0-9]+?)} $line match v1] {
+        set projman(Version) $v1
+    }
+    if [regexp -nocase -all -- {release:\s+([a-z0-9]+?)} $line match v1] {
+        set projman(Release) $v1
+    }
+    if [regexp -nocase -all -- {build:\s+([a-z0-9]+?)} $line match v1] {
+        set projman(Build) $v1
+    }
+    if [regexp -nocase -all -- {author:\s+(.+?)} $line match v1] {
+        set projman(Author) $v1
+    }
+    if [regexp -nocase -all -- {home page:\s+(.+?)} $line match v1] {
+        set projman(Homepage) $v1
+    }
+}
+close $f
+
+set projman(Help) "projman
+Version: $projman(Version)
+Release: $projman(Release)
+Build: $projman(Build)
+Home page: $projman(Homepage)
+
+ProjMan (aka \"Tcl/Tk Project Manager\") is a text editor for programming
+in TCL/Tk and other languages.
+It includes a file manager, a source editor with syntax highlighting and code
+navigation, a context-sensitive help system, Git support, and much more."
+
+package require cmdline
+package require msgcat
+package require inifile
+package require ctext
+package require base64
+package require fileutil
+package require Thread
+package require fileutil::magic::filetype
 
 ################################################################################
 
