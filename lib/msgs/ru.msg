@@ -68,7 +68,7 @@
 ::msgcat::mcset ru "Docs dir" "Каталог документации"
 ::msgcat::mcset ru "Don't selected file" "Не определен файл"
 ::msgcat::mcset ru "E-mail" "Эл. почта"
-::msgcat::mcset ru "Edit" "Редактирование"
+::msgcat::mcset ru "Edit" "Правка"
 ::msgcat::mcset ru "Editor" "Редактор"
 ::msgcat::mcset ru "Editor background" "Цвет фона"
 ::msgcat::mcset ru "Editor foreground" "Цвет шрифта"
