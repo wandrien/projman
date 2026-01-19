@@ -381,14 +381,15 @@ namespace eval FileOper {
         set txt $itemName.frmText.t
         if ![string match "*untitled*" $itemName] {
             set file [open "$fileFullPath" r]
-            $txt insert end [chan read -nonewline $file]  
+            $txt insert end [chan read -nonewline $file]
             close $file
         }
-        # Delete emty last line
+        # Delete empty last line
         if {[$txt get {end-1 line} end] eq "\n" || [$txt get {end-1 line} end] eq "\r\n"} {
             $txt delete {end-1 line} end
             debug_puts ">[$txt get {end-1 line} end]<"
         }
+        $txt edit reset
         $txt see 1.0
     }
     
