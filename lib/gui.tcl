@@ -61,11 +61,23 @@ wm protocol . WM_DELETE_WINDOW Quit
 wm overrideredirect . 0
 #wm positionfrom . user
 
+event add <<Copy>>  <Control-Insert>
+event add <<Paste>> <Shift-Insert>
+event add <<Cut>>   <Shift-Delete>
+
+set latestTxtWidget {}
+bind all <FocusIn> {
+    if {[winfo class %W] eq "Ctext"} {
+        global latestTxtWidget
+        set latestTxtWidget %W
+    }
+}
+
 bind . <Control-q> Quit
 bind . <Control-Q> Quit
 bind . <Control-eacute> Quit
-bind . <Insert> Add
-bind . <Delete> Del
+#bind . <Insert> Add
+#bind . <Delete> Del
 bind . <F1> ShowHelpDialog
 bind . <Control-n> Editor::New
 bind . <Control-N> Editor::New

@@ -786,7 +786,7 @@ namespace eval Editor {
         bind $txt <Control-comma> "Editor::Comment $txt $fileType"
         bind $txt <Control-period> "Editor::Uncomment $txt $fileType"
         bind $txt <Control-eacute> Find
-        bind $txt <Insert> {OverWrite}
+        #bind $txt <Insert> {OverWrite}
         bind $txt <ButtonRelease-1> "Editor::SearchBrackets $txt"
         bind $txt <Button-1><ButtonRelease-1> "Editor::SelectionHighlight $txt"
         bind $txt <<Modified>> "SetModifiedFlag $w $nb auto"

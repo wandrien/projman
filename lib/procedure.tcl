@@ -689,3 +689,20 @@ proc SetActiveProject {path} {
     .frmStatus.lblGitLogo configure -image git_logo_20x20
     .frmStatus.lblGit configure -text "[::msgcat::mc "Branch"]: [Git::Branches current]"
 }
+
+proc SendEventToLatestTxtWidget {ev} {
+    global latestTxtWidget
+    if {$latestTxtWidget eq ""} {
+        return
+    } elseif {[winfo exists $latestTxtWidget] && [winfo class $latestTxtWidget] eq "Ctext"} {
+        event generate ${latestTxtWidget}.t $ev
+    } else {
+        set latestTxtWidget ""
+    }
+}
+
+proc Cut {} { SendEventToLatestTxtWidget <<Cut>> }
+proc Copy {} { SendEventToLatestTxtWidget <<Copy>> }
+proc Paste {} { SendEventToLatestTxtWidget <<Paste>> }
+proc Undo {} { SendEventToLatestTxtWidget <<Undo>> }
+proc Redo {} { SendEventToLatestTxtWidget <<Redo>> }
