@@ -195,9 +195,15 @@ proc ResetModifiedFlag {w nbEditor} {
     # debug_puts "ResetModifiedFlag: $lbl"
     $nbEditor tab $w -text $lbl
 }
-proc SetModifiedFlag {w nbEditor} {
+proc SetModifiedFlag {w nbEditor force} {
     global modified
-    #$w.frmText.t edit modified false
+    if {$force eq "force"} {
+        $w.frmText.t edit modified true
+    } else {
+        if {![$w.frmText.t edit modified]} {
+            return
+        }
+    }
     set modified($w) "true"
     set lbl [$nbEditor tab $w -text]
     # debug_puts "SetModifiedFlag: $w; $modified($w); >$lbl<"

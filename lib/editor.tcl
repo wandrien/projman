@@ -789,7 +789,7 @@ namespace eval Editor {
         bind $txt <Insert> {OverWrite}
         bind $txt <ButtonRelease-1> "Editor::SearchBrackets $txt"
         bind $txt <Button-1><ButtonRelease-1> "Editor::SelectionHighlight $txt"
-        bind $txt <<Modified>> "SetModifiedFlag $w $nb"
+        bind $txt <<Modified>> "SetModifiedFlag $w $nb auto"
         bind $txt <Control-i> ImageBase64Encode
         bind $txt <Control-u> "Editor::SearchBrackets %W"
         bind $txt <Control-J> "catch {Editor::GoToFunction $txt}"
@@ -924,7 +924,7 @@ namespace eval Editor {
         set nbEditorItem [NB::InsertItem $nbEditor  $fileFullPath "file"]
         # debug_puts "$nbEditorItem, $nbEditor"
         Editor $fileFullPath $nbEditor $nbEditorItem
-        SetModifiedFlag $nbEditorItem $nbEditor
+        SetModifiedFlag $nbEditorItem $nbEditor force
         focus -force $nbEditorItem.frmText.t.t
     }
     
