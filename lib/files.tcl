@@ -285,8 +285,8 @@ namespace eval FileOper {
         }
         set editedText [$nbEditorItem.frmText.t get 0.0 end]
         set f [open $filePath "w+"]
-        debug_puts -nonewline $f $editedText
-        debug_puts "$f was saved"
+        puts -nonewline $f $editedText
+        debug_puts "$filePath was saved"
         close $f
         ResetModifiedFlag $nbEditorItem $nbEditor
     }
