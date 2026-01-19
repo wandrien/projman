@@ -13,6 +13,7 @@
 namespace eval Config {} {
     variable cfgINISections
     variable cfgVariables
+    variable cfgOnConfigSaveCb
 }
 
 if [info exists env(LANG)] {
@@ -67,7 +68,7 @@ editedFiles=
 "
 proc Config::create {dir} {
     set cfgFile [open [file join $dir projman.ini]  "w+"]
-    debug_puts $cfgFile $::configDefault
+    puts $cfgFile $::configDefault
     close $cfgFile
 }
 
@@ -82,7 +83,14 @@ proc Config::read {dir} {
     ini::close $cfgFile
 }
 
+proc Config::registerCallbackOnConfigSave {callback {link ""}} {
+    variable cfgOnConfigSaveCb
+    registerCallback cfgOnConfigSaveCb $callback $link
+    debug_puts "registerCallbackOnConfigSave: $callback"
+}
+
 proc Config::write {dir} {
+    variable cfgOnConfigSaveCb
     global activeProject editors
     set cfgFile [ini::open [file join $dir projman.ini] "w"]
     foreach section  [array names ::cfgINISections] {
@@ -96,7 +104,7 @@ proc Config::write {dir} {
     ini::set $cfgFile "UserSession" editedFiles ""
 
     # Save an top level window geometry into config
-    ini::set $cfgFile "GUI" geometry [wm geometry .]
+    fireCallbacks cfgOnConfigSaveCb $cfgFile
     if {[info exists activeProject] !=0 && $activeProject ne ""} {
         ini::set $cfgFile "UserSession" opened $activeProject
         # Добавим пути к открытым в редакторе файлам в переменную
@@ -116,7 +124,7 @@ proc Config::write {dir} {
         ini::set $cfgFile "UserSession" editedFiles ""
     }
     # debug_puts $editors
-    
+
     ini::commit $cfgFile
     ini::close $cfgFile
 }

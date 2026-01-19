@@ -7,11 +7,51 @@
 #  GUI module
 #######################################################
 
-if {[info exists cfgVariables(geometry)]} {
-    wm geometry . $cfgVariables(geometry)
-} else {
-    wm geometry . 1024x768
+proc wm_zoomed {window {value "--none--"}} {
+    if {$value eq "--none--"} {
+        if {![catch {wm attributes $window -zoomed} value]} {
+            return $value
+        }
+        if {![catch {wm state $window} state]} {
+            return [expr {$state eq zoomed}]
+        }
+        return 0
+    } else {
+        if {![catch {wm attributes $window -zoomed $value} value]} {
+            return $value
+        }
+        set state [exrp {$value ? "zoomed" : "normal"}]
+        if {![catch {wm state $window -zoomed $state} value]} {
+            return $value
+        }
+        return $value
+    }
 }
+
+proc guiRestoreGuiState {} {
+    global cfgVariables
+    if {[info exists cfgVariables(geometry)]} {
+        wm geometry . $cfgVariables(geometry)
+    } else {
+        wm geometry . 1024x768
+    }
+    if {[info exists cfgVariables(zoomed)]} {
+        wm_zoomed . $cfgVariables(zoomed)
+    }
+}
+
+proc guiCallbackOnConfigSave {_link iniFile} {
+    set zoomed [wm_zoomed .]
+    ini::set $iniFile "GUI" zoomed $zoomed
+    if {$zoomed == 0} {
+        ini::set $iniFile "GUI" geometry [wm geometry .]
+    }
+}
+
+Config::registerCallbackOnConfigSave guiCallbackOnConfigSave
+
+guiRestoreGuiState
+
 # Заголовок окна
 wm title . "ProjMan \($projman(Version)-$projman(Release)\)"
 wm iconname . "ProjMan"

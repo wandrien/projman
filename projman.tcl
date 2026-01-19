@@ -606,6 +606,29 @@ proc extract_fields_from_comments {targetArrayName channelId fieldDesc} {
         "Not all required fields found. Missing: [join $missing {, }]"
 }
 
+proc registerCallback {cbListRef callback {link ""}} {
+    upvar $cbListRef cbList
+
+    if {[info commands $callback] eq ""} {
+        error "Procedure '$callback_proc' doesnt exists"
+    }
+
+    lappend cbList [list $callback $link]
+}
+
+proc fireCallbacks {cbListRef args} {
+    upvar $cbListRef cbList
+
+    foreach item $cbList {
+        set callback [lindex $item 0]
+        set link [lindex $item 1]
+        if {[info commands $callback] ne ""} {
+            #debug_puts "fireCallbacks: $callback"
+            $callback $link {*}$args
+        }
+    }
+}
+
 ################################################################################
 
 # Extract version etc from the source code
