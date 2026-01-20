@@ -56,6 +56,45 @@ proc GetConvertCaseMenu {m} {
         -accelerator "Ctrl+Shift+I"
 }
 
+proc GetConvertIdentCaseMenu {m} {
+    $m add command -label [::msgcat::mc "twowords (flatcase)"] \
+        -command SelectionToFlatCase
+    $m add command -label [::msgcat::mc "TWOWORDS (UPPERCASE)"] \
+        -command SelectionToUpperFlatCase
+
+    $m add separator
+
+    $m add command -label [::msgcat::mc "twoWords (camelCase)"] \
+        -command SelectionToCamelCase
+    $m add command -label [::msgcat::mc "TwoWords (PascalCase)"] \
+        -command SelectionToPascalCase
+
+    $m add separator
+
+    $m add command -label [::msgcat::mc "two_words (snake_case)"] \
+        -command SelectionToSnakeCase
+    $m add command -label [::msgcat::mc "TWO_WORDS (SCREAMING_SNAKE_CASE)"] \
+        -command SelectionToScreamingSnakeCase
+    $m add command -label [::msgcat::mc "two_Words (camel_Snake_Case)"] \
+        -command SelectionToCamelSnakeCase
+    $m add command -label [::msgcat::mc "Two_Words (Title_Case)"] \
+        -command SelectionToTitleSnakeCase
+
+    $m add separator
+
+    $m add command -label [::msgcat::mc "two-words (kebab-case)"] \
+        -command SelectionToKebabCase
+    $m add command -label [::msgcat::mc "TWO-WORDS (SCREAMING-KEBAB-CASE)"] \
+        -command SelectionToScreamingKebabCase
+    $m add command -label [::msgcat::mc "Two-Words (Train-Case)"] \
+        -command SelectionToTrainCase
+
+    $m add separator
+
+    $m add command -label [::msgcat::mc "two words (space separated)"] \
+        -command SelectionToWords
+}
+
 proc GetEditMenu {m} {
     $m add command -label [::msgcat::mc "Undo"] -command Undo\
     -accelerator "Ctrl+Z"
@@ -73,6 +112,9 @@ proc GetEditMenu {m} {
     menu $m.convertCase
     $m add cascade -label [::msgcat::mc "Convert Case"] -menu $m.convertCase
     GetConvertCaseMenu $m.convertCase
+    menu $m.convertIdentCase
+    $m add cascade -label [::msgcat::mc "Convert Naming Style"] -menu $m.convertIdentCase
+    GetConvertIdentCaseMenu $m.convertIdentCase
 
     $m add separator
     $m add command -label [::msgcat::mc "Find"] -command {Editor::FindDialog ""}\
