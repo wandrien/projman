@@ -152,12 +152,12 @@ pack [ttk::label .frmStatus.lblPosition -justify right] -side left -expand true 
 pack [ttk::label .frmStatus.lblSize -justify center] -side right -fill x
 pack [ttk::label .frmStatus.lblEncoding -justify center] -side right -fill x
 
-foreach menuId {File Edit View Help} {
+foreach menuId {File Edit View Git Help} {
     ttk::menubutton .frmMenu.mnu${menuId} -text [::msgcat::mc ${menuId}] -menu .frmMenu.mnu${menuId}.m
     Get${menuId}Menu [menu .frmMenu.mnu${menuId}.m -title [::msgcat::mc ${menuId}]]
 }
 
-pack .frmMenu.mnuFile .frmMenu.mnuEdit .frmMenu.mnuView -side left
+pack .frmMenu.mnuFile .frmMenu.mnuEdit .frmMenu.mnuView .frmMenu.mnuGit -side left
 pack .frmMenu.mnuHelp -side right
 
 # PopUP menu

@@ -27,6 +27,7 @@ cfgModifyDate=''
 searchCommand=/usr/bin/grep
 searchCommandOptions=-r -n -H
 gitCommand=/usr/bin/git
+gitkCommand=/usr/bin/gitk
 # must return a mime type of file
 fileTypeCommand=/usr/bin/file
 fileTypeCommandOptions=-i -b

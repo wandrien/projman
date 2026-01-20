@@ -122,6 +122,14 @@ proc GetViewMenu {m} {
         -variable cfgVariables(multilineComments) -onvalue true -offvalue false 
 }
 
+proc GetGitMenu {m} {
+    $m add command -label [::msgcat::mc "Git"] -command Git::Dialog
+    $m add command -label [::msgcat::mc "Gitk - Directory History"] -command {Git::Gitk -directory}
+    $m add command -label [::msgcat::mc "Gitk - File History"] -command {Git::Gitk -file}
+    $m add command -label [::msgcat::mc "Git GUI"] -command Git::GUI
+    $m add command -label [::msgcat::mc "Git GUI - Blame"] -command {Git::GUI -blame}
+}
+
 proc GetHelpMenu {m} {
     $m add command -label [::msgcat::mc "About ..."] -command Help::About
 }

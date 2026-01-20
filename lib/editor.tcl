@@ -1540,4 +1540,19 @@ namespace eval Editor {
 
         return $fr
     }
+
+    proc GetSavedPath {} {
+        global nbEditor tree
+        set nbEditorItem [$nbEditor select]
+        #debug_puts "nbEditorItem: $nbEditorItem"
+        if [string match "*untitled*" $nbEditorItem] {
+            return ""
+        } else {
+            set treeItem "file::[string range $nbEditorItem [expr [string last "." $nbEditorItem] +1] end ]"
+            #debug_puts "treeItem: $treeItem"
+            set filePath [Tree::GetItemID $tree $treeItem]
+            #debug_puts "filePath: $filePath"
+            return $filePath
+        }
+    }
 }

@@ -706,3 +706,7 @@ proc Copy {} { SendEventToLatestTxtWidget <<Copy>> }
 proc Paste {} { SendEventToLatestTxtWidget <<Paste>> }
 proc Undo {} { SendEventToLatestTxtWidget <<Undo>> }
 proc Redo {} { SendEventToLatestTxtWidget <<Redo>> }
+
+proc RunAsync {cmd} {
+    after 0 [list catch $cmd]
+}

@@ -850,4 +850,52 @@ namespace eval Git {
         
         ctext::addHighlightClassForRegexp $fr.body.tCommit stackControl lightblue {^[\w]+:}
     }
+
+    proc Gitk {{what -directory}} {
+        global cfgVariables
+        set filePath [Editor::GetSavedPath]
+        if {$filePath eq ""} {
+            return;
+        }
+
+        if {$what eq "-directory"} {
+            set path [file dirname $filePath]
+        } elseif {$what eq "-file"} {
+            set path $filePath
+        } else {
+            return
+        }
+
+        set cmd exec
+        lappend cmd $cfgVariables(gitkCommand)
+        lappend cmd "--"
+        lappend cmd $filePath
+        lappend cmd "&"
+        RunAsync $cmd
+    }
+
+    proc GUI {{subcommand -none-}} {
+        global cfgVariables
+        set filePath [Editor::GetSavedPath]
+        if {$filePath eq ""} {
+            return;
+        }
+        set path [file dirname $filePath]
+
+        set cmd exec
+        lappend cmd $cfgVariables(gitCommand)
+        lappend cmd "-C" $path
+        lappend cmd "gui"
+
+        if {$subcommand eq "-none-"} {
+            # pass
+        } elseif {$subcommand eq "-blame"}  {
+            lappend cmd "blame" $filePath
+        } else {
+            return;
+        }
+
+        lappend cmd "&"
+        RunAsync $cmd
+    }
 }
