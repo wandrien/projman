@@ -8,7 +8,13 @@
 # Generate menu module
 ######################################################
 
-proc GetFileMenu {m} {
+proc MakeSubmenu {m submenuIdent generator title} {
+    menu $m.$submenuIdent
+    $m add cascade -label $title -menu $m.$submenuIdent
+    $generator $m.$submenuIdent
+}
+
+proc MakeFileMenu {m} {
     global activeProject
     $m add command -label [::msgcat::mc "New file"] -command Editor::New\
     -accelerator "Ctrl+N"
@@ -43,7 +49,7 @@ proc GetFileMenu {m} {
     $m add command -label [::msgcat::mc "Exit"] -command Quit -accelerator "Ctrl+Q"
 }
 
-proc GetConvertCaseMenu {m} {
+proc MakeConvertCaseMenu {m} {
     $m add command -label [::msgcat::mc "UPPER CASE"] -command SelectionToUpperCase\
         -accelerator "Ctrl+Shift+U"
     $m add command -label [::msgcat::mc "lower case"] -command SelectionToLowerCase\
@@ -56,7 +62,7 @@ proc GetConvertCaseMenu {m} {
         -accelerator "Ctrl+Shift+I"
 }
 
-proc GetConvertIdentCaseMenu {m} {
+proc MakeConvertIdentCaseMenu {m} {
     $m add command -label [::msgcat::mc "twowords (flatcase)"] \
         -command SelectionToFlatCase
     $m add command -label [::msgcat::mc "TWOWORDS (UPPERCASE)"] \
@@ -95,7 +101,7 @@ proc GetConvertIdentCaseMenu {m} {
         -command SelectionToWords
 }
 
-proc GetEditMenu {m} {
+proc MakeEditMenu {m} {
     $m add command -label [::msgcat::mc "Undo"] -command Undo\
     -accelerator "Ctrl+Z"
     $m add command -label [::msgcat::mc "Redo"] -command Redo\
@@ -109,12 +115,8 @@ proc GetEditMenu {m} {
     -accelerator "Ctrl+Z"
 
     $m add separator
-    menu $m.convertCase
-    $m add cascade -label [::msgcat::mc "Convert Case"] -menu $m.convertCase
-    GetConvertCaseMenu $m.convertCase
-    menu $m.convertIdentCase
-    $m add cascade -label [::msgcat::mc "Convert Naming Style"] -menu $m.convertIdentCase
-    GetConvertIdentCaseMenu $m.convertIdentCase
+    MakeSubmenu $m convertCase MakeConvertCaseMenu [::msgcat::mc "Convert Case"]
+    MakeSubmenu $m convertIdentCase MakeConvertIdentCaseMenu [::msgcat::mc "Convert Naming Style"]
 
     $m add separator
     $m add command -label [::msgcat::mc "Find"] -command {Editor::FindDialog ""}\
@@ -132,7 +134,7 @@ proc GetEditMenu {m} {
     
 }
 
-proc GetViewMenu {m} {
+proc MakeViewMenu {m} {
     global cfgVariables
     $m add checkbutton -label [::msgcat::mc "View panel"] -command ViewFilesTree \
         -variable cfgVariables(filesPanelShow) -onvalue true -offvalue false \
@@ -182,7 +184,7 @@ proc GetViewMenu {m} {
         -variable cfgVariables(multilineComments) -onvalue true -offvalue false 
 }
 
-proc GetGitMenu {m} {
+proc MakeGitMenu {m} {
     $m add command -label [::msgcat::mc "Git"] -command Git::Dialog
     $m add command -label [::msgcat::mc "Gitk - Directory History"] -command {Git::Gitk -directory}
     $m add command -label [::msgcat::mc "Gitk - File History"] -command {Git::Gitk -file}
@@ -190,8 +192,16 @@ proc GetGitMenu {m} {
     $m add command -label [::msgcat::mc "Git GUI - Blame"] -command {Git::GUI -blame}
 }
 
-proc GetHelpMenu {m} {
+proc MakeHelpMenu {m} {
     $m add command -label [::msgcat::mc "About ..."] -command Help::About
+}
+
+proc MakePopupMenu {m} {
+    MakeEditMenu $m
+    $m add separator
+    MakeSubmenu $m file MakeFileMenu [::msgcat::mc "File"]
+    MakeSubmenu $m view MakeViewMenu [::msgcat::mc "View"]
+    MakeSubmenu $m git MakeGitMenu [::msgcat::mc "Git"]
 }
 
 proc PopupMenu {x y} {

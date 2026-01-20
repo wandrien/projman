@@ -13,6 +13,7 @@
 * DONE: FEAT: Добавить меню для вызова `gitk` и `git gui`.
 * DONE: FEAT: Команды для смены регистра символов.
 * DONE: FEAT: Команды для смены капитализации идентификатора: https://en.wikipedia.org/wiki/Naming_convention_(programming)#Examples_of_multiple-word_identifier_formats
+* DONE: FEAT: Сделать контекстное меню по ПКМ более компактным.
 
 * BUG: Мерцание при переключении между вкладками.
 * BUG: Если файл конфигурации существует и пустой, программа падает.

@@ -154,7 +154,7 @@ pack [ttk::label .frmStatus.lblEncoding -justify center] -side right -fill x
 
 foreach menuId {File Edit View Git Help} {
     ttk::menubutton .frmMenu.mnu${menuId} -text [::msgcat::mc ${menuId}] -menu .frmMenu.mnu${menuId}.m
-    Get${menuId}Menu [menu .frmMenu.mnu${menuId}.m -title [::msgcat::mc ${menuId}]]
+    Make${menuId}Menu [menu .frmMenu.mnu${menuId}.m -title [::msgcat::mc ${menuId}]]
 }
 
 pack .frmMenu.mnuFile .frmMenu.mnuEdit .frmMenu.mnuView .frmMenu.mnuGit -side left
@@ -162,9 +162,7 @@ pack .frmMenu.mnuHelp -side right
 
 # PopUP menu
 menu .popup -title ProjMan
-GetFileMenu .popup
-GetEditMenu .popup
-GetViewMenu .popup
+MakePopupMenu .popup
 
 set frmTool [ttk::frame .frmBody.frmTool]
 ttk::panedwindow .frmBody.panel -orient horizontal -style TPanedwindow
