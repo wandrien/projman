@@ -823,6 +823,11 @@ namespace eval Editor {
             }
             break
         }
+        bind $txt <Control-Shift-U> {SelectionToUpperCase %W}
+        bind $txt <Control-Shift-L> {SelectionToLowerCase %W}
+        bind $txt <Control-Shift-T> {SelectionToTitleCase %W}
+        bind $txt <Control-Shift-Y> {SelectionToSentenceCase %W}
+        bind $txt <Control-Shift-I> {SelectionToggleCase %W}
         # bind $txt.t <KeyRelease> "Editor::ReleaseKey %K $txt.t $fileType"
         # bind $txt.t <KeyPress> "Editor::PressKey %K $txt.t"
         # bind $txt <KeyRelease> "Editor::Key %k %K" 

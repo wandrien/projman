@@ -43,6 +43,18 @@ proc GetFileMenu {m} {
     $m add command -label [::msgcat::mc "Exit"] -command Quit -accelerator "Ctrl+Q"
 }
 
+proc GetConvertCaseMenu {m} {
+    $m add command -label [::msgcat::mc "UPPER CASE"] -command SelectionToUpperCase\
+        -accelerator "Ctrl+Shift+U"
+    $m add command -label [::msgcat::mc "lower case"] -command SelectionToLowerCase\
+        -accelerator "Ctrl+Shift+L"
+    $m add command -label [::msgcat::mc "Title Case"] -command SelectionToTitleCase\
+        -accelerator "Ctrl+Shift+T"
+    $m add command -label [::msgcat::mc "Sentence case"] -command SelectionToSentenceCase\
+        -accelerator "Ctrl+Shift+Y"
+    $m add command -label [::msgcat::mc "iNVERT CASE"] -command SelectionToggleCase\
+        -accelerator "Ctrl+Shift+I"
+}
 
 proc GetEditMenu {m} {
     $m add command -label [::msgcat::mc "Undo"] -command Undo\
@@ -56,6 +68,12 @@ proc GetEditMenu {m} {
     -accelerator "Ctrl+V"
     $m add command -label [::msgcat::mc "Cut"] -command Cut\
     -accelerator "Ctrl+Z"
+
+    $m add separator
+    menu $m.convertCase
+    $m add cascade -label [::msgcat::mc "Convert Case"] -menu $m.convertCase
+    GetConvertCaseMenu $m.convertCase
+
     $m add separator
     $m add command -label [::msgcat::mc "Find"] -command {Editor::FindDialog ""}\
     -accelerator "Ctrl+F"
