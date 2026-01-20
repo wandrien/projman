@@ -20,7 +20,7 @@ proc wm_zoomed {window {value "--none--"}} {
         if {![catch {wm attributes $window -zoomed $value} value]} {
             return $value
         }
-        set state [exrp {$value ? "zoomed" : "normal"}]
+        set state [expr {$value ? "zoomed" : "normal"}]
         if {![catch {wm state $window -zoomed $state} value]} {
             return $value
         }
