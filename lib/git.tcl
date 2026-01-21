@@ -185,14 +185,13 @@ namespace eval Git {
         set description [string trim [$txt get 0.0 end]]
         debug_puts $description
         set cmd exec
-        append cmd " $cfgVariables(gitCommand)"
-        append cmd " commit"
-        append cmd " -m"
-        regsub -all {\"|\'} $description {'} description
-        append cmd " \"$description\""
-        append cmd " --"
+        lappend cmd $cfgVariables(gitCommand)
+        lappend cmd "commit"
+        lappend cmd "-m"
+        lappend cmd $description
+        lappend cmd "--"
         foreach item [$listBox get 0 [$listBox size]] {
-            append cmd " [file join $activeProject $item]"
+            lappend cmd [file join $activeProject $item]
         }
         if {$description eq ""} {
             set answer [tk_messageBox -message [::msgcat::mc "Empty commit description"] \
